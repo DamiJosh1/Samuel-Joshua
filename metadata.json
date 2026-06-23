@@ -1,0 +1,6 @@
+{
+  "name": "Canada.ca Biometrics",
+  "description": "An interactive replica of the Government of Canada (Canada.ca) federal portal, featuring multi-language support (English/Français), complete section routing, biometrics instructions, passport fee estimators, Express Entry CRS points simulator, citizenship mock quizzes, business grants finders, Job Bank database, and a secure Service Canada Account console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
