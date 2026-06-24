@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useApp } from './context/AppContext';
 import GovernmentLayout from './layouts/GovernmentLayout';
+import LanguageGate from './components/LanguageGate';
 
 // Core interactive pages
 import Home from './pages/Home';
@@ -38,59 +39,71 @@ import {
 export default function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
-        <Routes>
+      <AppContent />
+    </AppProvider>
+  );
+}
+
+function AppContent() {
+  const { hasEntered } = useApp();
+
+  if (!hasEntered) {
+    return <LanguageGate />;
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        
+        {/* Main Government Routing Template enclosing child views */}
+        <Route path="/" element={<GovernmentLayout />}>
           
-          {/* Main Government Routing Template enclosing child views */}
-          <Route path="/" element={<GovernmentLayout />}>
-            
-            {/* Primary Index Landings */}
-            <Route index element={<Home />} />
-            <Route path="services" element={<Services />} />
-            
-            {/* Immigration Sector Nested gateways */}
-            <Route path="immigration-citizenship">
-              <Route index element={<Immigration />} />
-              <Route path="biometrics" element={<Biometrics />} />
-              <Route path="passports" element={<Passport />} />
-              <Route path="visit-canada" element={<VisitCanada />} />
-              <Route path="work-permits" element={<WorkPermit />} />
-              <Route path="study-permits" element={<StudyPermit />} />
-              <Route path="permanent-residence" element={<PermanentResidence />} />
-              <Route path="citizenship" element={<Citizenship />} />
-            </Route>
-
-            {/* Core Categories Section routes */}
-            <Route path="taxes" element={<Taxes />} />
-            <Route path="benefits" element={<Benefits />} />
-            <Route path="employment" element={<Employment />} />
-            <Route path="travel" element={<Travel />} />
-            <Route path="business" element={<Business />} />
-            <Route path="health" element={<Health />} />
-            <Route path="environment" element={<Environment />} />
-            <Route path="justice" element={<Justice />} />
-            <Route path="public-safety" element={<PublicSafety />} />
-
-            {/* Support / Help Guides pages */}
-            <Route path="search" element={<SearchPage />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="help" element={<Help />} />
-            <Route path="accessibility" element={<Accessibility />} />
-            <Route path="privacy" element={<Privacy />} />
-            <Route path="terms" element={<Terms />} />
-
-            {/* Credentials authentication portal paths */}
-            <Route path="auth/login" element={<Login />} />
-            <Route path="auth/register" element={<Login />} />
-            <Route path="dashboard" element={<Dashboard />} />
-
-            {/* General Catch-All fallback redirecting to root index */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-
+          {/* Primary Index Landings */}
+          <Route index element={<Home />} />
+          <Route path="services" element={<Services />} />
+          
+          {/* Immigration Sector Nested gateways */}
+          <Route path="immigration-citizenship">
+            <Route index element={<Immigration />} />
+            <Route path="biometrics" element={<Biometrics />} />
+            <Route path="passports" element={<Passport />} />
+            <Route path="visit-canada" element={<VisitCanada />} />
+            <Route path="work-permits" element={<WorkPermit />} />
+            <Route path="study-permits" element={<StudyPermit />} />
+            <Route path="permanent-residence" element={<PermanentResidence />} />
+            <Route path="citizenship" element={<Citizenship />} />
           </Route>
 
-        </Routes>
-      </BrowserRouter>
-    </AppProvider>
+          {/* Core Categories Section routes */}
+          <Route path="taxes" element={<Taxes />} />
+          <Route path="benefits" element={<Benefits />} />
+          <Route path="employment" element={<Employment />} />
+          <Route path="travel" element={<Travel />} />
+          <Route path="business" element={<Business />} />
+          <Route path="health" element={<Health />} />
+          <Route path="environment" element={<Environment />} />
+          <Route path="justice" element={<Justice />} />
+          <Route path="public-safety" element={<PublicSafety />} />
+
+          {/* Support / Help Guides pages */}
+          <Route path="search" element={<SearchPage />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="help" element={<Help />} />
+          <Route path="accessibility" element={<Accessibility />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+
+          {/* Credentials authentication portal paths */}
+          <Route path="auth/login" element={<Login />} />
+          <Route path="auth/register" element={<Login />} />
+          <Route path="dashboard" element={<Dashboard />} />
+
+          {/* General Catch-All fallback redirecting to root index */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
   );
 }

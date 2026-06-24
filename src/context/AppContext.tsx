@@ -21,6 +21,8 @@ interface AppContextType {
   applications: ApplicationInfo[];
   addApplication: (app: ApplicationInfo) => void;
   updateApplicationStatus: (id: string, newStatus: ApplicationInfo['status'], details: string, detailsFr: string) => void;
+  hasEntered: boolean;
+  setHasEntered: (entered: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -28,6 +30,18 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [currentLang, setCurrentLang] = useState<Language>('en');
   const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const [hasEntered, setHasEnteredState] = useState<boolean>(() => {
+    return sessionStorage.getItem('gov_gate_entered') === 'true';
+  });
+
+  const setHasEntered = (entered: boolean) => {
+    setHasEnteredState(entered);
+    if (entered) {
+      sessionStorage.setItem('gov_gate_entered', 'true');
+    } else {
+      sessionStorage.removeItem('gov_gate_entered');
+    }
+  };
   
   // Starting Applications database
   const [applications, setApplications] = useState<ApplicationInfo[]>([
@@ -191,7 +205,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       applications,
       addApplication,
-      updateApplicationStatus
+      updateApplicationStatus,
+      hasEntered,
+      setHasEntered
     }}>
       {children}
     </AppContext.Provider>
