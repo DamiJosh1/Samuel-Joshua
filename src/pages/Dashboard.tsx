@@ -65,7 +65,7 @@ export default function Dashboard() {
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 flex-grow space-y-10 font-sans">
       
       {/* Greeting row */}
-      <div className="bg-[#f0f4f8] border border-blue-200/40 rounded-xl p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-gray-50 border border-gray-200 rounded p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
           <span className="text-xs font-bold text-gray-400 uppercase tracking-widest block">{currentLang === 'en' ? 'Console Hub' : 'Console d\'accès'}</span>
           <h1 className="text-2xl font-bold text-[#335075]">
@@ -124,7 +124,7 @@ export default function Dashboard() {
                       </div>
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-[#2572b4] to-[#af3c43] rounded-full transition-all duration-500"
+                          className="h-full bg-[#2572b4] rounded-full transition-all duration-500"
                           style={{ width: `${getProgressPercent(app.status)}%` }}
                         ></div>
                       </div>

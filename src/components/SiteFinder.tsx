@@ -214,10 +214,10 @@ export default function SiteFinder({ currentLang }: SiteFinderProps) {
               typeBadgeStyles = 'bg-red-50 text-red-800 border-red-200/60';
               typeBadgeName = currentLang === 'en' ? t.badgeVac : t.badgeVac;
             } else if (site.type === 'asc') {
-              typeBadgeStyles = 'bg-teal-50 text-teal-800 border-teal-200/60';
+              typeBadgeStyles = 'bg-gray-100 text-gray-800 border-gray-200';
               typeBadgeName = currentLang === 'en' ? t.badgeAsc : t.badgeAsc;
             } else if (site.type === 'service-canada') {
-              typeBadgeStyles = 'bg-sky-50 text-sky-800 border-sky-200/60';
+              typeBadgeStyles = 'bg-blue-50 text-blue-800 border-blue-200/60';
               typeBadgeName = currentLang === 'en' ? t.badgeSc : t.badgeSc;
             }
 

@@ -35,8 +35,8 @@ export function Health() {
   const { currentLang } = useApp();
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 flex-grow space-y-6 font-sans">
-      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-teal-600 pb-2 flex items-center gap-2">
-        <HeartPulse className="w-7 h-7 text-teal-600 animate-pulse" />
+      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-[#af3c43] pb-2 flex items-center gap-2">
+        <HeartPulse className="w-7 h-7 text-gray-700" />
         <span>{currentLang === 'en' ? 'Health care services and medical exams' : 'Santé et soins de santé publics'}</span>
       </h1>
       <p className="text-sm text-gray-750 leading-relaxed max-w-3xl">
@@ -44,7 +44,7 @@ export function Health() {
           ? 'Find public healthcare parameters, recall notices, look up panel physicians for immigration medical exams, and explore Canada Health Act credits.'
           : 'Consultez la réglementation sur la santé publique, trouvez un médecin agréé pour l\'évaluation médicale d\'immigration.'}
       </p>
-      <div className="p-4 bg-teal-50 border border-teal-200 text-teal-950 text-xs rounded-lg max-w-lg">
+      <div className="p-4 bg-gray-50 border border-gray-200 text-gray-900 text-xs rounded-lg max-w-lg">
         <strong>{currentLang === 'en' ? 'Medical Exams for Immigration:' : 'Examen médical d\'immigration :'}</strong>{' '}
         {currentLang === 'en' 
           ? 'If you plan to stay in Canada for more than 6 months, you must undergo medical checks conducted exclusively by official panel physicians.'
@@ -61,7 +61,7 @@ export function Environment() {
   const { currentLang } = useApp();
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 flex-grow space-y-6 font-sans">
-      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-emerald-600 pb-2">
+      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-[#af3c43] pb-2">
         {currentLang === 'en' ? 'Environment and natural resources' : 'Environnement et ressources naturelles'}
       </h1>
       <p className="text-sm text-gray-750 leading-relaxed max-w-3xl">
@@ -80,7 +80,7 @@ export function Justice() {
   const { currentLang } = useApp();
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 flex-grow space-y-6 font-sans">
-      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-indigo-600 pb-2">
+      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-[#af3c43] pb-2">
         {currentLang === 'en' ? 'Justice, laws, and legal system' : 'Justice, droit et système judiciaire'}
       </h1>
       <p className="text-sm text-gray-750 leading-relaxed max-w-3xl">
@@ -99,8 +99,8 @@ export function PublicSafety() {
   const { currentLang } = useApp();
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 flex-grow space-y-6 font-sans">
-      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-red-600 pb-2 flex items-center gap-2">
-        <ShieldAlert className="w-7 h-7 text-red-650" />
+      <h1 className="text-3xl font-extrabold text-[#333] border-b-2 border-[#af3c43] pb-2 flex items-center gap-2">
+        <ShieldAlert className="w-7 h-7 text-gray-700" />
         <span>{currentLang === 'en' ? 'Public safety, policing, and emergency defense' : 'Sécurité publique et urgences'}</span>
       </h1>
       <p className="text-sm text-gray-750 leading-relaxed max-w-3xl">

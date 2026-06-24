@@ -1,10 +1,6 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
-
-// Standard model for Q&A and basic tasks as per guidelines
-const MODEL_NAME = "gemini-3.5-flash";
 
 interface ApplicationInfo {
   id: string;
@@ -109,27 +105,6 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   }
 ];
 
-// Lazy-initialized Gemini API client wrapper to ensure stability
-let aiClient: GoogleGenAI | null = null;
-
-function getAiClient(): GoogleGenAI {
-  if (!aiClient) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY environment variable is not set inside the Secrets manager.");
-    }
-    aiClient = new GoogleGenAI({
-      apiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        }
-      }
-    });
-  }
-  return aiClient;
-}
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -226,48 +201,6 @@ async function startServer() {
 
     db.applications.set(email, currentList);
     res.json(currentList[index]);
-  });
-
-  // 6. API: AI assistant using Google GenAI SDK (with fallback context)
-  app.post("/api/ai/assistant", async (req, res) => {
-    const { message, lang } = req.body;
-    
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    try {
-      const client = getAiClient();
-      
-      const systemInstruction = lang === "fr"
-        ? "Vous êtes l'assistant IA de Service Canada pour la biométrie et l'immigration. " +
-          "Vous donnez des explications précises sur les délais de 30 jours, les lettres d'instructions biométriques (LIB), " +
-          "les renouvellements de passeport, et les démarches d'immigration canadienne. " +
-          "Répondez avec courtoisie, clarté, en français, en utilisant la mise en forme Markdown."
-        : "You are the official Service Canada AI Assistant for Biometrics and Immigration support. " +
-          "You provide accurate instructions, clear details about the 30-day biometrics deadline, " +
-          "the Biometrics Instruction Letter (BIL), passport renewal processing windows, and Canadian immigration programs. " +
-          "Keep your responses polite, factual, helpful, and formatted in clean Markdown.";
-
-      const response = await client.models.generateContent({
-        model: MODEL_NAME,
-        contents: `User asks: ${message}`,
-        config: {
-          systemInstruction,
-          temperature: 0.7,
-        },
-      });
-
-      res.json({ text: response.text });
-    } catch (err: any) {
-      console.error("AI Assistant Error:", err.message);
-      // Fallback response if GEMINI_API_KEY is not defined or fails
-      const fallbackResponse = lang === "fr"
-        ? `[Désolé, l'assistant IA est en mode autonome hors-ligne]. \n\nVoici ce que vous devez savoir pour votre question : \n- Pour la biométrie, vous disposez d'un délai strict de **30 jours** à compter de la réception de votre Lettre d'Instructions Biométriques (LIB).\n- Pour réserver un rendez-vous, rendez-vous sur le site de réservation officiel du CRDV/VAC ou ASC.\n- Pour les passeports, le délai de traitement régulier est de 10 à 20 jours ouvrables.`
-        : `[Sorry, the AI assistant is running in local fallback mode]. \n\nHere is some guidance regarding your request: \n- Biometrics submissions must occur within a strict **30-day deadline** from the moment you receive your Biometrics Instruction Letter (BIL).\n- You must bring your printed BIL and valid passport to your scheduled ASC/VAC collection appointment.\n- Passport renewals are completed standardly within 10 to 20 working business days.`;
-      
-      res.json({ text: fallbackResponse });
-    }
   });
 
   // Vite integration middleware setup
