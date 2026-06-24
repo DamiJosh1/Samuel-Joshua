@@ -110,42 +110,64 @@ const SEARCH_CATALOG: SearchResult[] = [
 ];
 
 export const placeholderApi = {
-  // Retrieve Latest News items
+  // Retrieve Latest News items from real Express Backend API
   async getNews(lang: Language): Promise<NewsArticle[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(MOCK_NEWS), 250);
-    });
+    try {
+      const response = await fetch("/api/news");
+      if (!response.ok) throw new Error("Backend news fetch failed");
+      const data = await response.json();
+      return Array.isArray(data) ? data : MOCK_NEWS;
+    } catch (e) {
+      console.warn("Falling back to local news list:", e);
+      return MOCK_NEWS;
+    }
   },
 
-  // Get estimated processing times and fees
+  // Get estimated processing times and fees from Express Backend API
   async getProcessingTimes(): Promise<ProcessingTime[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(MOCK_PROCESSING_TIMES), 150);
-    });
+    try {
+      const response = await fetch("/api/processing-times");
+      if (!response.ok) throw new Error("Backend processing times fetch failed");
+      const data = await response.json();
+      return Array.isArray(data) ? data : MOCK_PROCESSING_TIMES;
+    } catch (e) {
+      console.warn("Falling back to local processing times:", e);
+      return MOCK_PROCESSING_TIMES;
+    }
   },
 
-  // Get travel advisory levels
+  // Get travel advisory levels from Express Backend API
   async getTravelAdvisories(): Promise<TravelAdvisory[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(MOCK_ADVISORIES), 150);
-    });
+    try {
+      const response = await fetch("/api/travel-advisories");
+      if (!response.ok) throw new Error("Backend travel advisories fetch failed");
+      const data = await response.json();
+      return Array.isArray(data) ? data : MOCK_ADVISORIES;
+    } catch (e) {
+      console.warn("Falling back to local advisories:", e);
+      return MOCK_ADVISORIES;
+    }
   },
 
-  // Dedicated Unified Search matching
+  // Dedicated Unified Search matching using Express Backend API
   async queryAll(term: string, lang: Language): Promise<SearchResult[]> {
-    return new Promise((resolve) => {
-      if (!term.trim()) {
-        resolve([]);
-        return;
-      }
+    if (!term.trim()) {
+      return [];
+    }
+    try {
+      const response = await fetch(`/api/search?term=${encodeURIComponent(term)}&lang=${lang}`);
+      if (!response.ok) throw new Error("Backend search fetch failed");
+      const data = await response.json();
+      return Array.isArray(data) ? data : SEARCH_CATALOG;
+    } catch (e) {
+      console.warn("Falling back to client search engine:", e);
       const q = term.toLowerCase();
-      const results = SEARCH_CATALOG.filter((item) => {
+      return SEARCH_CATALOG.filter((item) => {
         const title = (lang === 'en' ? item.title : item.titleFr).toLowerCase();
         const snippet = (lang === 'en' ? item.snippet : item.snippetFr).toLowerCase();
         const category = (lang === 'en' ? item.category : item.categoryFr).toLowerCase();
         return title.includes(q) || snippet.includes(q) || category.includes(q);
       });
-      setTimeout(() => resolve(results), 200);
-    });
+    }
   }
 };

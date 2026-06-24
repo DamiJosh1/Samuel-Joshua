@@ -341,7 +341,7 @@ export default function EligibilityChecker({ currentLang }: EligibilityCheckerPr
             {assessment.exempt ? (
               <div className="bg-[#f3f9f3] border-l-6 border-[#2b8a3e] rounded-r p-4 space-y-3">
                 <div className="flex items-center gap-2.5 text-[#2b8a3e]">
-                  <CheckCircle className="w-5, h-5 shrink-0" />
+                  <CheckCircle className="w-5 h-5 shrink-0" />
                   <span className="font-bold text-base">{t.exemptTitle}</span>
                 </div>
                 <p className="text-sm text-gray-700 font-medium">
@@ -357,7 +357,7 @@ export default function EligibilityChecker({ currentLang }: EligibilityCheckerPr
             ) : (
               <div className="bg-[#fdf6f2] border-l-6 border-[#d9480f] rounded-r p-4 space-y-3">
                 <div className="flex items-center gap-2.5 text-[#d9480f]">
-                  <AlertTriangle className="w-5, h-5 shrink-0" />
+                  <AlertTriangle className="w-5 h-5 shrink-0" />
                   <span className="font-bold text-base">{t.requiredTitle}</span>
                 </div>
                 <p className="text-sm text-gray-700 font-medium">

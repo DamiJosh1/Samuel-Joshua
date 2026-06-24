@@ -69,6 +69,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Sync tracked application status with the Express Backend
+  useEffect(() => {
+    const email = user?.email || "guest";
+    fetch(`/api/applications?email=${encodeURIComponent(email)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch applications from backend");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setApplications(data);
+        } else {
+          console.error("Applications backend did not return an array, ignoring:", data);
+        }
+      })
+      .catch((err) => {
+        console.error("Backend sync failed, using client fallback:", err);
+      });
+  }, [user]);
+
   const setLanguage = (lang: Language) => {
     setCurrentLang(lang);
     localStorage.setItem('gov_lang', lang);
@@ -85,28 +105,81 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('gov_user');
   };
 
-  const addApplication = (app: ApplicationInfo) => {
-    setApplications(prev => [app, ...prev]);
+  const addApplication = async (app: ApplicationInfo) => {
+    const email = user?.email || "guest";
+    // Optimistic UI update
+    setApplications((prev) => [app, ...prev]);
+
+    try {
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, application: app }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setApplications(data);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to persist application creation to backend:", err);
+    }
   };
 
-  const updateApplicationStatus = (id: string, newStatus: ApplicationInfo['status'], details: string, detailsFr: string) => {
-    setApplications(prev => prev.map(app => {
-      if (app.id === id) {
-        let statusFr: ApplicationInfo['statusFr'] = 'En cours';
-        if (newStatus === 'Received') statusFr = 'Reçu';
-        if (newStatus === 'Approved') statusFr = 'Approuvé';
-        if (newStatus === 'Action Required') statusFr = 'Action requise';
-        return {
-          ...app,
+  const updateApplicationStatus = async (
+    id: string,
+    newStatus: ApplicationInfo['status'],
+    details: string,
+    detailsFr: string
+  ) => {
+    const email = user?.email || "guest";
+    let statusFr: ApplicationInfo['statusFr'] = 'En cours';
+    if (newStatus === 'Received') statusFr = 'Reçu';
+    if (newStatus === 'Approved') statusFr = 'Approuvé';
+    if (newStatus === 'Action Required') statusFr = 'Action requise';
+
+    // Optimistic UI update
+    setApplications((prev) =>
+      prev.map((app) =>
+        app.id === id
+          ? {
+              ...app,
+              status: newStatus,
+              statusFr,
+              details,
+              detailsFr,
+              lastUpdated: new Date().toISOString().split('T')[0],
+            }
+          : app
+      )
+    );
+
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
           status: newStatus,
           statusFr,
           details,
           detailsFr,
-          lastUpdated: new Date().toISOString().split('T')[0]
-        };
+        }),
+      });
+      if (response.ok) {
+        const updatedItem = await response.json();
+        setApplications((prev) =>
+          prev.map((app) => (app.id === id ? updatedItem : app))
+        );
       }
-      return app;
-    }));
+    } catch (err) {
+      console.error("Failed to update status on backend:", err);
+    }
   };
 
   return (

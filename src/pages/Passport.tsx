@@ -83,7 +83,7 @@ export default function Passport() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Type selector */}
-              <div className="space-y-1.5Col">
+              <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 uppercase">{currentLang === 'en' ? 'Applicant Age & Term' : 'Âge et durée d\'admissibilité'}</label>
                 <select 
                   value={ageRange} 
@@ -97,7 +97,7 @@ export default function Passport() {
               </div>
 
               {/* Expediting speed */}
-              <div className="space-y-1.5Col">
+              <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 uppercase">{currentLang === 'en' ? 'Required Speed' : 'Délai de traitement requis'}</label>
                 <select 
                   value={expedite} 
@@ -111,7 +111,7 @@ export default function Passport() {
               </div>
 
               {/* Delivery option */}
-              <div className="space-y-1.5Col">
+              <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 uppercase">{currentLang === 'en' ? 'Delivery Mode' : 'Mode de livraison'}</label>
                 <select 
                   value={delivery} 

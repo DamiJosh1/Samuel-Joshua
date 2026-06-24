@@ -67,7 +67,7 @@ export default function Login() {
           )}
 
           {isRegisterPage && (
-            <div className="space-y-1.5Col">
+            <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-700 uppercase block">{currentLang === 'en' ? 'Your Full Name:' : 'Votre nom complet :'}</label>
               <input
                 type="text"
@@ -79,7 +79,7 @@ export default function Login() {
             </div>
           )}
 
-          <div className="space-y-1.5Col">
+          <div className="space-y-1.5">
             <label className="text-xs font-bold text-gray-700 uppercase block">{currentLang === 'en' ? 'Email Address:' : 'Adresse de courriel :'}</label>
             <input
               type="email"
@@ -90,7 +90,7 @@ export default function Login() {
             />
           </div>
 
-          <div className="space-y-1.5Col block">
+          <div className="space-y-1.5 block">
             <label className="text-xs font-bold text-gray-700 uppercase block">{currentLang === 'en' ? 'Password:' : 'Mot de passe :'}</label>
             <input
               type="password"

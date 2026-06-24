@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { GENERAL_TRANSLATIONS } from '../types';
 import { Search, Globe, ChevronRight } from 'lucide-react';
+import AiAssistant from '../components/AiAssistant';
 
 export default function GovernmentLayout() {
   const { currentLang, setLanguage, user, logout } = useApp();
@@ -343,6 +344,9 @@ export default function GovernmentLayout() {
 
         </div>
       </footer>
+
+      {/* Floating Live AI Support Assistant Connected to custom Express Backend */}
+      <AiAssistant />
 
     </div>
   );
