@@ -1,16 +1,32 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Language } from '../types';
 
+export interface TimelineEvent {
+  id: string;
+  date: string;
+  time: string;
+  action: string;
+  details?: string;
+  documentName?: string;
+}
+
 export interface ApplicationInfo {
   id: string;
-  type: 'Passport' | 'Biometrics' | 'Study Permit' | 'Express Entry';
-  typeFr: 'Passeport' | 'Biométrie' | 'Permis d\'études' | 'Entrée express';
-  status: 'Received' | 'In Progress' | 'Approved' | 'Action Required';
-  statusFr: 'Reçu' | 'En cours' | 'Approuvé' | 'Action requise';
+  type: string;
+  typeFr: string;
+  status: string;
+  statusFr: string;
   lastUpdated: string;
   details: string;
   detailsFr: string;
-  documents?: { name: string; date: string; time: string }[];
+  documents?: { name: string; category?: string; date: string; time: string }[];
+  timeline?: TimelineEvent[];
+  biometricStatus?: string;
+  workPermitStatus?: string;
+  visitorVisaStatus?: string;
+  studyPermitStatus?: string;
+  passportRequestStatus?: string;
+  medicalRequestStatus?: string;
 }
 
 interface AppContextType {

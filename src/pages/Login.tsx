@@ -50,10 +50,10 @@ export default function Login() {
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-12 md:py-20 flex-grow flex items-center justify-center font-sans">
       
-      <div className="w-full max-w-md bg-white border border-gray-250 rounded-lg shadow-sm overflow-hidden" id="login-form-container">
+      <div className="w-full max-w-md bg-white border border-gray-400 overflow-hidden" id="login-form-container">
         
         {/* Banner */}
-        <div className="bg-[#335075] text-white p-5 flex items-center gap-2.5">
+        <div className="bg-[#26374a] text-white p-5 flex items-center gap-2.5">
           <Key className="w-5 h-5 text-gray-200" />
           <div>
             <h2 className="text-base font-bold">
@@ -69,8 +69,8 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           
           {errorLine && (
-            <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded text-xs text-red-900 flex items-start gap-2 animate-fadeIn">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="p-3 bg-red-50 border-l-4 border-red-700 text-xs text-red-900 flex items-start gap-2 animate-fadeIn">
+              <AlertCircle className="w-4 h-4 text-red-700 shrink-0 mt-0.5" />
               <span>{errorLine}</span>
             </div>
           )}
@@ -82,7 +82,7 @@ export default function Login() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border p-2 text-xs rounded bg-gray-50 text-[#333] outline-none focus:bg-white focus:border-[#335075]"
+                className="w-full border border-gray-400 p-2 text-xs bg-white text-[#333] outline-none focus:bg-white focus:border-[#26374a]"
                 placeholder={currentLang === 'en' ? 'e.g. Jean Dupont' : 'ex : Jean Dupont'}
               />
             </div>
@@ -94,7 +94,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border p-2 text-xs rounded bg-gray-50 text-[#333] outline-none focus:bg-white focus:border-[#335075]"
+              className="w-full border border-gray-400 p-2 text-xs bg-white text-[#333] outline-none focus:bg-white focus:border-[#26374a]"
               placeholder="name@domain.ca"
             />
           </div>
@@ -105,27 +105,27 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border p-2 text-xs rounded bg-gray-50 text-[#333] outline-none focus:bg-white focus:border-[#335075]"
+              className="w-full border border-gray-400 p-2 text-xs bg-white text-[#333] outline-none focus:bg-white focus:border-[#26374a]"
               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#335075] hover:bg-[#1c3552] text-white text-xs font-bold py-2.5 rounded transition-colors cursor-pointer uppercase tracking-wider"
+            className="w-full bg-[#26374a] hover:bg-[#111820] text-white text-xs font-bold py-2.5 transition-colors cursor-pointer uppercase tracking-wider"
           >
             {isRegisterPage ? (currentLang === 'en' ? 'Register Account' : 'Créer mon dossier') : (currentLang === 'en' ? 'Sign In Key' : 'S\'authentifier')}
           </button>
 
           {/* Switch toggle directions */}
-          <div className="text-center pt-3 border-t border-gray-100/60 flex flex-col gap-1 text-[11px] text-gray-500 font-sans font-semibold">
+          <div className="text-center pt-3 border-t border-gray-300 flex flex-col gap-1 text-[11px] text-[#333] font-sans font-semibold">
             {isRegisterPage ? (
               <>
                 <span>{currentLang === 'en' ? 'Already hold a GCKey credentials profile?' : 'Détenteur d\'un compte CléGC ?'}</span>
                 <button
                   type="button"
                   onClick={() => navigate('/auth/login')}
-                  className="text-[#2572b4] hover:underline hover:text-[#05355c] cursor-pointer"
+                  className="text-[#26374a] hover:underline cursor-pointer"
                 >
                   {currentLang === 'en' ? 'Sign In with Existing Profile' : 'Connectez-vous à votre dossier'}
                 </button>
@@ -136,7 +136,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => navigate('/auth/register')}
-                  className="text-teal-700 hover:underline hover:text-teal-900 cursor-pointer"
+                  className="text-[#26374a] hover:underline cursor-pointer"
                 >
                   {currentLang === 'en' ? 'Create a New GCKey Credentials Account' : 'Créer un identifiant CléGC'}
                 </button>
@@ -146,7 +146,7 @@ export default function Login() {
 
         </form>
 
-        <div className="bg-gray-50 p-4 border-t text-[10px] text-gray-400 leading-relaxed text-center font-bold">
+        <div className="bg-gray-100 p-4 border-t border-gray-300 text-[10px] text-gray-600 leading-relaxed text-center font-bold">
           {currentLang === 'en' 
             ? 'Encryption standards enforced: Session keys expire after 15 minutes of inactivity.'
             : 'Normes de cryptage actives : Les sessions expirent après 15 minutes d\'inactivité.'}

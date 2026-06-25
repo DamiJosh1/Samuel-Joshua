@@ -3,20 +3,45 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 
+interface TimelineEvent {
+  id: string;
+  date: string;
+  time: string;
+  action: string;
+  details?: string;
+  documentName?: string;
+}
+
 interface ApplicationInfo {
   id: string;
-  type: 'Passport' | 'Biometrics' | 'Study Permit' | 'Express Entry';
-  typeFr: 'Passeport' | 'Biométrie' | 'Permis d\'études' | 'Entrée express';
-  status: 'Received' | 'In Progress' | 'Approved' | 'Action Required';
-  statusFr: 'Reçu' | 'En cours' | 'Approuvé' | 'Action requise';
+  type: string;
+  typeFr: string;
+  status: string;
+  statusFr: string;
   lastUpdated: string;
   details: string;
   detailsFr: string;
-  documents?: { name: string; date: string; time: string }[];
+  documents?: { name: string; category?: string; date: string; time: string }[];
+  timeline?: TimelineEvent[];
+  biometricStatus?: string;
+  workPermitStatus?: string;
+  visitorVisaStatus?: string;
+  studyPermitStatus?: string;
+  passportRequestStatus?: string;
+  medicalRequestStatus?: string;
+}
+
+interface UserProfile {
+  email: string;
+  name: string;
+  uci?: string;
+  phone?: string;
+  dob?: string;
 }
 
 // In-memory simple storage to act as the backend database
 const db = {
+  users: new Map<string, UserProfile>(),
   applications: new Map<string, ApplicationInfo[]>(),
 
   news: [
@@ -180,7 +205,10 @@ async function startServer() {
   app.patch("/api/applications/:id", (req, res) => {
     const email = String(req.body.email || "guest").trim().toLowerCase();
     const id = req.params.id;
-    const { status, statusFr, details, detailsFr, documents } = req.body;
+    const { 
+      status, statusFr, details, detailsFr, documents, timeline,
+      biometricStatus, workPermitStatus, visitorVisaStatus, studyPermitStatus, passportRequestStatus, medicalRequestStatus 
+    } = req.body;
 
     if (!db.applications.has(email)) {
       db.applications.set(email, [...DEFAULT_APPLICATIONS]);
@@ -200,6 +228,13 @@ async function startServer() {
       details: details ?? currentList[index].details,
       detailsFr: detailsFr ?? currentList[index].detailsFr,
       documents: documents ?? currentList[index].documents,
+      timeline: timeline ?? currentList[index].timeline,
+      biometricStatus: biometricStatus ?? currentList[index].biometricStatus,
+      workPermitStatus: workPermitStatus ?? currentList[index].workPermitStatus,
+      visitorVisaStatus: visitorVisaStatus ?? currentList[index].visitorVisaStatus,
+      studyPermitStatus: studyPermitStatus ?? currentList[index].studyPermitStatus,
+      passportRequestStatus: passportRequestStatus ?? currentList[index].passportRequestStatus,
+      medicalRequestStatus: medicalRequestStatus ?? currentList[index].medicalRequestStatus,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 

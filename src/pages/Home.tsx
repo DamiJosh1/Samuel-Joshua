@@ -137,22 +137,18 @@ export default function Home() {
   return (
     <div className="bg-white min-h-screen text-[#333] font-sans">
       
-      {/* 1. HIGH-FIDELITY FOREST HERO BANNER */}
+      {/* 1. HERO BANNER */}
       <section 
-        className="relative bg-cover bg-center py-12 md:py-20 flex items-center" 
-        style={{ 
-          backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=80')` 
-        }}
+        className="bg-[#26374a] text-white py-12 md:py-20 flex items-center" 
         id="home-hero-section"
       >
         <div className="mx-auto max-w-6xl w-full px-4">
-          {/* Translucent Dark Blue Container from Canada.ca screenshot */}
-          <div className="bg-[#1c2d42]/95 md:bg-[#1c2d42]/90 border border-gray-700/30 text-white max-w-md p-6 sm:p-8 rounded shadow-lg space-y-4">
+          <div className="max-w-md p-6 sm:p-8 border border-[#111820] bg-[#111820] space-y-4">
             <div className="space-y-1">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
                 Canada.ca
               </h1>
-              <div className="h-1 bg-[#af3c43] w-32" aria-hidden="true"></div>
+              <div className="h-1 bg-white w-32" aria-hidden="true"></div>
             </div>
             
             <p className="text-gray-100 text-sm sm:text-base font-normal leading-relaxed">
@@ -220,41 +216,41 @@ export default function Home() {
       </section>
 
       {/* 4. LATEST NEWS FEED: Clean, Standard Federal Announcement Block */}
-      <section className="bg-[#f5f5f5] border-t border-b border-gray-200 py-12">
+      <section className="bg-gray-100 border-t border-b border-gray-300 py-12">
         <div className="mx-auto max-w-6xl px-4 space-y-8">
           
           <div className="flex items-center justify-between border-b border-gray-300 pb-3">
-            <h2 className="text-lg font-bold text-[#333] flex items-center gap-2">
-              <Newspaper className="w-5 h-5 text-[#af3c43]" />
+            <h2 className="text-lg font-bold text-black flex items-center gap-2">
+              <Newspaper className="w-5 h-5 text-[#26374a]" />
               {currentLang === 'en' ? 'Latest federal announcements' : 'Nouvelles du gouvernement fédéral'}
             </h2>
-            <span className="text-xs font-bold text-gray-500 bg-white border border-gray-300 px-3 py-1 rounded">
+            <span className="text-xs font-bold text-gray-500 bg-white border border-gray-400 px-3 py-1">
               {currentLang === 'en' ? 'Newsroom' : 'Salle de presse'}
             </span>
           </div>
 
           {loadingNews ? (
             <div className="flex flex-col items-center justify-center py-8 space-y-2">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#af3c43]"></div>
+              <div className="animate-spin h-8 w-8 border-b-2 border-[#26374a]"></div>
               <span className="text-xs text-gray-500 font-semibold">{currentLang === 'en' ? 'Loading news...' : 'Chargement...'}</span>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6" id="news-grid-section">
               {news.map((item) => (
-                <article key={item.id} className="bg-white border border-gray-200 rounded p-5 flex flex-col justify-between shadow-xs">
+                <article key={item.id} className="bg-white border border-gray-400 p-5 flex flex-col justify-between">
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between text-[10px] font-bold text-[#af3c43] uppercase tracking-wider">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-[#26374a] uppercase tracking-wider">
                       <span>{currentLang === 'en' ? item.category : item.categoryFr}</span>
-                      <span className="text-gray-400 font-normal">{item.date}</span>
+                      <span className="text-gray-500 font-normal">{item.date}</span>
                     </div>
-                    <h3 className="text-sm font-bold text-[#333] hover:text-[#2572b4] leading-snug">
-                      <span className="cursor-pointer">{currentLang === 'en' ? item.title : item.titleFr}</span>
+                    <h3 className="text-sm font-bold text-black hover:underline leading-snug">
+                      <span className="cursor-pointer text-[#2572b4]">{currentLang === 'en' ? item.title : item.titleFr}</span>
                     </h3>
-                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 font-normal">
+                    <p className="text-xs text-gray-700 leading-relaxed line-clamp-3 font-normal">
                       {currentLang === 'en' ? item.summary : item.summaryFr}
                     </p>
                   </div>
-                  <div className="pt-4 border-t border-gray-100 mt-4 flex items-center justify-between">
+                  <div className="pt-4 border-t border-gray-300 mt-4 flex items-center justify-between">
                     <span className="text-xs font-bold text-[#2572b4] hover:underline cursor-pointer">
                       {currentLang === 'en' ? 'Read full announcement' : 'Lire le communiqué complet'}
                     </span>
@@ -264,14 +260,13 @@ export default function Home() {
               ))}
             </div>
           )}
-
         </div>
       </section>
 
       {/* 5. CLINICAL PROMPT Callout (WET Standard Info Alert Box) */}
       <section className="mx-auto max-w-4xl px-4 py-12" id="government-migration-tracker">
-        <div className="bg-[#f3f8fc] border-l-6 border-[#269abc] rounded-r p-5 space-y-3">
-          <h3 className="font-bold text-[#004d66] text-base">
+        <div className="bg-gray-100 border-l-4 border-[#26374a] p-5 space-y-3">
+          <h3 className="font-bold text-black text-base">
             {currentLang === 'en' ? 'Biometrics Service Assistant' : 'Assistant de service de biométrie'}
           </h3>
           <p className="text-xs text-gray-700 leading-relaxed font-normal">
@@ -282,7 +277,7 @@ export default function Home() {
           <div className="pt-1">
             <Link 
               to="/immigration-citizenship/biometrics" 
-              className="inline-block bg-[#2572b4] hover:bg-[#05355c] text-white font-bold text-xs px-4 py-2 rounded transition-colors focus:ring-2 focus:ring-[#2572b4]"
+              className="inline-block bg-[#26374a] hover:bg-[#111820] text-white font-bold text-xs px-4 py-2 transition-colors border border-[#26374a]"
             >
               {currentLang === 'en' ? 'Verify biometrics requirements' : 'Vérifier vos exigences de biométrie'}
             </Link>
