@@ -97,89 +97,98 @@ export default function GovernmentLayout() {
     <div className="min-h-screen flex flex-col bg-white text-[#333] font-sans antialiased" style={{ fontFamily: '"Noto Sans", sans-serif' }}>
       
       {/* 2-TIERED WET GOVERNMENT HEADER */}
-      <header className="border-b border-[#e0e0e0] bg-white text-[#333]">
-        <div className="h-1.5 bg-[#af3c43]" id="header-top-accent"></div>
-        
-        <div className="mx-auto max-w-6xl px-4 py-4 md:py-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <header className="border-b border-gray-300 bg-white text-[#333]">
+        <div className="mx-auto max-w-6xl px-4 py-3 md:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             
             {/* Logo Signature Section */}
-            <Link to="/" className="flex items-center gap-3 select-none hover:opacity-90 transition-opacity" id="gov-can-logo">
-              <div className="text-[#af3c43]" aria-hidden="true">
-                <svg width="42" height="38" viewBox="0 0 100 90" fill="currentColor">
-                  <path d="M50,10 C50,10 52,24 57,28 C61,31 66,22 66,22 C66,22 66,28 72,28 C78,28 74,38 82,38 C90,38 85,46 88,49 C91,52 92,51 90,54 C88,57 74,53 72,58 C70,63 76,78 71,78 C66,78 63,60 62,60 C61,60 59,64 58,74 L54,84 L46,84 L42,74 C41,64 39,60 38,60 C37,60 34,78 29,78 C24,78 30,63 28,58 C26,53 12,57 10,54 C8,51 9,52 12,49 C15,46 10,38 18,38 C26,38 22,28 28,28 C34,28 34,22 34,22 C34,22 39,31 43,28 C48,24 50,10 50,10 Z" />
-                </svg>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold tracking-tight text-[#333] leading-none">
-                  {t.govOfCanada}
-                </span>
-                <span className="text-[10px] font-bold text-[#777] tracking-wider mt-0.5 uppercase leading-none">
-                  {t.logoSub}
-                </span>
-              </div>
+            <Link to="/" className="flex items-center" id="gov-can-logo">
+              <img 
+                src={currentLang === 'en' 
+                  ? "https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-en.svg"
+                  : "https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg"
+                }
+                alt={currentLang === 'en' ? "Government of Canada" : "Gouvernement du Canada"} 
+                className="h-8 md:h-10 w-auto object-contain"
+                id="gov-canada-sig-logo-header"
+                referrerPolicy="no-referrer"
+              />
             </Link>
 
             {/* Actions Panel */}
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-              
-              {/* Account State Greeting */}
-              {user ? (
-                <div className="flex items-center gap-3 text-xs md:text-sm bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">
-                  <span className="font-semibold text-gray-700">
-                    {currentLang === 'en' ? `Hello, ${user.name}` : `Bonjour, ${user.name}`}
-                  </span>
-                  <Link to="/dashboard" className="text-[#2572b4] hover:underline font-bold border-l border-gray-300 pl-2">
-                    {currentLang === 'en' ? 'Console' : 'Console'}
-                  </Link>
-                  <button 
-                    onClick={logout} 
-                    className="text-red-700 hover:text-red-900 font-bold hover:underline ml-1 cursor-pointer"
-                  >
-                    {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
-                  </button>
-                </div>
-              ) : (
-                <Link
-                  to="/auth/login"
-                  className="text-xs md:text-sm font-bold text-[#335075] hover:text-[#1c3552] border border-[#335075]/30 rounded px-2.5 py-1.5 bg-gray-50/50 hover:bg-gray-50 transition-colors"
-                  id="header-signin-btn"
-                >
-                  {currentLang === 'en' ? 'My Account Sign In' : 'Connexion à mon compte'}
-                </Link>
-              )}
-
-              {/* Language Toggle Button */}
-              <button
-                onClick={handleLangToggle}
-                className="flex items-center gap-1.5 text-sm font-bold text-[#2572b4] hover:text-[#05355c] hover:underline transition-colors focus:outline-none focus:ring-1 focus:ring-[#2572b4] px-2 py-1 rounded cursor-pointer"
-                title={t.langToggleLabel}
-                aria-label={t.langToggleLabel}
-                id="lang-toggle-button"
-              >
-                <Globe className="w-4 h-4" />
-                <span>{t.langToggle}</span>
-              </button>
-
-              {/* Central Header Search Form */}
-              <form onSubmit={handleSearchSubmit} className="flex items-center" id="search-box-form">
-                <input
-                  type="text"
-                  value={searchVal}
-                  onChange={(e) => setSearchVal(e.target.value)}
-                  placeholder={t.searchPlaceholder}
-                  className="w-36 md:w-52 border border-[#b3b3b3] border-r-0 rounded-l px-3 py-1.5 text-sm outline-none focus:border-[#2572b4] focus:ring-1 focus:ring-[#2572b4]"
-                  aria-label={t.searchPlaceholder}
-                />
+            <div className="flex flex-col sm:items-end gap-2">
+              <div className="flex justify-between w-full sm:w-auto">
+                {/* Language Toggle Button */}
                 <button
-                  type="submit"
-                  className="bg-[#335075] hover:bg-[#1c3552] text-white text-sm font-medium px-4 py-1.5 rounded-r cursor-pointer transition-colors border border-[#335075] flex items-center gap-1 focus:outline-none"
-                  id="search-submit-btn"
+                  onClick={handleLangToggle}
+                  className="text-sm text-[#284162] hover:text-[#05355c] hover:underline focus:outline-none focus:ring-1 focus:ring-[#2572b4] rounded cursor-pointer"
+                  title={t.langToggleLabel}
+                  aria-label={t.langToggleLabel}
+                  id="lang-toggle-button"
                 >
-                  <Search className="w-3.5 h-3.5" />
-                  <span className="hidden xs:inline">{t.searchButton}</span>
+                  {t.langToggle}
                 </button>
-              </form>
+                
+                {/* Account State Greeting (visible on mobile next to language toggle) */}
+                <div className="sm:hidden text-sm">
+                  {user ? (
+                    <div className="flex items-center gap-2">
+                      <Link to="/dashboard" className="text-[#2572b4] hover:underline">
+                        {currentLang === 'en' ? 'Account' : 'Compte'}
+                      </Link>
+                      <button onClick={logout} className="text-red-700 hover:underline">
+                        {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
+                      </button>
+                    </div>
+                  ) : (
+                    <Link to="/auth/login" className="text-[#2572b4] hover:underline">
+                      {currentLang === 'en' ? 'Sign in' : 'Connexion'}
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                {/* Central Header Search Form */}
+                <form onSubmit={handleSearchSubmit} className="flex items-center w-full" id="search-box-form">
+                  <input
+                    type="text"
+                    value={searchVal}
+                    onChange={(e) => setSearchVal(e.target.value)}
+                    placeholder="Search Canada.ca"
+                    className="w-full sm:w-64 border border-gray-400 border-r-0 px-3 py-1.5 text-base outline-none focus:border-[#2572b4] focus:ring-1 focus:ring-[#2572b4]"
+                    aria-label="Search Canada.ca"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1.5 cursor-pointer transition-colors border border-[#26374a] flex items-center justify-center focus:outline-none"
+                    id="search-submit-btn"
+                    aria-label="Search"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </form>
+
+                {/* Account State Greeting (Desktop) */}
+                {user ? (
+                  <div className="hidden sm:flex items-center gap-3 text-sm">
+                    <Link to="/dashboard" className="text-[#2572b4] hover:underline font-bold">
+                      {currentLang === 'en' ? 'Console' : 'Console'}
+                    </Link>
+                    <button onClick={logout} className="text-red-700 hover:underline font-bold">
+                      {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    to="/auth/login"
+                    className="hidden sm:block text-sm font-bold text-[#2572b4] hover:underline whitespace-nowrap"
+                    id="header-signin-btn"
+                  >
+                    {currentLang === 'en' ? 'Sign in' : 'Connexion'}
+                  </Link>
+                )}
+              </div>
 
             </div>
           </div>
@@ -187,35 +196,11 @@ export default function GovernmentLayout() {
       </header>
 
       {/* TOP NAVIGATION BAR LINKS (Mandated header categories navigation) */}
-      <nav className="bg-[#335075] text-white text-xs md:text-sm font-bold border-b border-[#21354e] shadow-sm select-none" id="header-categories-nav">
-        <div className="mx-auto max-w-6xl px-4 flex flex-wrap items-center">
-          <Link to="/" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Home' : 'Accueil'}
-          </Link>
-          <Link to="/services" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Services' : 'Services'}
-          </Link>
-          <Link to="/immigration-citizenship" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Immigration' : 'Immigration'}
-          </Link>
-          <Link to="/taxes" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Taxes' : 'Impôts'}
-          </Link>
-          <Link to="/benefits" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Benefits' : 'Prestations'}
-          </Link>
-          <Link to="/employment" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Employment' : 'Emploi'}
-          </Link>
-          <Link to="/travel" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Travel' : 'Voyage'}
-          </Link>
-          <Link to="/business" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors border-r border-[#21354e]">
-            {currentLang === 'en' ? 'Business' : 'Entreprises'}
-          </Link>
-          <Link to="/contact" className="hover:bg-[#1c3552] py-3.5 px-4 block transition-colors">
-            {currentLang === 'en' ? 'Contact' : 'Contact'}
-          </Link>
+      <nav className="bg-[#26374a] text-white border-b border-[#111820] shadow-sm select-none" id="header-categories-nav">
+        <div className="mx-auto max-w-6xl px-4 flex">
+          <button className="bg-[#26374a] hover:bg-[#111820] text-white font-bold py-2.5 px-4 flex items-center gap-2 border-l border-r border-[#111820]">
+            MENU <span className="text-xs">▼</span>
+          </button>
         </div>
       </nav>
 

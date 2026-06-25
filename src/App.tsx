@@ -21,6 +21,7 @@ import Business from './pages/Business';
 import SearchPage from './pages/Search';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Secondary hubs pages
 import {
@@ -97,6 +98,7 @@ function AppContent() {
           <Route path="auth/login" element={<Login />} />
           <Route path="auth/register" element={<Login />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="admin" element={<AdminDashboard />} />
 
           {/* General Catch-All fallback redirecting to root index */}
           <Route path="*" element={<Navigate to="/" replace />} />

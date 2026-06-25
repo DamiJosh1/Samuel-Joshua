@@ -42,130 +42,176 @@ export default function Home() {
 
   const sectors = [
     {
+      id: "jobs",
+      titleEn: "Jobs",
+      titleFr: "Emplois",
+      descEn: "Find a job, training, hiring programs, work permits, Social Insurance Number (SIN)",
+      descFr: "Trouver un emploi, formation, programmes d'embauche, permis de travail, numéro d'assurance sociale (NAS)",
+      to: "/employment"
+    },
+    {
       id: "immig",
       titleEn: "Immigration and citizenship",
       titleFr: "Immigration et citoyenneté",
-      descEn: "Apply to travel, study, work or immigrate to Canada, calculate biometrics, track passports.",
-      descFr: "Présentez une demande de voyage, d'études ou de permis, calculez la biométrie et suivez les passeports.",
-      to: "/immigration-citizenship",
-      icon: Globe,
-      color: "border-[#af3c43]"
-    },
-    {
-      id: "taxes",
-      titleEn: "Taxes",
-      titleFr: "Impôts",
-      descEn: "File your annual personal income returns, look up rates brackets, find dates guidelines.",
-      descFr: "Déclarez vos revenus, consultez les tranches d'imposition et trouvez les dates limites.",
-      to: "/taxes",
-      icon: FileText,
-      color: "border-[#335075]"
-    },
-    {
-      id: "benefits",
-      titleEn: "Benefits",
-      titleFr: "Prestations",
-      descEn: "Calculate Canada Child Credit estimators, examine EI criteria, old-age assistance parameters.",
-      descFr: "Calculez l'allocation pour enfants, étudiez l'assurance-emploi et la pension de vieillesse.",
-      to: "/benefits",
-      icon: Heart,
-      color: "border-teal-600"
-    },
-    {
-      id: "employment",
-      titleEn: "Jobs and employment",
-      titleFr: "Emplois et perfectionnement",
-      descEn: "Search vacancies in Job Bank, download training grants, inspect workplace standard codes.",
-      descFr: "Parcourez le Guichet-Emploi, trouvez des subventions de formation et les normes du travail.",
-      to: "/employment",
-      icon: Briefcase,
-      color: "border-amber-600"
+      descEn: "Visit, work, study, immigrate, refugees, permanent residents, apply, check status",
+      descFr: "Visiter, travailler, étudier, immigrer, réfugiés, résidents permanents, présenter une demande, vérifier l'état",
+      to: "/immigration-citizenship"
     },
     {
       id: "travel",
       titleEn: "Travel and tourism",
       titleFr: "Voyage et tourisme",
-      descEn: "Look up interactive country security advisory statuses, declare custom listings.",
-      descFr: "Consultez les avertissements de sécurité par pays et remplissez les déclarations de douane.",
-      to: "/travel",
-      icon: Plane,
-      color: "border-sky-600"
+      descEn: "In Canada or abroad, advice, advisories, passports, visit Canada, events, attractions",
+      descFr: "Au Canada ou à l'étranger, conseils, avertissements, passeports, visiter le Canada, événements, attractions",
+      to: "/travel"
     },
     {
       id: "business",
       titleEn: "Business and industry",
       titleFr: "Entreprises et industrie",
-      descEn: "Register commercial numbers, examine business grants, study import-export criteria.",
-      descFr: "Enregistrez votre entreprise, demandez du financement et apprenez les règles d'importation.",
-      to: "/business",
-      icon: Building2,
-      color: "border-purple-600"
+      descEn: "Starting a business, permits, copyright, business support, selling to government",
+      descFr: "Lancer une entreprise, permis, droit d'auteur, soutien aux entreprises, vendre au gouvernement",
+      to: "/business"
+    },
+    {
+      id: "benefits",
+      titleEn: "Benefits",
+      titleFr: "Prestations",
+      descEn: "EI, family and sickness leave, pensions, housing, student aid, disabilities, after a death",
+      descFr: "Assurance-emploi, congés familiaux et de maladie, pensions, logement, aide aux étudiants, invalidité, décès",
+      to: "/benefits"
+    },
+    {
+      id: "health",
+      titleEn: "Health",
+      titleFr: "Santé",
+      descEn: "Food, nutrition, diseases, vaccines, drugs, product safety and recalls",
+      descFr: "Alimentation, nutrition, maladies, vaccins, médicaments, sécurité des produits et rappels",
+      to: "/services"
+    }
+  ];
+
+  const mostRequested = [
+    {
+      labelEn: "Sign in to an account",
+      labelFr: "Ouvrir une session dans un compte",
+      to: "/auth/login"
+    },
+    {
+      labelEn: "Employment Insurance and leave",
+      labelFr: "Assurance-emploi et congés",
+      to: "/benefits"
+    },
+    {
+      labelEn: "Public pensions (CPP and OAS)",
+      labelFr: "Pensions publiques (RPC et SV)",
+      to: "/benefits"
+    },
+    {
+      labelEn: "Get a passport",
+      labelFr: "Obtenir un passeport",
+      to: "/immigration-citizenship/passports"
+    },
+    {
+      labelEn: "Biometrics Calculator",
+      labelFr: "Calculateur de biométrie",
+      to: "/immigration-citizenship/biometrics"
+    },
+    {
+      labelEn: "Work Permits",
+      labelFr: "Permis de travail",
+      to: "/immigration-citizenship/work-permits"
+    },
+    {
+      labelEn: "Study Permits",
+      labelFr: "Permis d'études",
+      to: "/immigration-citizenship/study-permits"
+    },
+    {
+      labelEn: "Canadian Citizenship Test",
+      labelFr: "Examen de citoyenneté",
+      to: "/immigration-citizenship/citizenship"
     }
   ];
 
   return (
     <div className="bg-white min-h-screen text-[#333] font-sans">
       
-      {/* 1. SECTOR HERO BANNER: Solid, Clean, Authoritative WET Background */}
-      <section className="bg-[#335075] text-white py-12 md:py-16" id="home-hero-section">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="max-w-3xl space-y-5">
-            <span className="text-xs font-bold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded">
-              {currentLang === 'en' ? 'Official Portal' : 'Portail Officiel'}
-            </span>
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-              {currentLang === 'en' ? 'Canada.ca - Services and benefits' : 'Canada.ca - Services et prestations'}
-            </h1>
-            <p className="text-gray-100 text-sm md:text-base leading-relaxed max-w-2xl">
+      {/* 1. HIGH-FIDELITY FOREST HERO BANNER */}
+      <section 
+        className="relative bg-cover bg-center py-12 md:py-20 flex items-center" 
+        style={{ 
+          backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%), url('https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=80')` 
+        }}
+        id="home-hero-section"
+      >
+        <div className="mx-auto max-w-6xl w-full px-4">
+          {/* Translucent Dark Blue Container from Canada.ca screenshot */}
+          <div className="bg-[#1c2d42]/95 md:bg-[#1c2d42]/90 border border-gray-700/30 text-white max-w-md p-6 sm:p-8 rounded shadow-lg space-y-4">
+            <div className="space-y-1">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
+                Canada.ca
+              </h1>
+              <div className="h-1 bg-[#af3c43] w-32" aria-hidden="true"></div>
+            </div>
+            
+            <p className="text-gray-100 text-sm sm:text-base font-normal leading-relaxed">
               {currentLang === 'en'
-                ? 'Access central directories and interactive service tools of the Government of Canada: calculate biometrics deadlines, search job vacancy banks, estimate tax returns, and verify travel advice.'
-                : 'Accédez aux répertoires centraux et aux outils de service interactifs du gouvernement du Canada : calculez les délais biométriques, consultez le Guichet-Emploi, estimez vos impôts et vérifiez les avis de voyage.'}
+                ? 'The official website of the Government of Canada'
+                : 'Le site officiel du gouvernement du Canada'}
             </p>
-
-            {/* Flat search input without high-contrast animations */}
-            <form onSubmit={handleHeroSearchSubmit} className="flex max-w-xl pt-2" id="hero-search-form">
-              <input
-                type="text"
-                placeholder={currentLang === 'en' ? 'Search Canada.ca...' : 'Rechercher dans Canada.ca...'}
-                value={heroSearch}
-                onChange={(e) => setHeroSearch(e.target.value)}
-                className="w-full text-black px-4 py-3 rounded-l border border-r-0 border-gray-300 outline-none text-sm md:text-base bg-white"
-                aria-label={currentLang === 'en' ? 'Search query' : 'Requête de recherche'}
-              />
-              <button
-                type="submit"
-                className="bg-[#af3c43] hover:bg-[#8f2f35] text-white px-6 font-bold flex items-center gap-2 transition-colors rounded-r cursor-pointer"
-                id="hero-search-submit-btn"
-              >
-                <Search className="w-5 h-5" />
-                <span>{currentLang === 'en' ? 'Search' : 'Rechercher'}</span>
-              </button>
-            </form>
+            
+            <p className="text-gray-200 text-xs leading-relaxed border-t border-gray-600/30 pt-3">
+              {currentLang === 'en'
+                ? 'Access central IRCC immigration services, passports, biometrics checkers, work permits, tax estimations, and federal support.'
+                : 'Accédez aux services d\'immigration d\'IRCC, aux passeports, aux vérificateurs de biométrie, aux permis de travail et au soutien.'}
+            </p>
           </div>
         </div>
       </section>
 
-      {/* 2. CHOOSE A SECTOR: Pristine WET-Style Directory Links (Minimalistic & High-Contrast) */}
+      {/* 2. MOST REQUESTED (Light Grey strip of links) */}
+      <section className="bg-[#f5f5f5] border-b border-gray-200 py-6 md:py-8" id="most-requested-strip">
+        <div className="mx-auto max-w-6xl px-4">
+          <h2 className="text-base font-bold text-[#333] mb-4 uppercase tracking-wider">
+            {currentLang === 'en' ? 'Most requested' : 'Les plus demandés'}
+          </h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-3.5 gap-x-6 text-sm">
+            {mostRequested.map((item, idx) => (
+              <Link 
+                key={idx} 
+                to={item.to} 
+                className="text-[#2572b4] hover:text-[#05355c] hover:underline font-semibold leading-snug flex items-center gap-1.5"
+              >
+                <span>&bull;</span>
+                <span>{currentLang === 'en' ? item.labelEn : item.labelFr}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. SECTOR SERVICES & CATEGORIES LIST (Strictly plain 3-column layout matching the screenshot) */}
       <section className="mx-auto max-w-6xl px-4 py-12 md:py-16 space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold text-[#333] border-b border-gray-200 pb-3">
-            {currentLang === 'en' ? 'Departments and areas' : 'Ministères et services de confiance'}
+        <div className="border-b border-gray-200 pb-3">
+          <h2 className="text-xl font-bold text-[#333] tracking-tight">
+            {currentLang === 'en' ? 'Government Services and Information' : 'Services et renseignements gouvernementaux'}
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 gap-x-12">
           {sectors.map((sec) => (
             <div
               key={sec.id}
-              className="space-y-2 group"
+              className="space-y-1.5"
             >
-              <h3 className="text-lg font-bold text-[#2572b4] hover:text-[#05355c]">
-                <Link to={sec.to} className="hover:underline flex items-baseline gap-1" id={`sector-link-${sec.id}`}>
-                  <span>{currentLang === 'en' ? sec.titleEn : sec.titleFr}</span>
-                  <ChevronRight className="w-4 h-4 text-gray-400 self-center" />
+              <h3 className="text-base font-bold text-[#2572b4] hover:text-[#05355c]">
+                <Link to={sec.to} className="hover:underline hover:text-[#05355c]" id={`sector-link-${sec.id}`}>
+                  {currentLang === 'en' ? sec.titleEn : sec.titleFr}
                 </Link>
               </h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-xs text-gray-600 leading-relaxed font-normal">
                 {currentLang === 'en' ? sec.descEn : sec.descFr}
               </p>
             </div>
@@ -173,13 +219,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. LATEST NEWS FEED: Clean, Standard Federal Announcement Block */}
-      <section className="bg-[#f5f5f5] border-t border-b border-gray-200 py-12 md:py-16">
+      {/* 4. LATEST NEWS FEED: Clean, Standard Federal Announcement Block */}
+      <section className="bg-[#f5f5f5] border-t border-b border-gray-200 py-12">
         <div className="mx-auto max-w-6xl px-4 space-y-8">
           
           <div className="flex items-center justify-between border-b border-gray-300 pb-3">
-            <h2 className="text-2xl font-bold text-[#333] flex items-center gap-2">
-              <Newspaper className="w-6 h-6 text-[#af3c43]" />
+            <h2 className="text-lg font-bold text-[#333] flex items-center gap-2">
+              <Newspaper className="w-5 h-5 text-[#af3c43]" />
               {currentLang === 'en' ? 'Latest federal announcements' : 'Nouvelles du gouvernement fédéral'}
             </h2>
             <span className="text-xs font-bold text-gray-500 bg-white border border-gray-300 px-3 py-1 rounded">
@@ -197,14 +243,14 @@ export default function Home() {
               {news.map((item) => (
                 <article key={item.id} className="bg-white border border-gray-200 rounded p-5 flex flex-col justify-between shadow-xs">
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between text-[11px] font-bold text-[#af3c43] uppercase tracking-wider">
+                    <div className="flex items-center justify-between text-[10px] font-bold text-[#af3c43] uppercase tracking-wider">
                       <span>{currentLang === 'en' ? item.category : item.categoryFr}</span>
                       <span className="text-gray-400 font-normal">{item.date}</span>
                     </div>
-                    <h3 className="text-base font-bold text-[#333] hover:text-[#2572b4] leading-snug">
+                    <h3 className="text-sm font-bold text-[#333] hover:text-[#2572b4] leading-snug">
                       <span className="cursor-pointer">{currentLang === 'en' ? item.title : item.titleFr}</span>
                     </h3>
-                    <p className="text-xs text-gray-600 leading-relaxed line-clamp-3">
+                    <p className="text-xs text-gray-500 leading-relaxed line-clamp-3 font-normal">
                       {currentLang === 'en' ? item.summary : item.summaryFr}
                     </p>
                   </div>
@@ -222,21 +268,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. CLINICAL PROMPT Callout instead of sparkly overdesigned box (WET Standard Alert Box) */}
+      {/* 5. CLINICAL PROMPT Callout (WET Standard Info Alert Box) */}
       <section className="mx-auto max-w-4xl px-4 py-12" id="government-migration-tracker">
-        <div className="bg-[#f3f8fc] border-l-6 border-[#269abc] rounded-r p-6 space-y-3">
-          <h3 className="font-bold text-[#004d66] text-lg">
+        <div className="bg-[#f3f8fc] border-l-6 border-[#269abc] rounded-r p-5 space-y-3">
+          <h3 className="font-bold text-[#004d66] text-base">
             {currentLang === 'en' ? 'Biometrics Service Assistant' : 'Assistant de service de biométrie'}
           </h3>
-          <p className="text-sm text-gray-700 leading-relaxed">
+          <p className="text-xs text-gray-700 leading-relaxed font-normal">
             {currentLang === 'en' 
               ? 'Are you requested to submit fingerprints and facial photography? Use our official interactive assistant to calculate precise 30-day deadlines, verify previous biometrics validity, and locate ASC / VAC collection centers globally.'
               : 'Vous devez fournir vos empreintes et votre photo ? Utilisez notre assistant interactif officiel pour calculer vos délais précis de 30 jours, vérifier la validité de vos empreintes et repérer les centres d\'admission.'}
           </p>
-          <div className="pt-2">
+          <div className="pt-1">
             <Link 
               to="/immigration-citizenship/biometrics" 
-              className="inline-block bg-[#2572b4] hover:bg-[#05355c] text-white font-bold text-sm px-5 py-2.5 rounded transition-colors focus:ring-2 focus:ring-[#2572b4]"
+              className="inline-block bg-[#2572b4] hover:bg-[#05355c] text-white font-bold text-xs px-4 py-2 rounded transition-colors focus:ring-2 focus:ring-[#2572b4]"
             >
               {currentLang === 'en' ? 'Verify biometrics requirements' : 'Vérifier vos exigences de biométrie'}
             </Link>

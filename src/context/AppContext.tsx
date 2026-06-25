@@ -10,6 +10,7 @@ export interface ApplicationInfo {
   lastUpdated: string;
   details: string;
   detailsFr: string;
+  documents?: { name: string; date: string; time: string }[];
 }
 
 interface AppContextType {
@@ -20,7 +21,7 @@ interface AppContextType {
   logout: () => void;
   applications: ApplicationInfo[];
   addApplication: (app: ApplicationInfo) => void;
-  updateApplicationStatus: (id: string, newStatus: ApplicationInfo['status'], details: string, detailsFr: string) => void;
+  updateApplication: (id: string, updates: Partial<ApplicationInfo>) => void;
   hasEntered: boolean;
   setHasEntered: (entered: boolean) => void;
 }
@@ -143,28 +144,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateApplicationStatus = async (
+  const updateApplication = async (
     id: string,
-    newStatus: ApplicationInfo['status'],
-    details: string,
-    detailsFr: string
+    updates: Partial<ApplicationInfo>
   ) => {
     const email = user?.email || "guest";
-    let statusFr: ApplicationInfo['statusFr'] = 'En cours';
-    if (newStatus === 'Received') statusFr = 'Reçu';
-    if (newStatus === 'Approved') statusFr = 'Approuvé';
-    if (newStatus === 'Action Required') statusFr = 'Action requise';
-
+    
     // Optimistic UI update
     setApplications((prev) =>
       prev.map((app) =>
         app.id === id
           ? {
               ...app,
-              status: newStatus,
-              statusFr,
-              details,
-              detailsFr,
+              ...updates,
               lastUpdated: new Date().toISOString().split('T')[0],
             }
           : app
@@ -179,10 +171,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         },
         body: JSON.stringify({
           email,
-          status: newStatus,
-          statusFr,
-          details,
-          detailsFr,
+          ...updates
         }),
       });
       if (response.ok) {
@@ -205,7 +194,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       applications,
       addApplication,
-      updateApplicationStatus,
+      updateApplication,
       hasEntered,
       setHasEntered
     }}>

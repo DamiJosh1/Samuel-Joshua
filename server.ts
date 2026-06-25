@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import nodemailer from "nodemailer";
 
 interface ApplicationInfo {
   id: string;
@@ -11,11 +12,13 @@ interface ApplicationInfo {
   lastUpdated: string;
   details: string;
   detailsFr: string;
+  documents?: { name: string; date: string; time: string }[];
 }
 
 // In-memory simple storage to act as the backend database
 const db = {
   applications: new Map<string, ApplicationInfo[]>(),
+
   news: [
     {
       id: 'news-1',
@@ -177,7 +180,7 @@ async function startServer() {
   app.patch("/api/applications/:id", (req, res) => {
     const email = String(req.body.email || "guest").trim().toLowerCase();
     const id = req.params.id;
-    const { status, statusFr, details, detailsFr } = req.body;
+    const { status, statusFr, details, detailsFr, documents } = req.body;
 
     if (!db.applications.has(email)) {
       db.applications.set(email, [...DEFAULT_APPLICATIONS]);
@@ -196,11 +199,78 @@ async function startServer() {
       statusFr: statusFr ?? currentList[index].statusFr,
       details: details ?? currentList[index].details,
       detailsFr: detailsFr ?? currentList[index].detailsFr,
+      documents: documents ?? currentList[index].documents,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 
     db.applications.set(email, currentList);
     res.json(currentList[index]);
+  });
+
+  // 6. API: Admin GET all applications across all users
+  app.get("/api/admin/applications", (req, res) => {
+    const allApps: { email: string; app: ApplicationInfo }[] = [];
+    db.applications.forEach((apps, email) => {
+      apps.forEach(app => {
+        allApps.push({ email, app });
+      });
+    });
+    res.json(allApps);
+  });
+
+  // 7. API: Send email notification
+  app.post("/api/send-email", async (req, res) => {
+    const { to, subject, text } = req.body;
+    
+    if (!to || !subject || !text) {
+      return res.status(400).json({ error: "Missing email parameters" });
+    }
+
+    try {
+      // For demonstration, use ethereal email or console.log if no auth provided.
+      // Nodemailer requires an SMTP server (like Gmail, Outlook, AWS SES).
+      // Here we will mock it if no env var is set.
+      let transporter;
+      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || "smtp.gmail.com",
+          port: Number(process.env.SMTP_PORT) || 587,
+          secure: process.env.SMTP_SECURE === "true",
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+      } else {
+        // Create a test account if no real SMTP provided
+        const testAccount = await nodemailer.createTestAccount();
+        transporter = nodemailer.createTransport({
+          host: "smtp.ethereal.email",
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: testAccount.user, // generated ethereal user
+            pass: testAccount.pass, // generated ethereal password
+          },
+        });
+      }
+
+      const info = await transporter.sendMail({
+        from: '"Canada Immigration Services" <no-reply@canada.ca.example>',
+        to,
+        subject,
+        text,
+      });
+
+      console.log("Message sent: %s", info.messageId);
+      // ethereal url
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+      res.json({ success: true, messageId: info.messageId });
+    } catch (err) {
+      console.error("Email send failed:", err);
+      res.status(500).json({ error: "Failed to send email" });
+    }
   });
 
   // Vite integration middleware setup
