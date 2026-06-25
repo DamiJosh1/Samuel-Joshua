@@ -90,12 +90,6 @@ export default function Dashboard() {
 
                     {/* Specific Statuses Grid */}
                     <div className="bg-gray-50 p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-300 text-sm">
-                      {app.biometricStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Biometrics</span>
-                          <span className="font-semibold">{app.biometricStatus}</span>
-                        </div>
-                      )}
                       {app.medicalRequestStatus && (
                         <div className="border border-gray-300 p-2 bg-white">
                           <span className="font-bold block text-xs uppercase text-gray-600">Medical Exam</span>
@@ -124,6 +118,12 @@ export default function Dashboard() {
                         <div className="border border-gray-300 p-2 bg-white">
                           <span className="font-bold block text-xs uppercase text-gray-600">Passport Request</span>
                           <span className="font-semibold">{app.passportRequestStatus}</span>
+                        </div>
+                      )}
+                      {app.biometricStatus && (
+                        <div className="border border-gray-300 p-2 bg-white">
+                          <span className="font-bold block text-xs uppercase text-gray-600">Biometrics</span>
+                          <span className="font-semibold">{app.biometricStatus}</span>
                         </div>
                       )}
                     </div>

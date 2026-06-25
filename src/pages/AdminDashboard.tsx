@@ -198,7 +198,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (user?.email !== 'admin@canada.ca') {
+  if (user?.email?.toLowerCase() !== 'admin@canada.ca') {
     return (
       <main className="mx-auto max-w-6xl w-full px-4 py-8">
         <h1 className="text-xl font-bold">Unauthorized</h1>
