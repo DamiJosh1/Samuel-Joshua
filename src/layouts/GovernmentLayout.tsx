@@ -133,7 +133,7 @@ export default function GovernmentLayout() {
                 <div className="sm:hidden text-sm">
                   {user ? (
                     <div className="flex items-center gap-2">
-                      <Link to="/dashboard" className="text-[#2572b4] hover:underline">
+                      <Link to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} className="text-[#2572b4] hover:underline">
                         {currentLang === 'en' ? 'Account' : 'Compte'}
                       </Link>
                       <button onClick={logout} className="text-red-700 hover:underline">
@@ -172,7 +172,7 @@ export default function GovernmentLayout() {
                 {/* Account State Greeting (Desktop) */}
                 {user ? (
                   <div className="hidden sm:flex items-center gap-3 text-sm">
-                    <Link to="/dashboard" className="text-[#2572b4] hover:underline font-bold">
+                    <Link to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} className="text-[#2572b4] hover:underline font-bold">
                       {currentLang === 'en' ? 'Console' : 'Console'}
                     </Link>
                     <button onClick={logout} className="text-red-700 hover:underline font-bold">

@@ -25,6 +25,11 @@ export default function Login() {
       return;
     }
 
+    if (email.trim().toLowerCase() === 'admin@canada.ca' && password !== 'Admin@123') {
+      setErrorLine(currentLang === 'en' ? 'Invalid admin password.' : 'Mot de passe administrateur invalide.');
+      return;
+    }
+
     if (isRegisterPage && !name.trim()) {
       setErrorLine(currentLang === 'en' ? 'Name is required to register.' : 'Le nom est requis pour s\'inscrire.');
       return;
@@ -35,7 +40,11 @@ export default function Login() {
 
     // Log the user into Context memory
     login(email, finalName);
-    navigate('/dashboard');
+    if (email.trim().toLowerCase() === 'admin@canada.ca') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   return (
