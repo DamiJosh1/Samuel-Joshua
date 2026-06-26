@@ -1,31 +1,39 @@
-import { useState, useEffect } from 'react';
-import { useApp, ApplicationInfo, TimelineEvent } from '../context/AppContext';
+import React, { useState, useEffect } from 'react';
+import { useApp, ApplicationInfo, TimelineEvent, IMMIGRATION_JOURNEY_STEPS } from '../context/AppContext';
 
 export default function AdminDashboard() {
   const { currentLang, user } = useApp();
   const [allApplications, setAllApplications] = useState<{email: string, app: ApplicationInfo}[]>([]);
+  const [allUsers, setAllUsers] = useState<{email: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'profiles' | 'applications'>('profiles');
   const [selectedProfileEmail, setSelectedProfileEmail] = useState<string | null>(null);
-  
+
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailText, setEmailText] = useState('');
   const [emailSuccess, setEmailSuccess] = useState(false);
-  
+
   // New App Form
   const [newAppEmail, setNewAppEmail] = useState('');
   const [newAppType, setNewAppType] = useState('Work Permit');
 
+  // New Profile Form
+  const [newProfileName, setNewProfileName] = useState('');
+  const [newProfileEmail, setNewProfileEmail] = useState('');
+
   const fetchApps = () => {
-    fetch('/api/admin/applications')
-      .then(res => res.json())
-      .then(data => {
-        setAllApplications(data);
+    Promise.all([
+      fetch('/api/admin/applications').then(res => res.json()),
+      fetch('/api/admin/users').then(res => res.json())
+    ])
+      .then(([appsData, usersData]) => {
+        setAllApplications(appsData);
+        setAllUsers(usersData);
         setLoading(false);
       })
       .catch(err => {
@@ -37,6 +45,29 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchApps();
   }, []);
+
+  const handleCreateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProfileEmail || !newProfileName) return;
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newProfileEmail, name: newProfileName })
+      });
+      if (res.ok) {
+        alert("Applicant profile created successfully!");
+        setNewProfileEmail('');
+        setNewProfileName('');
+        fetchApps();
+      } else {
+        alert("Failed to create profile.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const sendEmailNotification = async (to: string, subject: string, text: string) => {
     try {
@@ -94,8 +125,8 @@ export default function AdminDashboard() {
       id: `APP-${Math.floor(100000 + Math.random() * 900000)}`,
       type: newAppType,
       typeFr: newAppType,
-      status: 'Received',
-      statusFr: 'Reçu',
+      status: IMMIGRATION_JOURNEY_STEPS[0],
+      statusFr: 'Consultation initiale',
       lastUpdated: new Date().toISOString().split('T')[0],
       details: 'Application created by administration.',
       detailsFr: 'Demande créée par l\'administration.',
@@ -212,36 +243,71 @@ export default function AdminDashboard() {
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 space-y-8 font-sans text-[#333]">
       <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Immigration Case Management</h1>
 
-      <div className="bg-gray-100 p-6 border border-gray-300">
-        <h2 className="text-xl font-bold mb-4">Create Applicant Profile</h2>
-        <form onSubmit={handleCreateApp} className="flex flex-wrap gap-4 items-end">
-          <div className="w-full md:w-64">
-            <label className="block text-sm font-bold mb-1">Applicant Email</label>
-            <input 
-              type="email" 
-              value={newAppEmail}
-              onChange={e => setNewAppEmail(e.target.value)}
-              className="w-full border border-gray-400 p-2"
-              required
-            />
-          </div>
-          <div className="w-full md:w-64">
-            <label className="block text-sm font-bold mb-1">Application Type</label>
-            <select 
-              value={newAppType}
-              onChange={e => setNewAppType(e.target.value)}
-              className="w-full border border-gray-400 p-2"
-            >
-              <option value="Work Permit">Work Permit</option>
-              <option value="Study Permit">Study Permit</option>
-              <option value="Visitor Visa">Visitor Visa</option>
-              <option value="Express Entry">Express Entry</option>
-            </select>
-          </div>
-          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820]">
-            Create Profile
-          </button>
-        </form>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gray-100 p-6 border border-gray-300">
+          <h2 className="text-xl font-bold mb-4">1. Create Applicant Profile</h2>
+          <form onSubmit={handleCreateProfile} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-1">Applicant Name</label>
+              <input 
+                type="text" 
+                value={newProfileName}
+                onChange={e => setNewProfileName(e.target.value)}
+                className="w-full border border-gray-400 p-2"
+                placeholder="e.g. John Doe"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-1">Applicant Email (Used for Sign In)</label>
+              <input 
+                type="email" 
+                value={newProfileEmail}
+                onChange={e => setNewProfileEmail(e.target.value)}
+                className="w-full border border-gray-400 p-2"
+                placeholder="name@domain.ca"
+                required
+              />
+            </div>
+            <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
+              Create Profile
+            </button>
+            <p className="text-xs text-gray-600 mt-2">After creating, provide the email and password to the user.</p>
+          </form>
+        </div>
+
+        <div className="bg-gray-100 p-6 border border-gray-300">
+          <h2 className="text-xl font-bold mb-4">2. Create New Application Record</h2>
+          <form onSubmit={handleCreateApp} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-1">Assign to Email</label>
+              <input 
+                type="email" 
+                value={newAppEmail}
+                onChange={e => setNewAppEmail(e.target.value)}
+                className="w-full border border-gray-400 p-2"
+                placeholder="Must match an existing profile"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-1">Application Type</label>
+              <select 
+                value={newAppType}
+                onChange={e => setNewAppType(e.target.value)}
+                className="w-full border border-gray-400 p-2"
+              >
+                <option value="Work Permit">Work Permit</option>
+                <option value="Study Permit">Study Permit</option>
+                <option value="Visitor Visa">Visitor Visa</option>
+                <option value="Express Entry">Express Entry</option>
+              </select>
+            </div>
+            <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
+              Create Application Record
+            </button>
+          </form>
+        </div>
       </div>
 
       {loading ? (
@@ -267,15 +333,16 @@ export default function AdminDashboard() {
             <div>
               <h2 className="text-xl font-bold mb-4">Applicant Profiles</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {Array.from(new Set(allApplications.map(a => a.email))).map(email => (
-                  <div key={email} onClick={() => setSelectedProfileEmail(email)} className="bg-white p-5 border border-gray-300 cursor-pointer hover:border-[#26374a] hover:shadow-sm">
-                    <div className="font-bold text-lg break-all">{email}</div>
-                    <div className="text-sm text-gray-600 mt-2">
-                      Applications: {allApplications.filter(a => a.email === email).length}
+                {allUsers.map(userItem => (
+                  <div key={userItem.email} onClick={() => setSelectedProfileEmail(userItem.email)} className="bg-white p-5 border border-gray-300 cursor-pointer hover:border-[#26374a] hover:shadow-sm">
+                    <div className="font-bold text-lg break-all">{userItem.name}</div>
+                    <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
+                    <div className="text-sm font-bold text-[#26374a] mt-2">
+                      Applications: {allApplications.filter(a => a.email === userItem.email).length}
                     </div>
                   </div>
                 ))}
-                {allApplications.length === 0 && (
+                {allUsers.length === 0 && (
                    <p className="text-gray-500 italic">No profiles created yet.</p>
                 )}
               </div>
@@ -334,12 +401,13 @@ export default function AdminDashboard() {
                         <td className="p-3 border-r border-gray-300">
                           <select 
                             value={item.app.status}
-                            onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Status Updated to ${e.target.value}`)}
-                            className="border border-gray-400 p-1 w-full max-w-[150px]"
+                            onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
+                            className="border border-gray-400 p-1 w-full max-w-[200px]"
                           >
-                            <option value="Received">Received</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Action Required">Action Required</option>
+                            <option value="Pending">Pending</option>
+                            {IMMIGRATION_JOURNEY_STEPS.map(step => (
+                              <option key={step} value={step}>{step}</option>
+                            ))}
                             <option value="Approved">Approved</option>
                             <option value="Refused">Refused</option>
                           </select>

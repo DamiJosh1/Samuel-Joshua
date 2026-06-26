@@ -1,11 +1,13 @@
-import { useApp, ApplicationInfo } from '../context/AppContext';
+import { useApp, ApplicationInfo, IMMIGRATION_JOURNEY_STEPS } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { 
   Activity, 
   ArrowRight,
   Download,
   FileText,
-  Clock
+  Clock,
+  CheckCircle2,
+  Circle
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -13,17 +15,19 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const getStatusBadge = (status: string) => {
-    if (status === 'Approved') return 'bg-gray-200 text-black border-black border-2';
-    if (status === 'Refused') return 'bg-gray-200 text-black border-black border-2';
-    if (status === 'Action Required') return 'bg-black text-white border-black border-2';
+    if (status === 'Approved') return 'bg-[#26374a] text-white border-[#26374a] border-2';
+    if (status === 'Refused') return 'bg-red-700 text-white border-red-700 border-2';
+    if (status === 'Action Required') return 'bg-[#d3080c] text-white border-[#d3080c] border-2';
     return 'bg-white text-black border-black border-2';
   };
 
-  const getProgressPercent = (status: string) => {
-    if (status === 'Approved' || status === 'Refused') return 100;
-    if (status === 'In Progress') return 50;
-    if (status === 'Action Required') return 25;
-    return 10;
+  const getStepProgress = (status: string) => {
+    const idx = IMMIGRATION_JOURNEY_STEPS.indexOf(status);
+    if (idx === -1) {
+      if (status === 'Approved') return IMMIGRATION_JOURNEY_STEPS.length;
+      return -1; // If "Pending" or something else
+    }
+    return idx;
   };
 
   return (
@@ -32,12 +36,12 @@ export default function Dashboard() {
       {/* Greeting row */}
       <div className="bg-white border border-gray-400 p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
-          <span className="text-xs font-bold text-gray-600 uppercase tracking-widest block">{currentLang === 'en' ? 'Console Hub' : 'Console d\'accès'}</span>
+          <span className="text-xs font-bold text-gray-600 uppercase tracking-widest block">{currentLang === 'en' ? 'Client Portal Dashboard' : 'Portail Client'}</span>
           <h1 className="text-2xl font-bold text-black">
-            {currentLang === 'en' ? `Welcome to My Service Canada Account, ${user?.name || 'Guest'}` : `Bienvenue dans votre dossier Service Canada, ${user?.name || 'Invité'}`}
+            {currentLang === 'en' ? `Applicant Profile: ${user?.name || 'Guest'}` : `Profil du candidat: ${user?.name || 'Invité'}`}
           </h1>
           <p className="text-xs text-gray-600">
-            {currentLang === 'en' ? 'Secure login session active' : 'Session sécurisée active'} &bull; ID: {user?.email || 'guest-session'}
+            {currentLang === 'en' ? 'Secure login session active' : 'Session sécurisée active'} &bull; ID: {user?.email || 'guest-session'} &bull; Created: {applications[0]?.lastUpdated || 'N/A'}
           </p>
         </div>
       </div>
@@ -49,92 +53,64 @@ export default function Dashboard() {
           <div className="bg-white border border-gray-400 p-6 space-y-6">
             <h2 className="text-lg font-bold text-black border-b border-gray-400 pb-2 flex items-center gap-2">
               <Activity className="w-5 h-5 text-black" />
-              {currentLang === 'en' ? 'Track Active Application Files Status' : 'Gérer l\'état d\'avancement de mes dossiers'}
+              {currentLang === 'en' ? 'My Immigration Applications' : 'Mes demandes d\'immigration'}
             </h2>
 
             <div className="space-y-8">
               {applications.length > 0 ? (
-                applications.map((app) => (
-                  <div key={app.id} className="border border-gray-300 p-0 bg-white" id={`app-ticket-${app.id}`}>
-                    
-                    {/* Header */}
-                    <div className="p-5 border-b border-gray-300">
-                      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-                        <div>
-                          <span className="text-[10px] font-bold text-gray-600 uppercase font-mono block">Application No: {app.id}</span>
-                          <h3 className="text-xl font-bold text-black">
-                            {currentLang === 'en' ? app.type : app.typeFr}
-                          </h3>
+                applications.map((app) => {
+                  const currentStepIndex = getStepProgress(app.status);
+                  
+                  return (
+                    <div key={app.id} className="border border-gray-300 p-0 bg-white" id={`app-ticket-${app.id}`}>
+                      
+                      {/* Header */}
+                      <div className="p-5 border-b border-gray-300">
+                        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-600 uppercase font-mono block">Client ID / App No: {app.id}</span>
+                            <h3 className="text-xl font-bold text-black mt-1">
+                              {currentLang === 'en' ? app.type : app.typeFr}
+                            </h3>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                            <span className={`text-xs uppercase font-bold px-3 py-1 ${getStatusBadge(app.status)}`}>
+                              Status: {currentLang === 'en' ? app.status : app.statusFr}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs uppercase font-bold px-3 py-1 ${getStatusBadge(app.status)}`}>
-                            {currentLang === 'en' ? app.status : app.statusFr}
-                          </span>
+                      </div>
+
+                      {/* Application Process Journey */}
+                      <div className="p-5 bg-gray-50 border-b border-gray-300">
+                        <h4 className="font-bold text-sm mb-4 uppercase text-gray-600 border-b border-gray-300 pb-2">
+                          {currentLang === 'en' ? 'Application Process Journey' : 'Parcours de la demande'}
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
+                          {IMMIGRATION_JOURNEY_STEPS.map((step, idx) => {
+                            const isCompleted = currentStepIndex >= idx;
+                            const isCurrent = currentStepIndex === idx;
+                            return (
+                              <div key={step} className={`flex items-center gap-2 ${isCurrent ? 'font-bold text-[#26374a]' : (isCompleted ? 'text-gray-800' : 'text-gray-400')}`}>
+                                {isCompleted ? (
+                                  <CheckCircle2 className="w-4 h-4 text-[#1a5b28] shrink-0" />
+                                ) : (
+                                  <Circle className="w-4 h-4 text-gray-300 shrink-0" />
+                                )}
+                                <span className="text-sm">{step}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
-                      {/* Progress slider bar */}
-                      <div className="mt-4 space-y-1.5">
-                        <div className="flex justify-between items-center text-[10px] font-bold text-gray-600 uppercase">
-                          <span>{currentLang === 'en' ? 'Processing Stage' : 'Étape d\'analyse'}</span>
-                          <span>{getProgressPercent(app.status)}%</span>
-                        </div>
-                        <div className="w-full h-3 bg-gray-200 border border-gray-300">
-                          <div 
-                            className="h-full bg-[#26374a] transition-all duration-500"
-                            style={{ width: `${getProgressPercent(app.status)}%` }}
-                          ></div>
-                        </div>
+                      {/* Next Action / Details */}
+                      <div className="p-5 border-b border-gray-300">
+                        <h4 className="font-bold text-sm mb-2 uppercase text-gray-600">Current Notes / Next Required Action</h4>
+                        <p className="text-black text-sm">
+                          {currentLang === 'en' ? app.details : app.detailsFr}
+                        </p>
                       </div>
-                    </div>
-
-                    {/* Specific Statuses Grid */}
-                    <div className="bg-gray-50 p-5 grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-300 text-sm">
-                      {app.medicalRequestStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Medical Exam</span>
-                          <span className="font-semibold">{app.medicalRequestStatus}</span>
-                        </div>
-                      )}
-                      {app.workPermitStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Work Permit</span>
-                          <span className="font-semibold">{app.workPermitStatus}</span>
-                        </div>
-                      )}
-                      {app.studyPermitStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Study Permit</span>
-                          <span className="font-semibold">{app.studyPermitStatus}</span>
-                        </div>
-                      )}
-                      {app.visitorVisaStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Visitor Visa</span>
-                          <span className="font-semibold">{app.visitorVisaStatus}</span>
-                        </div>
-                      )}
-                      {app.passportRequestStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Passport Request</span>
-                          <span className="font-semibold">{app.passportRequestStatus}</span>
-                        </div>
-                      )}
-                      {app.biometricStatus && (
-                        <div className="border border-gray-300 p-2 bg-white">
-                          <span className="font-bold block text-xs uppercase text-gray-600">Biometrics</span>
-                          <span className="font-semibold">{app.biometricStatus}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Next Action / Details */}
-                    <div className="p-5 border-b border-gray-300">
-                      <h4 className="font-bold text-sm mb-2 uppercase text-gray-600">Current Notes / Next Action</h4>
-                      <p className="text-black text-sm">
-                        {currentLang === 'en' ? app.details : app.detailsFr}
-                      </p>
-                    </div>
 
                     {/* Timeline */}
                     <div className="p-5 bg-white">
@@ -157,7 +133,8 @@ export default function Dashboard() {
                     </div>
 
                   </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-10 border border-gray-300 bg-gray-50 text-gray-600 text-sm">
                   No active application logs found for your account. Wait for an administrator to create one.

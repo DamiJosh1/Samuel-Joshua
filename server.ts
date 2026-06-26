@@ -113,31 +113,72 @@ const db = {
 const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   {
     id: "APP-40291",
-    type: "Biometrics",
-    typeFr: "Biométrie",
-    status: "In Progress",
-    statusFr: "En cours",
+    type: "Work Permit",
+    typeFr: "Permis de travail",
+    status: "Background Verification",
+    statusFr: "Vérification des antécédents",
     lastUpdated: "2026-06-21",
-    details: "Waiting for appointment confirmation at USCIS ASC Manhattan.",
-    detailsFr: "En attente de confirmation de rendez-vous à l'ASC USCIS de Manhattan."
-  },
-  {
-    id: "APP-82910",
-    type: "Passport",
-    typeFr: "Passeport",
-    status: "Received",
-    statusFr: "Reçu",
-    lastUpdated: "2026-06-19",
-    details: "Application submitted online via Service Canada.",
-    detailsFr: "Demande soumise en ligne via Service Canada."
+    details: "Your background check is currently underway. No action is required from you at this moment.",
+    detailsFr: "La vérification de vos antécédents est en cours. Aucune action n'est requise de votre part pour le moment."
   }
 ];
+
+// Seed initial database
+db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont" });
+db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
+
+  // Authentication and User API
+  app.post("/api/login", (req, res) => {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    if (email.toLowerCase() === "admin@canada.ca") {
+      if (password === "admin") { // simple mock password for admin
+        return res.json({ email: "admin@canada.ca", name: "Administrator" });
+      } else {
+        return res.status(401).json({ error: "Invalid admin credentials" });
+      }
+    }
+
+    // Normal user check
+    const lowerEmail = email.toLowerCase();
+    if (!db.users.has(lowerEmail)) {
+      return res.status(401).json({ error: "Account not found. Only administrators can create applicant profiles. Please contact your immigration officer." });
+    }
+
+    // We can just accept any password for now or set a temporary one, let's just accept any for mock since we are not storing passwords
+    const user = db.users.get(lowerEmail);
+    res.json({ email: user?.email, name: user?.name });
+  });
+
+  app.post("/api/admin/users", (req, res) => {
+    const { email, name } = req.body;
+    if (!email || !name) return res.status(400).json({ error: "Email and name required" });
+    
+    const lowerEmail = email.toLowerCase();
+    db.users.set(lowerEmail, { email: lowerEmail, name });
+    
+    // Auto-create empty application array for them
+    if (!db.applications.has(lowerEmail)) {
+      db.applications.set(lowerEmail, []);
+    }
+    
+    res.status(201).json({ success: true });
+  });
+
+  app.get("/api/admin/users", (req, res) => {
+    const usersList = Array.from(db.users.values());
+    res.json(usersList);
+  });
 
   // 1. API: News Feed
   app.get("/api/news", (req, res) => {

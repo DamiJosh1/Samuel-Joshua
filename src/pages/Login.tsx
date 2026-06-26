@@ -6,17 +6,13 @@ import { Terminal, ShieldCheck, Key, UserPlus, AlertCircle } from 'lucide-react'
 export default function Login() {
   const { currentLang, login } = useApp();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const isRegisterPage = location.pathname.includes('register');
 
   // Input states
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [errorLine, setErrorLine] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorLine('');
 
@@ -25,25 +21,29 @@ export default function Login() {
       return;
     }
 
-    if (email.trim().toLowerCase() === 'admin@canada.ca' && password !== 'Admin@123') {
-      setErrorLine(currentLang === 'en' ? 'Invalid admin password.' : 'Mot de passe administrateur invalide.');
-      return;
-    }
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), password })
+      });
 
-    if (isRegisterPage && !name.trim()) {
-      setErrorLine(currentLang === 'en' ? 'Name is required to register.' : 'Le nom est requis pour s\'inscrire.');
-      return;
-    }
+      const data = await res.json();
 
-    // Default username if signing in
-    const finalName = isRegisterPage ? name.trim() : email.split('@')[0];
+      if (!res.ok) {
+        setErrorLine(data.error || 'Authentication failed');
+        return;
+      }
 
-    // Log the user into Context memory
-    login(email, finalName);
-    if (email.trim().toLowerCase() === 'admin@canada.ca') {
-      navigate('/admin');
-    } else {
-      navigate('/dashboard');
+      // Log the user into Context memory
+      login(data.email, data.name || email.split('@')[0]);
+      if (data.email.toLowerCase() === 'admin@canada.ca') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setErrorLine(currentLang === 'en' ? 'Network error occurred.' : 'Erreur réseau.');
     }
   };
 
@@ -60,7 +60,7 @@ export default function Login() {
               {currentLang === 'en' ? 'Government Secure Sign-In Partner' : 'Partenaire de connexion sécurisé GC'}
             </h2>
             <span className="text-[10px] uppercase font-bold text-gray-300 block">
-              {isRegisterPage ? (currentLang === 'en' ? 'Create GCKey' : 'Créer une CléGC') : (currentLang === 'en' ? 'Sign In with GCKey' : 'Se connecter via CléGC')}
+              {currentLang === 'en' ? 'Sign In with GCKey' : 'Se connecter via CléGC'}
             </span>
           </div>
         </div>
@@ -72,19 +72,6 @@ export default function Login() {
             <div className="p-3 bg-red-50 border-l-4 border-red-700 text-xs text-red-900 flex items-start gap-2 animate-fadeIn">
               <AlertCircle className="w-4 h-4 text-red-700 shrink-0 mt-0.5" />
               <span>{errorLine}</span>
-            </div>
-          )}
-
-          {isRegisterPage && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase block">{currentLang === 'en' ? 'Your Full Name:' : 'Votre nom complet :'}</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-400 p-2 text-xs bg-white text-[#333] outline-none focus:bg-white focus:border-[#26374a]"
-                placeholder={currentLang === 'en' ? 'e.g. Jean Dupont' : 'ex : Jean Dupont'}
-              />
             </div>
           )}
 
@@ -114,34 +101,15 @@ export default function Login() {
             type="submit"
             className="w-full bg-[#26374a] hover:bg-[#111820] text-white text-xs font-bold py-2.5 transition-colors cursor-pointer uppercase tracking-wider"
           >
-            {isRegisterPage ? (currentLang === 'en' ? 'Register Account' : 'Créer mon dossier') : (currentLang === 'en' ? 'Sign In Key' : 'S\'authentifier')}
+            {currentLang === 'en' ? 'Sign In Key' : 'S\'authentifier'}
           </button>
 
-          {/* Switch toggle directions */}
           <div className="text-center pt-3 border-t border-gray-300 flex flex-col gap-1 text-[11px] text-[#333] font-sans font-semibold">
-            {isRegisterPage ? (
-              <>
-                <span>{currentLang === 'en' ? 'Already hold a GCKey credentials profile?' : 'Détenteur d\'un compte CléGC ?'}</span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/auth/login')}
-                  className="text-[#26374a] hover:underline cursor-pointer"
-                >
-                  {currentLang === 'en' ? 'Sign In with Existing Profile' : 'Connectez-vous à votre dossier'}
-                </button>
-              </>
-            ) : (
-              <>
-                <span>{currentLang === 'en' ? 'New applicant to Canada.ca systems?' : 'Nouvel arrivant sur Canada.ca ?'}</span>
-                <button
-                  type="button"
-                  onClick={() => navigate('/auth/register')}
-                  className="text-[#26374a] hover:underline cursor-pointer"
-                >
-                  {currentLang === 'en' ? 'Create a New GCKey Credentials Account' : 'Créer un identifiant CléGC'}
-                </button>
-              </>
-            )}
+             <span className="text-gray-500 italic">
+               {currentLang === 'en' 
+                 ? 'Only authorized applicants with pre-created accounts can sign in.' 
+                 : 'Seuls les candidats autorisés avec des comptes pré-créés peuvent se connecter.'}
+             </span>
           </div>
 
         </form>

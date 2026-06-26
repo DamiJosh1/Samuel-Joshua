@@ -10,6 +10,21 @@ export interface TimelineEvent {
   documentName?: string;
 }
 
+export const IMMIGRATION_JOURNEY_STEPS = [
+  "Initial Consultation",
+  "Documents Submitted",
+  "Documents Under Review",
+  "Eligibility Assessment",
+  "Application Submitted",
+  "Application Received",
+  "Background Verification",
+  "Medical Examination",
+  "Decision Made",
+  "Passport Request",
+  "Biometrics Appointment",
+  "Biometrics Completed"
+];
+
 export interface ApplicationInfo {
   id: string;
   type: string;
