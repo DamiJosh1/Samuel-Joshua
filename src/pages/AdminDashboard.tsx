@@ -8,6 +8,8 @@ export default function AdminDashboard() {
   
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'profiles' | 'applications'>('profiles');
+  const [selectedProfileEmail, setSelectedProfileEmail] = useState<string | null>(null);
   
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
@@ -246,48 +248,117 @@ export default function AdminDashboard() {
         <p>Loading applications...</p>
       ) : (
         <div className="space-y-6">
-          <h2 className="text-xl font-bold">Manage Applicant Profiles</h2>
-          <table className="w-full text-left border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200 border-b border-gray-400">
-                <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Type</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
-                <th className="p-3 font-bold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allApplications.map((item, idx) => (
-                <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
-                  <td className="p-3 border-r border-gray-300">{item.app.id}</td>
-                  <td className="p-3 border-r border-gray-300">{item.email}</td>
-                  <td className="p-3 border-r border-gray-300">{item.app.type}</td>
-                  <td className="p-3 border-r border-gray-300">
-                    <select 
-                      value={item.app.status}
-                      onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Status Updated to ${e.target.value}`)}
-                      className="border border-gray-400 p-1"
-                    >
-                      <option value="Received">Received</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Action Required">Action Required</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Refused">Refused</option>
-                    </select>
-                  </td>
-                  <td className="p-3">
+          <div className="flex gap-4 border-b border-gray-300">
+            <button 
+              onClick={() => { setViewMode('profiles'); setSelectedAppId(null); }} 
+              className={`pb-2 px-2 font-bold ${viewMode === 'profiles' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+            >
+              Applicant Profiles
+            </button>
+            <button 
+              onClick={() => { setViewMode('applications'); setSelectedAppId(null); setSelectedProfileEmail(null); }} 
+              className={`pb-2 px-2 font-bold ${viewMode === 'applications' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+            >
+              All Applications
+            </button>
+          </div>
+
+          {viewMode === 'profiles' && !selectedProfileEmail && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">Applicant Profiles</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {Array.from(new Set(allApplications.map(a => a.email))).map(email => (
+                  <div key={email} onClick={() => setSelectedProfileEmail(email)} className="bg-white p-5 border border-gray-300 cursor-pointer hover:border-[#26374a] hover:shadow-sm">
+                    <div className="font-bold text-lg break-all">{email}</div>
+                    <div className="text-sm text-gray-600 mt-2">
+                      Applications: {allApplications.filter(a => a.email === email).length}
+                    </div>
+                  </div>
+                ))}
+                {allApplications.length === 0 && (
+                   <p className="text-gray-500 italic">No profiles created yet.</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {viewMode === 'profiles' && selectedProfileEmail && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center bg-gray-100 p-4 border border-gray-300">
+                <h2 className="text-xl font-bold break-all">Profile: {selectedProfileEmail}</h2>
+                <button onClick={() => setSelectedProfileEmail(null)} className="text-sm font-bold text-[#26374a] hover:underline whitespace-nowrap ml-4">
+                  &larr; Back to Profiles
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-bold text-lg">Applications / Records for this Profile</h3>
+                {allApplications.filter(a => a.email === selectedProfileEmail).map((item) => (
+                  <div key={item.app.id} className="bg-white border border-gray-300 p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                    <div>
+                      <div className="font-bold text-lg">{item.app.type}</div>
+                      <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
+                    </div>
                     <button 
-                      onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); }}
-                      className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold"
+                      onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); }}
+                      className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
                     >
                       Manage File
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {viewMode === 'applications' && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">All Applications</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse border border-gray-300 min-w-[600px]">
+                  <thead>
+                    <tr className="bg-gray-200 border-b border-gray-400">
+                      <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
+                      <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
+                      <th className="p-3 border-r border-gray-300 font-bold">Type</th>
+                      <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
+                      <th className="p-3 font-bold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allApplications.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
+                        <td className="p-3 border-r border-gray-300">{item.app.id}</td>
+                        <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
+                        <td className="p-3 border-r border-gray-300">{item.app.type}</td>
+                        <td className="p-3 border-r border-gray-300">
+                          <select 
+                            value={item.app.status}
+                            onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Status Updated to ${e.target.value}`)}
+                            className="border border-gray-400 p-1 w-full max-w-[150px]"
+                          >
+                            <option value="Received">Received</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Action Required">Action Required</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Refused">Refused</option>
+                          </select>
+                        </td>
+                        <td className="p-3">
+                          <button 
+                            onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); }}
+                            className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
+                          >
+                            Manage File
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {selectedAppId && selectedUserEmail && (
             <div className="border border-gray-400 p-6 space-y-8 bg-gray-50 mt-8">
@@ -301,7 +372,7 @@ export default function AdminDashboard() {
                 <div className="space-y-4 bg-white p-4 border border-gray-300">
                   <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Sub-Statuses</h3>
                   
-                  {['biometricStatus', 'workPermitStatus', 'visitorVisaStatus', 'studyPermitStatus', 'passportRequestStatus', 'medicalRequestStatus'].map((statusKey) => {
+                  {['workPermitStatus', 'visitorVisaStatus', 'studyPermitStatus', 'passportRequestStatus', 'medicalRequestStatus', 'biometricStatus'].map((statusKey) => {
                     const currentVal = allApplications.find(a => a.app.id === selectedAppId)?.app[statusKey as keyof ApplicationInfo] as string || '';
                     const label = statusKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                     return (
