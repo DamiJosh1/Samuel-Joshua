@@ -26,6 +26,8 @@ export default function AdminDashboard() {
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileEmail, setNewProfileEmail] = useState('');
 
+  const [subStatusEdits, setSubStatusEdits] = useState<Record<string, string>>({});
+
   const fetchApps = () => {
     Promise.all([
       fetch('/api/admin/applications').then(res => res.json()),
@@ -367,7 +369,7 @@ export default function AdminDashboard() {
                       <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
                     </div>
                     <button 
-                      onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); }}
+                      onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
                       className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
                     >
                       Manage File
@@ -414,7 +416,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="p-3">
                           <button 
-                            onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); }}
+                            onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
                             className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
                           >
                             Manage File
@@ -441,14 +443,15 @@ export default function AdminDashboard() {
                   <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Sub-Statuses</h3>
                   
                   {['workPermitStatus', 'visitorVisaStatus', 'studyPermitStatus', 'passportRequestStatus', 'medicalRequestStatus', 'biometricStatus'].map((statusKey) => {
-                    const currentVal = allApplications.find(a => a.app.id === selectedAppId)?.app[statusKey as keyof ApplicationInfo] as string || '';
+                    const originalVal = allApplications.find(a => a.app.id === selectedAppId)?.app[statusKey as keyof ApplicationInfo] as string || '';
+                    const currentVal = subStatusEdits[statusKey] !== undefined ? subStatusEdits[statusKey] : originalVal;
                     const label = statusKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                     return (
                       <div key={statusKey} className="flex justify-between items-center">
                         <label className="text-sm font-bold w-1/2">{label}</label>
                         <select 
                           value={currentVal}
-                          onChange={(e) => handleUpdateApp(selectedUserEmail, selectedAppId, { [statusKey]: e.target.value }, `${label} Updated to ${e.target.value || 'None'}`)}
+                          onChange={(e) => setSubStatusEdits({ ...subStatusEdits, [statusKey]: e.target.value })}
                           className="w-1/2 border border-gray-400 p-1 text-sm"
                         >
                           <option value="">-- Not Set --</option>
@@ -460,6 +463,22 @@ export default function AdminDashboard() {
                       </div>
                     );
                   })}
+                  <div className="pt-2">
+                    <button 
+                      onClick={() => {
+                        Object.keys(subStatusEdits).forEach(key => {
+                          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          handleUpdateApp(selectedUserEmail, selectedAppId, { [key]: subStatusEdits[key] }, `${label} Updated to ${subStatusEdits[key] || 'None'}`);
+                        });
+                        setSubStatusEdits({});
+                        alert("Sub-statuses saved.");
+                      }}
+                      disabled={Object.keys(subStatusEdits).length === 0}
+                      className="w-full bg-[#26374a] hover:bg-[#111820] disabled:bg-gray-400 text-white px-4 py-2 font-bold text-sm"
+                    >
+                      Save Sub-Statuses
+                    </button>
+                  </div>
                 </div>
 
                 {/* Document Upload */}
