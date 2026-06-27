@@ -11,18 +11,22 @@ export interface TimelineEvent {
 }
 
 export const IMMIGRATION_JOURNEY_STEPS = [
-  "Initial Consultation",
-  "Documents Submitted",
-  "Documents Under Review",
-  "Eligibility Assessment",
+  "Draft",
+  "Documents Requested",
+  "Documents Received",
+  "Under Review",
   "Application Submitted",
-  "Application Received",
-  "Background Verification",
-  "Medical Examination",
+  "Processing",
+  "Additional Documents Required",
+  "Medical Requested",
+  "Medical Results Received",
+  "Biometrics Requested",
+  "Biometrics Scheduled",
+  "Biometrics Completed",
   "Decision Made",
-  "Passport Request",
-  "Biometrics Appointment",
-  "Biometrics Completed"
+  "Approved",
+  "Refused",
+  "Completed"
 ];
 
 export interface ApplicationInfo {
@@ -32,6 +36,8 @@ export interface ApplicationInfo {
   status: string;
   statusFr: string;
   lastUpdated: string;
+  dateCreated?: string;
+  timeCreated?: string;
   details: string;
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
@@ -47,8 +53,8 @@ export interface ApplicationInfo {
 interface AppContextType {
   currentLang: Language;
   setLanguage: (lang: Language) => void;
-  user: { email: string; name: string } | null;
-  login: (email: string, name: string) => void;
+  user: { email: string; name: string; dateCreated?: string; timeCreated?: string } | null;
+  login: (email: string, name: string, dateCreated?: string, timeCreated?: string) => void;
   logout: () => void;
   applications: ApplicationInfo[];
   addApplication: (app: ApplicationInfo) => void;
@@ -61,7 +67,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [currentLang, setCurrentLang] = useState<Language>('en');
-  const [user, setUser] = useState<{ email: string; name: string } | null>(null);
+  const [user, setUser] = useState<{ email: string; name: string; dateCreated?: string; timeCreated?: string } | null>(null);
   const [hasEntered, setHasEnteredState] = useState<boolean>(() => {
     return sessionStorage.getItem('gov_gate_entered') === 'true';
   });
@@ -76,28 +82,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
   
   // Starting Applications database
-  const [applications, setApplications] = useState<ApplicationInfo[]>([
-    {
-      id: "APP-40291",
-      type: "Biometrics",
-      typeFr: "Biométrie",
-      status: "In Progress",
-      statusFr: "En cours",
-      lastUpdated: "2026-06-21",
-      details: "Waiting for appointment confirmation at USCIS ASC Manhattan.",
-      detailsFr: "En attente de confirmation de rendez-vous à l'ASC USCIS de Manhattan."
-    },
-    {
-      id: "APP-82910",
-      type: "Passport",
-      typeFr: "Passeport",
-      status: "Received",
-      statusFr: "Reçu",
-      lastUpdated: "2026-06-19",
-      details: "Application submitted online via Service Canada.",
-      detailsFr: "Demande soumise en ligne via Service Canada."
-    }
-  ]);
+  const [applications, setApplications] = useState<ApplicationInfo[]>([]);
 
   // Read language and session user configuration from localStorage
   useEffect(() => {
@@ -140,8 +125,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('gov_lang', lang);
   };
 
-  const login = (email: string, name: string) => {
-    const newUser = { email, name };
+  const login = (email: string, name: string, dateCreated?: string, timeCreated?: string) => {
+    const newUser = { email, name, dateCreated, timeCreated };
     setUser(newUser);
     localStorage.setItem('gov_user', JSON.stringify(newUser));
   };

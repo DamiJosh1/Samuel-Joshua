@@ -19,6 +19,8 @@ interface ApplicationInfo {
   status: string;
   statusFr: string;
   lastUpdated: string;
+  dateCreated?: string;
+  timeCreated?: string;
   details: string;
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
@@ -34,6 +36,8 @@ interface ApplicationInfo {
 interface UserProfile {
   email: string;
   name: string;
+  dateCreated?: string;
+  timeCreated?: string;
   uci?: string;
   phone?: string;
   dob?: string;
@@ -115,16 +119,18 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
     id: "APP-40291",
     type: "Work Permit",
     typeFr: "Permis de travail",
-    status: "Background Verification",
-    statusFr: "Vérification des antécédents",
+    status: "Application Submitted",
+    statusFr: "Demande soumise",
     lastUpdated: "2026-06-21",
+    dateCreated: "2026-06-21",
+    timeCreated: "10:30 AM",
     details: "Your background check is currently underway. No action is required from you at this moment.",
     detailsFr: "La vérification de vos antécédents est en cours. Aucune action n'est requise de votre part pour le moment."
   }
 ];
 
 // Seed initial database
-db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont" });
+db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont", dateCreated: "2026-06-20", timeCreated: "09:00 AM" });
 db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
 
 async function startServer() {
@@ -157,7 +163,7 @@ async function startServer() {
 
     // We can just accept any password for now or set a temporary one, let's just accept any for mock since we are not storing passwords
     const user = db.users.get(lowerEmail);
-    res.json({ email: user?.email, name: user?.name });
+    res.json({ email: user?.email, name: user?.name, dateCreated: user?.dateCreated, timeCreated: user?.timeCreated });
   });
 
   app.post("/api/admin/users", (req, res) => {
@@ -165,7 +171,12 @@ async function startServer() {
     if (!email || !name) return res.status(400).json({ error: "Email and name required" });
     
     const lowerEmail = email.toLowerCase();
-    db.users.set(lowerEmail, { email: lowerEmail, name });
+    
+    const now = new Date();
+    const dateCreated = now.toISOString().split('T')[0];
+    const timeCreated = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    db.users.set(lowerEmail, { email: lowerEmail, name, dateCreated, timeCreated });
     
     // Auto-create empty application array for them
     if (!db.applications.has(lowerEmail)) {
@@ -229,6 +240,12 @@ async function startServer() {
 
     if (!newApp || !newApp.id) {
       return res.status(400).json({ error: "Invalid application payload" });
+    }
+    
+    if (!newApp.dateCreated || !newApp.timeCreated) {
+      const now = new Date();
+      newApp.dateCreated = now.toISOString().split('T')[0];
+      newApp.timeCreated = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
     if (!db.applications.has(email)) {

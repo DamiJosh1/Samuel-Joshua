@@ -36,7 +36,7 @@ export default function Login() {
       }
 
       // Log the user into Context memory
-      login(data.email, data.name || email.split('@')[0]);
+      login(data.email, data.name || email.split('@')[0], data.dateCreated, data.timeCreated);
       if (data.email.toLowerCase() === 'admin@canada.ca') {
         navigate('/admin');
       } else {
