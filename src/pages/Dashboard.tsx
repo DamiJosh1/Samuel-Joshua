@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { useApp, ApplicationInfo, IMMIGRATION_JOURNEY_STEPS } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -6,7 +7,7 @@ import {
   Download,
   FileText,
   Clock,
-  CheckCircle2,
+  CheckCircle,
   Circle
 } from 'lucide-react';
 
@@ -33,12 +34,13 @@ export default function Dashboard() {
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (applications.length > 0 && !selectedAppId) {
-      setSelectedAppId(applications[0].id);
+    if (Array.isArray(applications) && applications.length > 0 && !selectedAppId) {
+      setSelectedAppId(applications[0]?.id || null);
     }
-  }, [applications]);
+  }, [applications, selectedAppId]);
 
-  const selectedApp = applications.find(a => a.id === selectedAppId) || applications[0];
+  const safeApplications = Array.isArray(applications) ? applications : [];
+  const selectedApp = safeApplications.find(a => a.id === selectedAppId) || safeApplications[0];
 
   return (
     <main className="mx-auto max-w-7xl w-full px-4 py-8 md:py-12 flex-grow space-y-10 font-sans text-[#333]">
@@ -77,10 +79,10 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {applications.length > 0 ? (
-                applications.map((app) => (
-                  <tr key={app.id} className={`border-b border-gray-300 hover:bg-gray-50 ${selectedAppId === app.id ? 'bg-blue-50' : ''}`}>
-                    <td className="p-3 border-r border-gray-300 font-semibold">{app.type}</td>
+              {safeApplications.length > 0 ? (
+                safeApplications.map((app) => (
+                  <tr key={app.id || Math.random()} className={`border-b border-gray-300 hover:bg-gray-50 ${selectedAppId === app.id ? 'bg-blue-50' : ''}`}>
+                    <td className="p-3 border-r border-gray-300 font-semibold">{app.type || 'N/A'}</td>
                     <td className="p-3 border-r border-gray-300 font-mono">{app.id}</td>
                     <td className="p-3 border-r border-gray-300">{user?.name}</td>
                     <td className="p-3 border-r border-gray-300 whitespace-nowrap">
@@ -149,7 +151,7 @@ export default function Dashboard() {
                     return (
                       <div key={step} className={`flex items-center gap-3 ${isCurrent ? 'font-bold text-[#26374a]' : (isCompleted ? 'text-gray-800' : 'text-gray-400')}`}>
                         {isCompleted ? (
-                          <CheckCircle2 className="w-5 h-5 text-[#1a5b28] shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-[#1a5b28] shrink-0" />
                         ) : (
                           <Circle className="w-5 h-5 text-gray-300 shrink-0" />
                         )}
