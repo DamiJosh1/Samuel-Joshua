@@ -120,6 +120,30 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteUser = async (email: string) => {
+    if (!window.confirm(`Are you sure you want to completely delete the profile for ${email}? This action cannot be undone and will delete all their applications.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users/${email}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        alert("User profile deleted.");
+        if (selectedProfileEmail === email) {
+          setSelectedProfileEmail(null);
+        }
+        fetchApps();
+      } else {
+        alert("Failed to delete user profile.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error deleting profile.");
+    }
+  };
+
   const handleCreateApp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAppEmail || !newAppType) return;
@@ -353,11 +377,21 @@ export default function AdminDashboard() {
               <h2 className="text-xl font-bold mb-4">Applicant Profiles</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {allUsers.map(userItem => (
-                  <div key={userItem.email} onClick={() => setSelectedProfileEmail(userItem.email)} className="bg-white p-5 border border-gray-300 cursor-pointer hover:border-[#26374a] hover:shadow-sm">
-                    <div className="font-bold text-lg break-all">{userItem.name}</div>
-                    <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
-                    <div className="text-sm font-bold text-[#26374a] mt-2">
-                      Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                  <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
+                    <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
+                      <div className="font-bold text-lg break-all">{userItem.name}</div>
+                      <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
+                      <div className="text-sm font-bold text-[#26374a] mt-2">
+                        Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-gray-200 text-right">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
+                        className="text-red-600 hover:text-red-800 text-sm font-bold"
+                      >
+                        Delete Profile
+                      </button>
                     </div>
                   </div>
                 ))}

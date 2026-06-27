@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 
@@ -129,9 +130,35 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   }
 ];
 
-// Seed initial database
-db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont", dateCreated: "2026-06-20", timeCreated: "09:00 AM" });
-db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
+const DATA_FILE = path.join(process.cwd(), "db_data.json");
+
+function saveData() {
+  const data = {
+    users: Array.from(db.users.entries()),
+    applications: Array.from(db.applications.entries()),
+  };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data));
+}
+
+function loadData() {
+  if (fs.existsSync(DATA_FILE)) {
+    try {
+      const fileData = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
+      db.users = new Map(fileData.users);
+      db.applications = new Map(fileData.applications);
+      return;
+    } catch (e) {
+      console.error("Error loading data file:", e);
+    }
+  }
+  
+  // Seed initial database if no file exists
+  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont", dateCreated: "2026-06-20", timeCreated: "09:00 AM" });
+  db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
+  saveData();
+}
+
+loadData();
 
 async function startServer() {
   const app = express();
@@ -203,8 +230,23 @@ async function startServer() {
     }
 
     db.applications.set(lowerEmail, applications);
+    saveData();
     
     res.status(201).json({ success: true });
+  });
+
+  app.delete("/api/admin/users/:email", (req, res) => {
+    const email = req.params.email.toLowerCase();
+    if (!email) return res.status(400).json({ error: "Email required" });
+    
+    if (db.users.has(email)) {
+      db.users.delete(email);
+      db.applications.delete(email);
+      saveData();
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
   });
 
   app.get("/api/admin/users", (req, res) => {
@@ -277,6 +319,7 @@ async function startServer() {
     // Prepend new application status tracker ticket
     const updatedList = [newApp, ...currentList];
     db.applications.set(email, updatedList);
+    saveData();
 
     res.status(201).json(updatedList);
   });
@@ -318,6 +361,7 @@ async function startServer() {
     };
 
     db.applications.set(email, currentList);
+    saveData();
     res.json(currentList[index]);
   });
 
