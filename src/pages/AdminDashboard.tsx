@@ -25,6 +25,7 @@ export default function AdminDashboard() {
   // New Profile Form
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileEmail, setNewProfileEmail] = useState('');
+  const [newProfileAppType, setNewProfileAppType] = useState('Work Permit');
 
   const [subStatusEdits, setSubStatusEdits] = useState<Record<string, string>>({});
 
@@ -56,10 +57,10 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newProfileEmail, name: newProfileName })
+        body: JSON.stringify({ email: newProfileEmail, name: newProfileName, appType: newProfileAppType })
       });
       if (res.ok) {
-        alert("Applicant profile created successfully!");
+        alert("Applicant profile created successfully! Application created.");
         setNewProfileEmail('');
         setNewProfileName('');
         fetchApps();
@@ -270,6 +271,22 @@ export default function AdminDashboard() {
                 placeholder="name@domain.ca"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-1">Initial Application Type</label>
+              <select 
+                value={newProfileAppType}
+                onChange={e => setNewProfileAppType(e.target.value)}
+                className="w-full border border-gray-400 p-2"
+              >
+                <option value="Work Permit">Work Permit</option>
+                <option value="Visitor Visa">Visitor Visa</option>
+                <option value="Study Permit">Study Permit</option>
+                <option value="Permanent Residence">Permanent Residence</option>
+                <option value="Citizenship">Citizenship</option>
+                <option value="Passport">Passport</option>
+                <option value="Biometrics">Biometrics</option>
+              </select>
             </div>
             <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
               Create Profile

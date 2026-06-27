@@ -167,7 +167,7 @@ async function startServer() {
   });
 
   app.post("/api/admin/users", (req, res) => {
-    const { email, name } = req.body;
+    const { email, name, appType } = req.body;
     if (!email || !name) return res.status(400).json({ error: "Email and name required" });
     
     const lowerEmail = email.toLowerCase();
@@ -178,10 +178,31 @@ async function startServer() {
     
     db.users.set(lowerEmail, { email: lowerEmail, name, dateCreated, timeCreated });
     
-    // Auto-create empty application array for them
-    if (!db.applications.has(lowerEmail)) {
-      db.applications.set(lowerEmail, []);
+    const applications = [];
+
+    if (appType) {
+      applications.push({
+        id: `APP-${Math.floor(100000 + Math.random() * 900000)}`,
+        type: appType,
+        typeFr: appType,
+        status: "Draft",
+        statusFr: "Brouillon",
+        lastUpdated: dateCreated,
+        dateCreated,
+        timeCreated,
+        details: "Application profile created by administration.",
+        detailsFr: "Profil de demande créé par l'administration.",
+        documents: [],
+        timeline: [{
+          id: `evt-${Date.now()}`,
+          date: dateCreated,
+          time: timeCreated,
+          action: "Application Profile Created"
+        }]
+      });
     }
+
+    db.applications.set(lowerEmail, applications);
     
     res.status(201).json({ success: true });
   });
