@@ -43,214 +43,139 @@ export default function Dashboard() {
   const selectedApp = safeApplications.find(a => a.id === selectedAppId) || safeApplications[0];
 
   return (
-    <main className="mx-auto max-w-7xl w-full px-4 py-8 md:py-12 flex-grow space-y-10 font-sans text-[#333]">
+    <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
       
-      {/* Greeting row */}
-      <div className="bg-white border border-gray-400 p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="space-y-2 text-center sm:text-left">
-          <span className="text-xs font-bold text-gray-600 uppercase tracking-widest block">{currentLang === 'en' ? 'Client Portal Dashboard' : 'Portail Client'}</span>
-          <h1 className="text-3xl font-bold text-black">
-            {currentLang === 'en' ? `Applicant Profile: ${user?.name || 'Guest'}` : `Profil du candidat: ${user?.name || 'Invité'}`}
-          </h1>
-          <div className="text-sm text-gray-700 flex flex-col sm:flex-row gap-2 sm:gap-6 mt-2">
-            <span><strong>Account Created:</strong> {user?.dateCreated || 'N/A'} at {user?.timeCreated || 'N/A'}</span>
-            <span><strong>Secure Session ID:</strong> {user?.email || 'guest-session'}</span>
-          </div>
+      {/* Top Breadcrumb & User Menu */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-8">
+        <div className="text-[#26374a] mb-4 sm:mb-0">
+          <span className="underline cursor-pointer">Home</span> <span className="no-underline text-black px-1">&rarr;</span> Your Account
+        </div>
+        <div className="flex gap-4 items-center">
+          <span className="text-gray-600">Signed in as <span className="uppercase">{user?.name}</span></span>
+          <span className="text-[#26374a] underline cursor-pointer font-bold">Account Home</span>
+          <span className="text-[#26374a] underline cursor-pointer font-bold">Account Profile</span>
+          <span className="text-[#26374a] underline cursor-pointer font-bold">Logout</span>
         </div>
       </div>
 
-      {/* 1. Applications Submitted Table */}
-      <div className="bg-white border border-gray-400 p-6 space-y-4">
-        <h2 className="text-xl font-bold text-black border-b border-gray-400 pb-2">
-          {currentLang === 'en' ? 'Applications Submitted' : 'Demandes soumises'}
-        </h2>
+      <h1 className="text-3xl font-medium text-[#333] mb-4">
+        <span className="uppercase">{user?.name}</span> account
+      </h1>
+      
+      <hr className="border-gray-300 mb-8" />
+
+      {/* View the applications you submitted */}
+      <div className="space-y-2 mb-10">
+        <h2 className="text-2xl font-medium text-[#333]">View the applications you submitted</h2>
+        <p className="text-[13px] text-gray-700">Review, check the status or read messages about your submitted application.</p>
         
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse border border-gray-300 min-w-[800px] text-sm">
+        <div className="flex items-center gap-2 text-[13px] mt-4">
+          <label className="font-bold">Search</label>
+          <input type="text" className="border border-gray-400 p-1 w-48 focus:outline-none focus:border-blue-500" />
+          <span className="text-gray-600 ml-4">Showing 1 to {safeApplications.length} of {safeApplications.length} entries |</span>
+        </div>
+
+        <div className="overflow-x-auto mt-4">
+          <table className="w-full text-left border-collapse text-[13px]">
             <thead>
-              <tr className="bg-gray-100 border-b border-gray-400">
-                <th className="p-3 border-r border-gray-300 font-bold">Application Type</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Application Number</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Applicant Name</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Date & Time Submitted</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Current Status</th>
-                <th className="p-3 border-r border-gray-300 font-bold">Messages</th>
-                <th className="p-3 font-bold">Actions</th>
+              <tr className="border-t-2 border-b-2 border-gray-300 text-gray-700">
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Application type <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Application number <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Applicant name <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Date Submitted <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Current status <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Messages <span className="text-[10px] text-gray-400">↓↑</span></th>
+                <th className="py-2 px-2 font-bold whitespace-nowrap">Action <span className="text-[10px] text-gray-400">↓↑</span></th>
               </tr>
             </thead>
             <tbody>
               {safeApplications.length > 0 ? (
                 safeApplications.map((app) => (
-                  <tr key={app.id || Math.random()} className={`border-b border-gray-300 hover:bg-gray-50 ${selectedAppId === app.id ? 'bg-blue-50' : ''}`}>
-                    <td className="p-3 border-r border-gray-300 font-semibold">{app.type || 'N/A'}</td>
-                    <td className="p-3 border-r border-gray-300 font-mono">{app.id}</td>
-                    <td className="p-3 border-r border-gray-300">{user?.name}</td>
-                    <td className="p-3 border-r border-gray-300 whitespace-nowrap">
-                      {app.dateCreated || 'N/A'} <br/><span className="text-xs text-gray-500">{app.timeCreated || 'N/A'}</span>
-                    </td>
-                    <td className="p-3 border-r border-gray-300">
-                      <span className={`text-[10px] uppercase font-bold px-2 py-1 ${getStatusBadge(app.status)}`}>
-                        {app.status}
-                      </span>
-                    </td>
-                    <td className="p-3 border-r border-gray-300 text-xs line-clamp-2 max-w-xs" title={app.details}>
-                      {app.details}
-                    </td>
-                    <td className="p-3 whitespace-nowrap space-y-1">
-                      <button 
-                        onClick={() => setSelectedAppId(app.id)}
-                        className="block w-full text-left text-sm font-bold text-[#26374a] hover:underline"
-                      >
-                        View Application
-                      </button>
-                      <button 
-                        onClick={() => {
-                          setSelectedAppId(app.id);
-                          document.getElementById('timeline-section')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="block w-full text-left text-sm font-bold text-[#26374a] hover:underline"
-                      >
-                        View Timeline
-                      </button>
+                  <tr key={app.id || Math.random()} className="border-b border-gray-300 hover:bg-gray-50">
+                    <td className="py-3 px-2 text-[#26374a] underline cursor-pointer uppercase">{app.type || 'WORK VISA'}</td>
+                    <td className="py-3 px-2">{app.id}</td>
+                    <td className="py-3 px-2 uppercase">{user?.name}</td>
+                    <td className="py-3 px-2 whitespace-nowrap">{app.dateCreated}</td>
+                    <td className="py-3 px-2">{app.status}</td>
+                    <td className="py-3 px-2">New</td>
+                    <td className="py-3 px-2 text-[#26374a] underline cursor-pointer">
+                      Check full application status
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="p-6 text-center text-gray-500 italic">
-                    No applications submitted yet.
-                  </td>
+                  <td colSpan={7} className="py-4 text-center text-gray-500 italic">No applications found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+        
+        <div className="mt-2">
+          <button className="bg-[#26374a] text-white px-3 py-1 text-sm font-bold">1</button>
+        </div>
       </div>
 
-      {selectedApp && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          <div className="lg:col-span-2 space-y-8">
+      {/* Details about your application */}
+      <div className="space-y-4">
+        <h2 className="text-2xl font-medium text-[#333]">Details about your application</h2>
+        <p className="text-[13px] text-gray-700">When we get your application, there are a series of steps it may go through before we make a decision Use the following table to find out the current status of each application step.</p>
+        
+        {selectedApp && (
+          <div className="mt-6">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-[13px] border-t-2 border-gray-300">
+                <tbody>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of eligibility</td>
+                    <td className="py-3 px-2 font-medium">We are reviewing whether you meet the eligibility requirements.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300 bg-gray-50">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of medical results</td>
+                    <td className="py-3 px-2 font-medium">You do not need a medical exam. We will send you a message if this changes.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of additional documents</td>
+                    <td className="py-3 px-2 font-medium">We do not need additional documents.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300 bg-gray-50">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Interview</td>
+                    <td className="py-3 px-2 font-medium">You do not need an interview. We will send you a message if this changes.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Biometrics</td>
+                    <td className="py-3 px-2 font-medium">We do not need your fingerprints. We will send you a message if this changes.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300 bg-gray-50">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Background check</td>
+                    <td className="py-3 px-2 font-medium">We are processing your background check. We will send you a message if we need more information.</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="py-3 px-2 w-1/3 text-gray-600">Final decision</td>
+                    <td className="py-3 px-2 font-medium">Your application is in progress. We will send you a message once the final decision has been made.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             
-            {/* Application Progress Tracker */}
-            <div className="bg-white border border-gray-400 p-6 space-y-6">
-              <div className="flex justify-between items-end border-b border-gray-400 pb-2">
-                <h2 className="text-xl font-bold text-black flex items-center gap-2">
-                  <Activity className="w-6 h-6 text-black" />
-                  Application Progress Tracker
-                </h2>
-                <div className="text-sm font-mono text-gray-600">APP NO: {selectedApp.id}</div>
-              </div>
-
-              <div className="p-5 bg-gray-50 border border-gray-300">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
-                  {IMMIGRATION_JOURNEY_STEPS.map((step, idx) => {
-                    const currentStepIndex = getStepProgress(selectedApp.status);
-                    const isCompleted = currentStepIndex >= idx;
-                    const isCurrent = currentStepIndex === idx;
-                    return (
-                      <div key={step} className={`flex items-center gap-3 ${isCurrent ? 'font-bold text-[#26374a]' : (isCompleted ? 'text-gray-800' : 'text-gray-400')}`}>
-                        {isCompleted ? (
-                          <CheckCircle className="w-5 h-5 text-[#1a5b28] shrink-0" />
-                        ) : (
-                          <Circle className="w-5 h-5 text-gray-300 shrink-0" />
-                        )}
-                        <span className="text-sm">{step}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+            {/* Applicant Information Section */}
+            <div className="mt-8">
+               <h3 className="text-lg font-medium text-[#333] mb-2 border-b border-gray-300 pb-2">Applicant Information</h3>
+               <div className="grid grid-cols-2 gap-4 text-[13px] mt-4">
+                 <div>
+                   <span className="text-gray-600 block">Name</span>
+                   <span className="font-bold uppercase">{user?.name}</span>
+                 </div>
+                 <div>
+                   <span className="text-gray-600 block">Application number</span>
+                   <span className="font-bold">{selectedApp.id}</span>
+                 </div>
+               </div>
             </div>
-
-            {/* Activity History */}
-            <div id="timeline-section" className="bg-white border border-gray-400 p-6 space-y-6">
-              <h2 className="text-xl font-bold text-black border-b border-gray-400 pb-2 flex items-center gap-2">
-                <Clock className="w-6 h-6 text-black" /> 
-                Activity History
-              </h2>
-              <div className="space-y-6 p-4">
-                {selectedApp.timeline && selectedApp.timeline.length > 0 ? (
-                  selectedApp.timeline.map((evt, idx) => (
-                    <div key={idx} className="border-l-4 border-[#26374a] pl-5 py-1 relative">
-                      <div className="absolute w-3 h-3 bg-[#26374a] rounded-full -left-[8px] top-1.5"></div>
-                      <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">{evt.date} &bull; {evt.time}</div>
-                      <div className="text-base font-bold text-black mt-1">{evt.action}</div>
-                      <div className="text-sm font-medium mt-1">Current Status: {selectedApp.status}</div>
-                      {evt.documentName && <div className="text-sm text-[#26374a] mt-2 inline-flex items-center gap-1 font-semibold"><FileText className="w-4 h-4" /> Attached File: {evt.documentName}</div>}
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-500 italic p-4 bg-gray-50 border border-gray-200">No activity history available.</div>
-                )}
-              </div>
-            </div>
-
           </div>
-
-          <div className="space-y-8">
-            
-            {/* Next Required Action */}
-            <div className="bg-[#26374a] text-white p-6 space-y-4">
-              <h3 className="text-lg font-bold border-b border-white/30 pb-2 flex items-center gap-2">
-                <ArrowRight className="w-5 h-5" /> Next Required Action
-              </h3>
-              <p className="text-sm leading-relaxed">
-                {selectedApp.details || 'No action required at this time. We are processing your application.'}
-              </p>
-            </div>
-
-            {/* Notifications */}
-            <div className="bg-white border border-gray-400 p-6 space-y-4">
-              <h3 className="text-lg font-bold border-b border-gray-400 pb-2 text-black">
-                Notifications
-              </h3>
-              <div className="space-y-3">
-                <div className="bg-gray-50 border border-gray-300 p-3 text-sm flex gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#d3080c] mt-1.5 shrink-0"></div>
-                  <div>
-                    <span className="font-bold text-black block mb-1">New Message</span>
-                    <span className="text-gray-700">Check your Activity History for recent updates to your application.</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Uploaded Documents */}
-            <div className="bg-white border border-gray-400 p-6 space-y-4">
-              <h3 className="text-lg font-bold text-black border-b border-gray-400 pb-2 flex items-center gap-2">
-                <Download className="w-5 h-5 text-black" />
-                Uploaded Documents
-              </h3>
-              
-              <div className="space-y-3">
-                {selectedApp.documents && selectedApp.documents.length > 0 ? (
-                  selectedApp.documents.map((doc, idx) => (
-                    <div key={`${selectedApp.id}-doc-${idx}`} className="flex flex-col border border-gray-300 p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <FileText className="w-6 h-6 text-[#26374a] shrink-0" />
-                        <div className="flex-1 space-y-1">
-                          <span className="font-bold text-black text-sm block">{doc.category || 'Document'}</span>
-                          <span className="text-sm font-semibold text-[#26374a] hover:underline cursor-pointer block">{doc.name}</span>
-                          <span className="text-xs text-gray-500 font-mono">Uploaded: {doc.date} &bull; {doc.time}</span>
-                          <button className="text-xs font-bold bg-white border border-gray-400 px-3 py-1 mt-2 hover:bg-gray-200">
-                            Download
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-gray-600 italic p-4 text-sm bg-gray-50 border border-gray-200">
-                    No documents uploaded yet.
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
     </main>
   );

@@ -117,16 +117,16 @@ const db = {
 // Default seed applications for fallback
 const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   {
-    id: "APP-40291",
-    type: "Work Permit",
-    typeFr: "Permis de travail",
-    status: "Application Submitted",
-    statusFr: "Demande soumise",
-    lastUpdated: "2026-06-21",
-    dateCreated: "2026-06-21",
-    timeCreated: "10:30 AM",
-    details: "Your background check is currently underway. No action is required from you at this moment.",
-    detailsFr: "La vérification de vos antécédents est en cours. Aucune action n'est requise de votre part pour le moment."
+    id: "W439263015",
+    type: "WORK VISA",
+    typeFr: "VISA DE TRAVAIL",
+    status: "Submitted",
+    statusFr: "Soumise",
+    lastUpdated: "2026-03-18",
+    dateCreated: "2026-03-18",
+    timeCreated: "09:00 AM",
+    details: "Your application is in progress. We will send you a message once the final decision has been made.",
+    detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise."
   }
 ];
 
@@ -153,7 +153,7 @@ function loadData() {
   }
   
   // Seed initial database if no file exists
-  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "Jean Dupont", dateCreated: "2026-06-20", timeCreated: "09:00 AM" });
+  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "YASIR IQBAL", dateCreated: "2026-03-18", timeCreated: "09:00 AM" });
   db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
   saveData();
 }

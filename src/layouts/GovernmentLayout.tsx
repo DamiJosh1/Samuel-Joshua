@@ -197,10 +197,16 @@ export default function GovernmentLayout() {
 
       {/* TOP NAVIGATION BAR LINKS (Mandated header categories navigation) */}
       <nav className="bg-[#26374a] text-white border-b border-[#111820] shadow-sm select-none" id="header-categories-nav">
-        <div className="mx-auto max-w-6xl px-4 flex">
-          <button className="bg-[#26374a] hover:bg-[#111820] text-white font-bold py-2.5 px-4 flex items-center gap-2 border-l border-r border-[#111820]">
-            MENU <span className="text-xs">▼</span>
-          </button>
+        <div className="mx-auto max-w-6xl flex items-center h-10">
+           <ul className="flex flex-row w-full h-full text-sm font-semibold text-center divide-x divide-gray-500 border-l border-r border-gray-500">
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Jobs</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors bg-[#111820]">Immigration</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Travel</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Business</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Benefits</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Health</li>
+             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Taxes</li>
+           </ul>
         </div>
       </nav>
 
