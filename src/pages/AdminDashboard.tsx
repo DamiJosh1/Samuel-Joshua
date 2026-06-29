@@ -144,6 +144,95 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleRequestDocument = async (email: string, appId: string, docName: string) => {
+    const targetAppItem = allApplications.find(a => a.app.id === appId);
+    if (!targetAppItem) return;
+    
+    const targetApp = targetAppItem.app;
+    const requested = targetApp.requestedDocuments || [];
+    
+    if (requested.some(d => d.name === docName)) {
+      alert("Document already requested.");
+      return;
+    }
+    
+    const newRequested = [...requested, { name: docName, status: 'Pending' as const }];
+    
+    try {
+      const res = await fetch(`/api/applications/${appId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          requestedDocuments: newRequested 
+        })
+      });
+      if (res.ok) {
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
+          email, 
+          app: { ...item.app, requestedDocuments: newRequested } 
+        } : item));
+        
+        // Also send them a message
+        const now = new Date();
+        const newMessage = {
+          id: `msg-${Date.now()}`,
+          subject: `Action Required: Please submit your ${docName}`,
+          date: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+          content: `<p>Dear Applicant,<br/><br/>We are currently reviewing your application.<br/><br/>In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong><br/><br/>You can upload this document or send it as instructed.<br/><br/>Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`,
+          isRead: false
+        };
+        const currentMessages = targetApp.messages || [];
+        await fetch(`/api/applications/${appId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email, 
+            messages: [newMessage, ...currentMessages]
+          })
+        });
+        
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
+          email, 
+          app: { ...item.app, messages: [newMessage, ...currentMessages] } 
+        } : item));
+        
+        alert(`Requested ${docName}`);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error requesting document.");
+    }
+  };
+
+  const handleUpdateRequestedDocStatus = async (email: string, appId: string, docName: string, newStatus: 'Pending' | 'Received') => {
+    const targetAppItem = allApplications.find(a => a.app.id === appId);
+    if (!targetAppItem) return;
+    
+    const targetApp = targetAppItem.app;
+    const requested = targetApp.requestedDocuments || [];
+    const updatedRequested = requested.map(d => d.name === docName ? { ...d, status: newStatus } : d);
+    
+    try {
+      const res = await fetch(`/api/applications/${appId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          requestedDocuments: updatedRequested 
+        })
+      });
+      if (res.ok) {
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
+          email, 
+          app: { ...item.app, requestedDocuments: updatedRequested } 
+        } : item));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleCreateApp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAppEmail || !newAppType) return;
@@ -238,6 +327,7 @@ export default function AdminDashboard() {
     if (!selectedUserEmail || !emailSubject || !emailText) return;
 
     try {
+      // 1. Send the email via Resend
       await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -248,6 +338,36 @@ export default function AdminDashboard() {
         })
       });
       
+      // 2. Add it to the user's internal messages
+      const targetAppItem = allApplications.find(a => a.app.id === selectedAppId);
+      if (targetAppItem) {
+        const targetApp = targetAppItem.app;
+        const now = new Date();
+        const newMessage = {
+          id: `msg-${Date.now()}`,
+          subject: emailSubject,
+          date: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+          content: `<p>${emailText.split('\\n').join('<br/>')}</p>`,
+          isRead: false
+        };
+
+        const currentMessages = targetApp.messages || [];
+        await fetch(`/api/applications/${selectedAppId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: selectedUserEmail, 
+            messages: [newMessage, ...currentMessages]
+          })
+        });
+        
+        // Update local state
+        setAllApplications(prev => prev.map(item => item.app.id === selectedAppId ? { 
+          email: selectedUserEmail, 
+          app: { ...item.app, messages: [newMessage, ...currentMessages] } 
+        } : item));
+      }
+
       setEmailSuccess(true);
       setEmailSubject('');
       setEmailText('');
@@ -583,10 +703,107 @@ export default function AdminDashboard() {
                   </form>
                 </div>
 
+                {/* Required Documents / Checklist */}
+                <div className="space-y-4 bg-white p-4 border border-gray-300">
+                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Required Documents Checklist</h3>
+                  <p className="text-sm text-gray-700">Track and request documents from the applicant step-by-step.</p>
+                  
+                  <div className="flex gap-2">
+                    <select id={`requestDoc-${selectedAppId}`} className="flex-1 border border-gray-400 p-2 text-sm bg-gray-50">
+                      <option value="">-- Request a Document --</option>
+                      <option value="Work permit application form">Work permit application form</option>
+                      <option value="Job Contract letter">Job Contract letter</option>
+                      <option value="Proof of qualification">Proof of qualification</option>
+                      <option value="IELTS certificate">IELTS certificate</option>
+                      <option value="LMIA Letter">LMIA Letter</option>
+                      <option value="Proof of Funds">Proof of Funds</option>
+                      <option value="Police clearance certificate">Police clearance certificate</option>
+                      <option value="Medical report">Medical report</option>
+                      <option value="Biometrics">Biometrics</option>
+                      <option value="Passport">Passport</option>
+                    </select>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        const sel = document.getElementById(`requestDoc-${selectedAppId}`) as HTMLSelectElement;
+                        if (sel && sel.value) {
+                          handleRequestDocument(selectedUserEmail, selectedAppId, sel.value);
+                          sel.value = '';
+                        }
+                      }}
+                      className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820]"
+                    >
+                      Request
+                    </button>
+                  </div>
+
+                  {(() => {
+                    const reqDocs = allApplications.find(a => a.app.id === selectedAppId)?.app.requestedDocuments;
+                    if (!reqDocs || reqDocs.length === 0) return null;
+                    return (
+                      <div className="mt-4">
+                        <table className="w-full text-left text-sm border-collapse">
+                          <thead>
+                            <tr className="bg-gray-100 border-b border-gray-300">
+                              <th className="p-2 font-bold">Document</th>
+                              <th className="p-2 font-bold w-32">Status</th>
+                              <th className="p-2 font-bold w-24">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {reqDocs.map((doc, idx) => (
+                              <tr key={idx} className="border-b border-gray-200">
+                                <td className="p-2">{doc.name}</td>
+                                <td className="p-2">
+                                  <span className={`px-2 py-1 text-xs font-bold ${doc.status === 'Received' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                    {doc.status}
+                                  </span>
+                                </td>
+                                <td className="p-2">
+                                  <button
+                                    onClick={() => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, doc.status === 'Pending' ? 'Received' : 'Pending')}
+                                    className="text-blue-600 hover:underline text-xs"
+                                  >
+                                    Mark as {doc.status === 'Pending' ? 'Received' : 'Pending'}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })()}
+                </div>
+
                 {/* Email Sender */}
                 <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Send Follow-up Email</h3>
-                  {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Email sent!</div>}
+                  <div className="flex justify-between items-center border-b border-gray-300 pb-1">
+                    <h3 className="font-bold text-lg">Send Follow-up / Request Document</h3>
+                    <select 
+                      className="border border-gray-400 p-1 text-sm bg-gray-50"
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (!val) return;
+                        setEmailSubject(`Action Required: Please submit your ${val}`);
+                        setEmailText(`Dear Applicant,\n\nWe are currently reviewing your application.\n\nIn order to proceed to the next step, please provide the following document as soon as possible:\n- ${val}\n\nYou can upload this document or send it as instructed.\n\nThank you,\nImmigration, Refugees and Citizenship Canada`);
+                        e.target.value = '';
+                      }}
+                    >
+                      <option value="">-- Quick Request Document --</option>
+                      <option value="Work permit application form">Work permit application form</option>
+                      <option value="Job Contract letter">Job Contract letter</option>
+                      <option value="Proof of qualification">Proof of qualification</option>
+                      <option value="IELTS certificate">IELTS certificate</option>
+                      <option value="LMIA Letter">LMIA Letter</option>
+                      <option value="Proof of Funds">Proof of Funds</option>
+                      <option value="Police clearance certificate">Police clearance certificate</option>
+                      <option value="Medical report">Medical report</option>
+                      <option value="Biometrics">Biometrics</option>
+                      <option value="Passport">Passport</option>
+                    </select>
+                  </div>
+                  {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent!</div>}
                   <form onSubmit={handleSendEmail} className="space-y-3">
                     <div>
                       <label className="block text-sm font-bold mb-1">Subject</label>

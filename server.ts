@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 interface TimelineEvent {
   id: string;
@@ -25,6 +26,7 @@ interface ApplicationInfo {
   details: string;
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
+  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
   workPermitStatus?: string;
@@ -126,7 +128,23 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
     dateCreated: "2026-03-18",
     timeCreated: "09:00 AM",
     details: "Your application is in progress. We will send you a message once the final decision has been made.",
-    detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise."
+    detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise.",
+    messages: [
+      {
+        id: "msg-1",
+        subject: "Confirmation of Online Application Transmission",
+        date: "March 18, 2026",
+        isRead: false,
+        content: "<p>Dear <strong>YASIR IQBAL</strong>,</p><p>This confirms that your application has been received by Immigration, Refugees and Citizenship Canada (IRCC).</p><p>Please note that this message does not mean your application is complete or that you are eligible for the program. We will review your application to make sure it is complete.</p><p>You can check the status of your application in your account.</p><p>Thank you,</p><p>Immigration, Refugees and Citizenship Canada</p>"
+      },
+      {
+        id: "msg-2",
+        subject: "Biometrics Collection Letter",
+        date: "March 20, 2026",
+        isRead: false,
+        content: "<p>Dear <strong>YASIR IQBAL</strong>,</p><p>This letter is to inform you that you are required to provide your biometrics (fingerprints and photograph).</p><p>Please bring this letter with you to a biometric collection service point. You have 30 days from the date of this letter to provide your biometrics.</p><p>Failure to provide your biometrics within this timeframe may result in your application being refused.</p><p>Thank you,</p><p>Immigration, Refugees and Citizenship Canada</p>"
+      }
+    ]
   }
 ];
 
@@ -378,54 +396,52 @@ async function startServer() {
 
   // 7. API: Send email notification
   app.post("/api/send-email", async (req, res) => {
-    const { to, subject, text } = req.body;
+    const { to, subject, text, html } = req.body;
     
-    if (!to || !subject || !text) {
+    if (!to || !subject || (!text && !html)) {
       return res.status(400).json({ error: "Missing email parameters" });
     }
 
     try {
-      // For demonstration, use ethereal email or console.log if no auth provided.
-      // Nodemailer requires an SMTP server (like Gmail, Outlook, AWS SES).
-      // Here we will mock it if no env var is set.
-      let transporter;
-      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-        transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST || "smtp.gmail.com",
-          port: Number(process.env.SMTP_PORT) || 587,
-          secure: process.env.SMTP_SECURE === "true",
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        });
-      } else {
-        // Create a test account if no real SMTP provided
-        const testAccount = await nodemailer.createTestAccount();
-        transporter = nodemailer.createTransport({
-          host: "smtp.ethereal.email",
-          port: 587,
-          secure: false, // true for 465, false for other ports
-          auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-          },
-        });
-      }
+      const resend = new Resend('re_g3UP34Qx_2T8JqyQkgyP4ovzFYznE54h5');
 
-      const info = await transporter.sendMail({
-        from: '"Canada Immigration Services" <no-reply@canada.ca.example>',
-        to,
+      const emailHtml = `
+<div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; border: 1px solid #ccc;">
+  <div style="padding: 20px; border-bottom: 2px solid #26374a;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td style="font-size: 18px; font-weight: bold; color: #000; width: 50%;">
+          Government<br/>of Canada
+        </td>
+        <td style="font-size: 18px; font-weight: bold; color: #000; width: 50%; text-align: left;">
+          Gouvernement<br/>du Canada
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div style="padding: 30px 20px;">
+    ${html || `<p>${text.replace(/\n/g, '<br/>')}</p>`}
+  </div>
+  <div style="padding: 20px; border-top: 1px solid #e5e5e5; font-size: 12px; color: #666; background-color: #f5f5f5;">
+    <p style="margin-top: 0;">This is an automated message from Immigration, Refugees and Citizenship Canada. Please do not reply to this email.</p>
+    <p style="margin-bottom: 0;">Il s'agit d'un message automatisé d'Immigration, Réfugiés et Citoyenneté Canada. Veuillez ne pas y répondre.</p>
+    <div style="margin-top: 20px; text-align: right;">
+      <span style="font-size: 20px; font-weight: bold; color: #000; font-family: serif;">Canada</span>
+    </div>
+  </div>
+</div>
+      `;
+
+      const data = await resend.emails.send({
+        from: 'IRCC / IRCC <onboarding@resend.dev>',
+        to: [to],
         subject,
-        text,
+        html: emailHtml,
       });
 
-      console.log("Message sent: %s", info.messageId);
-      // ethereal url
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-
-      res.json({ success: true, messageId: info.messageId });
-    } catch (err) {
+      console.log("Email sent successfully via Resend", data);
+      res.json({ success: true, data });
+    } catch (err: any) {
       console.error("Email send failed:", err);
       res.status(500).json({ error: "Failed to send email" });
     }
