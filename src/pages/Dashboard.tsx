@@ -101,8 +101,7 @@ export default function Dashboard() {
                     <td 
                       className="py-3 px-2 text-[#26374a] underline cursor-pointer"
                       onClick={() => {
-                        setSelectedAppId(app.id);
-                        document.getElementById('application-details')?.scrollIntoView({ behavior: 'smooth' });
+                        navigate(`/application/${app.id}`);
                       }}
                     >
                       Check full application status
@@ -121,96 +120,6 @@ export default function Dashboard() {
         <div className="mt-2">
           <button className="bg-[#26374a] text-white px-3 py-1 text-sm font-bold">1</button>
         </div>
-      </div>
-
-      {/* Details about your application */}
-      <div id="application-details" className="space-y-4">
-        <h2 className="text-2xl font-medium text-[#333]">Details about your application</h2>
-        <p className="text-[13px] text-gray-700">When we get your application, there are a series of steps it may go through before we make a decision Use the following table to find out the current status of each application step.</p>
-        
-        {selectedApp && (
-          <div className="mt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[13px] border-t-2 border-gray-300">
-                <tbody>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of eligibility</td>
-                    <td className="py-3 px-2 font-medium">We are reviewing whether you meet the eligibility requirements.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300 bg-gray-50">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of medical results</td>
-                    <td className="py-3 px-2 font-medium">You do not need a medical exam. We will send you a message if this changes.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Review of additional documents</td>
-                    <td className="py-3 px-2 font-medium">We do not need additional documents.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300 bg-gray-50">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Interview</td>
-                    <td className="py-3 px-2 font-medium">You do not need an interview. We will send you a message if this changes.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Biometrics</td>
-                    <td className="py-3 px-2 font-medium">We do not need your fingerprints. We will send you a message if this changes.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300 bg-gray-50">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Background check</td>
-                    <td className="py-3 px-2 font-medium">We are processing your background check. We will send you a message if we need more information.</td>
-                  </tr>
-                  <tr className="border-b border-gray-300">
-                    <td className="py-3 px-2 w-1/3 text-gray-600">Final decision</td>
-                    <td className="py-3 px-2 font-medium">Your application is in progress. We will send you a message once the final decision has been made.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
-            {/* Required Documents Section */}
-            {selectedApp.requestedDocuments && selectedApp.requestedDocuments.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-medium text-[#333] mb-2 border-b border-gray-300 pb-2">Required Documents</h3>
-                <p className="text-[13px] text-gray-700 mb-4">Please review the list of documents required for your application. If a document is marked as 'Pending', you must submit it to proceed.</p>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-[13px]">
-                    <thead>
-                      <tr className="border-t-2 border-b-2 border-gray-300 text-gray-700">
-                        <th className="py-2 px-2 font-bold whitespace-nowrap">Document Name</th>
-                        <th className="py-2 px-2 font-bold whitespace-nowrap">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedApp.requestedDocuments.map((doc, idx) => (
-                        <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
-                          <td className="py-3 px-2 font-medium">{doc.name}</td>
-                          <td className="py-3 px-2">
-                            <span className={`px-2 py-1 text-xs font-bold rounded-full ${doc.status === 'Received' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                              {doc.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-            
-            {/* Applicant Information Section */}
-            <div className="mt-8 mb-8">
-               <h3 className="text-lg font-medium text-[#333] mb-2 border-b border-gray-300 pb-2">Applicant Information</h3>
-               <div className="grid grid-cols-2 gap-4 text-[13px] mt-4">
-                 <div>
-                   <span className="text-gray-600 block">Name</span>
-                   <span className="font-bold uppercase">{user?.name}</span>
-                 </div>
-                 <div>
-                   <span className="text-gray-600 block">Application number</span>
-                   <span className="font-bold">{selectedApp.id}</span>
-                 </div>
-               </div>
-            </div>
-          </div>
-        )}
       </div>
 
     </main>

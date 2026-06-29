@@ -104,22 +104,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Sync tracked application status with the Express Backend
   useEffect(() => {
-    const email = user?.email || "guest";
-    fetch(`/api/applications?email=${encodeURIComponent(email)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not fetch applications from backend");
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setApplications(data);
-        } else {
-          console.error("Applications backend did not return an array, ignoring:", data);
-        }
-      })
-      .catch((err) => {
-        console.error("Backend sync failed, using client fallback:", err);
-      });
+    const fetchApps = () => {
+      const email = user?.email || "guest";
+      fetch(`/api/applications?email=${encodeURIComponent(email)}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Could not fetch applications from backend");
+          return res.json();
+        })
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setApplications(data);
+          } else {
+            console.error("Applications backend did not return an array, ignoring:", data);
+          }
+        })
+        .catch((err) => {
+          console.error("Backend sync failed, using client fallback:", err);
+        });
+    };
+
+    fetchApps();
+    // Poll every 3 seconds to keep UI live
+    const interval = setInterval(fetchApps, 3000);
+    return () => clearInterval(interval);
   }, [user]);
 
   const setLanguage = (lang: Language) => {

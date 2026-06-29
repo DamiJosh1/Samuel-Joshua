@@ -439,6 +439,11 @@ async function startServer() {
         html: emailHtml,
       });
 
+      if (data.error) {
+        console.warn("Resend email warning (likely unverified address):", data.error);
+        return res.json({ success: true, warning: data.error });
+      }
+
       console.log("Email sent successfully via Resend", data);
       res.json({ success: true, data });
     } catch (err: any) {
