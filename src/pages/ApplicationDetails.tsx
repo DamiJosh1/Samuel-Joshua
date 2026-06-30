@@ -150,7 +150,7 @@ export default function ApplicationDetails() {
               <td className="py-2 px-2 font-bold w-1/4">Last updated</td>
               <td className="py-2 px-2 w-1/4">{selectedApp.timeline?.[0]?.date?.split(' ')[0] || selectedApp.dateCreated?.split(' ')[0] || 'N/A'}</td>
             </tr>
-            <tr className="border-b border-gray-300 bg-gray-50">
+            <tr className="border-b border-gray-300">
               <td className="py-2 px-2 font-bold">Application number</td>
               <td className="py-2 px-2">{selectedApp.id}</td>
               <td className="py-2 px-2 font-bold">Current status</td>
@@ -162,7 +162,7 @@ export default function ApplicationDetails() {
               <td className="py-2 px-2 font-bold">Submitted location</td>
               <td className="py-2 px-2">Online</td>
             </tr>
-            <tr className="border-b border-gray-300 bg-gray-50">
+            <tr className="border-b border-gray-300">
               <td className="py-2 px-2 font-bold">Date created</td>
               <td className="py-2 px-2">{user?.createdAt?.split(' ')[0] || selectedApp.dateCreated?.split(' ')[0] || 'N/A'}</td>
               <td className="py-2 px-2 font-bold">Visa office</td>
@@ -299,7 +299,7 @@ export default function ApplicationDetails() {
 
       {/* 8. Next Required Action */}
       <h2 className="text-xl font-bold mb-4">Next required action</h2>
-      <div className="border border-gray-300 mb-8 flex flex-col sm:flex-row p-4 bg-gray-50">
+      <div className="border border-gray-300 mb-8 flex flex-col sm:flex-row p-4 bg-white">
         <div className="flex-shrink-0 mr-4 mb-4 sm:mb-0 mt-1">
           <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center border border-gray-300">
             <Info className="text-gray-700 w-8 h-8" />

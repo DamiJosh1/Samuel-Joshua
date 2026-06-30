@@ -51,7 +51,27 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // Scroll immediately
     window.scrollTo(0, 0);
+    if (document.documentElement) {
+      document.documentElement.scrollTop = 0;
+    }
+    if (document.body) {
+      document.body.scrollTop = 0;
+    }
+
+    // Scroll with a tiny delay to ensure page rendering is complete and browser doesn't autoscroll
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+      if (document.documentElement) {
+        document.documentElement.scrollTop = 0;
+      }
+      if (document.body) {
+        document.body.scrollTop = 0;
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   return null;

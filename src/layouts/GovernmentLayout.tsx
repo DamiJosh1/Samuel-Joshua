@@ -116,12 +116,12 @@ export default function GovernmentLayout() {
             </Link>
 
             {/* Actions Panel */}
-            <div className="flex flex-col sm:items-end gap-2">
-              <div className="flex justify-between w-full sm:w-auto">
+            <div className="flex flex-col gap-3 w-full sm:w-auto sm:items-end">
+              <div className="flex justify-between items-center w-full gap-4 sm:gap-8">
                 {/* Language Toggle Button */}
                 <button
                   onClick={handleLangToggle}
-                  className="text-sm text-[#284162] hover:text-[#05355c] hover:underline focus:outline-none focus:ring-1 focus:ring-[#2572b4] rounded cursor-pointer"
+                  className="text-sm font-semibold text-[#284162] hover:text-[#05355c] hover:underline focus:outline-none focus:ring-1 focus:ring-[#2572b4] rounded cursor-pointer"
                   title={t.langToggleLabel}
                   aria-label={t.langToggleLabel}
                   id="lang-toggle-button"
@@ -129,34 +129,46 @@ export default function GovernmentLayout() {
                   {t.langToggle}
                 </button>
                 
-                {/* Account State Greeting (visible on mobile next to language toggle) */}
-                <div className="sm:hidden text-sm">
+                {/* Account State Greeting (Unified layout used everywhere) */}
+                <div className="text-sm">
                   {user ? (
-                    <div className="flex items-center gap-2">
-                      <Link to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} className="text-[#2572b4] hover:underline">
+                    <div className="flex items-center gap-3">
+                      <Link 
+                        to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} 
+                        className="text-[#2572b4] hover:underline font-semibold"
+                        id="header-console-account-btn"
+                      >
                         {currentLang === 'en' ? 'Account' : 'Compte'}
                       </Link>
-                      <button onClick={logout} className="text-red-700 hover:underline">
+                      <span className="text-gray-300">|</span>
+                      <button 
+                        onClick={logout} 
+                        className="text-red-700 hover:underline font-semibold cursor-pointer"
+                      >
                         {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
                       </button>
                     </div>
                   ) : (
-                    <Link to="/auth/login" className="text-[#2572b4] hover:underline">
+                    <Link 
+                      to="/auth/login" 
+                      className="text-[#2572b4] hover:underline font-semibold"
+                      id="header-signin-btn"
+                    >
                       {currentLang === 'en' ? 'Sign in' : 'Connexion'}
                     </Link>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                {/* Central Header Search Form */}
-                <form onSubmit={handleSearchSubmit} className="flex items-center w-full" id="search-box-form">
+              {/* Central Header Search Form */}
+              <div className="w-full flex sm:justify-end">
+                <form onSubmit={handleSearchSubmit} className="flex items-center w-full sm:w-72" id="search-box-form">
                   <input
                     type="text"
                     value={searchVal}
                     onChange={(e) => setSearchVal(e.target.value)}
                     placeholder="Search Canada.ca"
-                    className="w-full sm:w-64 border border-gray-400 border-r-0 px-3 py-1.5 text-base outline-none focus:border-[#2572b4] focus:ring-1 focus:ring-[#2572b4]"
+                    className="w-full border border-gray-400 border-r-0 px-3 py-1.5 text-base outline-none focus:border-[#2572b4] focus:ring-1 focus:ring-[#2572b4]"
                     aria-label="Search Canada.ca"
                   />
                   <button
@@ -168,26 +180,6 @@ export default function GovernmentLayout() {
                     <Search className="w-5 h-5" />
                   </button>
                 </form>
-
-                {/* Account State Greeting (Desktop) */}
-                {user ? (
-                  <div className="hidden sm:flex items-center gap-3 text-sm">
-                    <Link to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} className="text-[#2572b4] hover:underline font-bold">
-                      {currentLang === 'en' ? 'Console' : 'Console'}
-                    </Link>
-                    <button onClick={logout} className="text-red-700 hover:underline font-bold">
-                      {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
-                    </button>
-                  </div>
-                ) : (
-                  <Link
-                    to="/auth/login"
-                    className="hidden sm:block text-sm font-bold text-[#2572b4] hover:underline whitespace-nowrap"
-                    id="header-signin-btn"
-                  >
-                    {currentLang === 'en' ? 'Sign in' : 'Connexion'}
-                  </Link>
-                )}
               </div>
 
             </div>
@@ -196,16 +188,16 @@ export default function GovernmentLayout() {
       </header>
 
       {/* TOP NAVIGATION BAR LINKS (Mandated header categories navigation) */}
-      <nav className="bg-[#26374a] text-white border-b border-[#111820] shadow-sm select-none" id="header-categories-nav">
+      <nav className="bg-[#26374a] text-white border-b border-[#111820] shadow-sm select-none overflow-x-auto scrollbar-none" id="header-categories-nav">
         <div className="mx-auto max-w-6xl flex items-center h-10">
-           <ul className="flex flex-row w-full h-full text-sm font-semibold text-center divide-x divide-gray-500 border-l border-r border-gray-500">
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Jobs</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors bg-[#111820]">Immigration</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Travel</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Business</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Benefits</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Health</li>
-             <li className="flex-1 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors">Taxes</li>
+           <ul className="flex flex-row w-full h-full text-sm font-semibold text-center divide-x divide-gray-500 border-l border-r border-gray-500 min-w-max sm:min-w-0">
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Jobs</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors bg-[#111820] whitespace-nowrap">Immigration</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Travel</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Business</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Benefits</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Health</li>
+             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Taxes</li>
            </ul>
         </div>
       </nav>

@@ -29,6 +29,11 @@ export default function AdminDashboard() {
 
   const [subStatusEdits, setSubStatusEdits] = useState<Record<string, string>>({});
 
+  // Custom Timeline states
+  const [customTimelineDate, setCustomTimelineDate] = useState('');
+  const [customTimelineTime, setCustomTimelineTime] = useState('');
+  const [customTimelineAction, setCustomTimelineAction] = useState('');
+
   const fetchApps = () => {
     Promise.all([
       fetch('/api/admin/applications').then(res => res.json()),
@@ -363,16 +368,23 @@ export default function AdminDashboard() {
     if (!selectedUserEmail || !emailSubject || !emailText) return;
 
     try {
-      // 1. Send the email via Resend
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: selectedUserEmail,
-          subject: emailSubject,
-          text: emailText
-        })
-      });
+      // 1. Send the email via Resend (Nested try-catch to ensure failure doesn't block internal system messaging)
+      try {
+        const res = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: selectedUserEmail,
+            subject: emailSubject,
+            text: emailText
+          })
+        });
+        if (!res.ok) {
+          console.warn("Resend endpoint returned non-OK response status");
+        }
+      } catch (err) {
+        console.warn("External email deliverability failed, falling back to internal system delivery:", err);
+      }
       
       // 2. Add it to the user's internal messages
       const targetAppItem = allApplications.find(a => a.app.id === selectedAppId);
@@ -383,7 +395,7 @@ export default function AdminDashboard() {
           id: `msg-${Date.now()}`,
           subject: emailSubject,
           date: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-          content: `<p>${emailText.split('\\n').join('<br/>')}</p>`,
+          content: `<p>${emailText.replace(/\n/g, '<br/>')}</p>`,
           isRead: false
         };
 
@@ -410,7 +422,99 @@ export default function AdminDashboard() {
       setTimeout(() => setEmailSuccess(false), 3000);
     } catch (e) {
       console.error(e);
-      alert("Failed to send email");
+      alert("Failed to send system message");
+    }
+  };
+
+  const handleDeleteTimelineEvent = async (userEmail: string, appId: string, eventId: string) => {
+    if (!confirm("Are you sure you want to delete this timeline event?")) return;
+    try {
+      const targetAppItem = allApplications.find(a => a.app.id === appId);
+      if (!targetAppItem) return;
+      
+      const updatedTimeline = (targetAppItem.app.timeline || []).filter(evt => evt.id !== eventId);
+      
+      const res = await fetch(`/api/applications/${appId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: userEmail, 
+          timeline: updatedTimeline
+        })
+      });
+      
+      if (res.ok) {
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? {
+          email: userEmail,
+          app: { ...item.app, timeline: updatedTimeline }
+        } : item));
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete timeline event");
+    }
+  };
+
+  const handleAddCustomTimeline = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAppId || !selectedUserEmail || !customTimelineAction) return;
+
+    const targetAppItem = allApplications.find(a => a.app.id === selectedAppId);
+    if (!targetAppItem) return;
+
+    const now = new Date();
+    // Use selected date/time or default to now
+    let finalDate = customTimelineDate;
+    if (finalDate) {
+      // Convert YYYY-MM-DD to "Month Day, Year"
+      const dateObj = new Date(finalDate + "T12:00:00");
+      finalDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    } else {
+      finalDate = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    let finalTime = customTimelineTime;
+    if (finalTime) {
+      // Convert HH:MM to 12-hour AM/PM
+      const [hoursStr, minutesStr] = finalTime.split(':');
+      const hours = parseInt(hoursStr, 10);
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      finalTime = `${formattedHours}:${minutesStr} ${ampm}`;
+    } else {
+      finalTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    const newTimelineEvent: TimelineEvent = {
+      id: `evt-${Date.now()}`,
+      date: finalDate,
+      time: finalTime,
+      action: customTimelineAction
+    };
+
+    const currentTimeline = targetAppItem.app.timeline || [];
+    const updatedTimeline = [newTimelineEvent, ...currentTimeline];
+
+    try {
+      const res = await fetch(`/api/applications/${selectedAppId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: selectedUserEmail, 
+          timeline: updatedTimeline
+        })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setAllApplications(prev => prev.map(item => item.app.id === selectedAppId ? { email: selectedUserEmail, app: updated } : item));
+        setCustomTimelineAction('');
+        setCustomTimelineDate('');
+        setCustomTimelineTime('');
+        alert("Timeline event added successfully");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to add timeline event");
     }
   };
 
@@ -426,87 +530,52 @@ export default function AdminDashboard() {
     <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 space-y-8 font-sans text-[#333]">
       <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Immigration Case Management</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-gray-100 p-6 border border-gray-300">
-          <h2 className="text-xl font-bold mb-4">1. Create Applicant Profile</h2>
-          <form onSubmit={handleCreateProfile} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold mb-1">Applicant Name</label>
-              <input 
-                type="text" 
-                value={newProfileName}
-                onChange={e => setNewProfileName(e.target.value)}
-                className="w-full border border-gray-400 p-2"
-                placeholder="e.g. John Doe"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-1">Applicant Email (Used for Sign In)</label>
-              <input 
-                type="email" 
-                value={newProfileEmail}
-                onChange={e => setNewProfileEmail(e.target.value)}
-                className="w-full border border-gray-400 p-2"
-                placeholder="name@domain.ca"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-1">Initial Application Type</label>
-              <select 
-                value={newProfileAppType}
-                onChange={e => setNewProfileAppType(e.target.value)}
-                className="w-full border border-gray-400 p-2"
-              >
-                <option value="Work Permit">Work Permit</option>
-                <option value="Visitor Visa">Visitor Visa</option>
-                <option value="Study Permit">Study Permit</option>
-                <option value="Permanent Residence">Permanent Residence</option>
-                <option value="Citizenship">Citizenship</option>
-                <option value="Passport">Passport</option>
-                <option value="Biometrics">Biometrics</option>
-              </select>
-            </div>
-            <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
-              Create Profile
-            </button>
-            <p className="text-xs text-gray-600 mt-2">After creating, provide the email and password to the user.</p>
-          </form>
-        </div>
-
-        <div className="bg-gray-100 p-6 border border-gray-300">
-          <h2 className="text-xl font-bold mb-4">2. Create New Application Record</h2>
-          <form onSubmit={handleCreateApp} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold mb-1">Assign to Email</label>
-              <input 
-                type="email" 
-                value={newAppEmail}
-                onChange={e => setNewAppEmail(e.target.value)}
-                className="w-full border border-gray-400 p-2"
-                placeholder="Must match an existing profile"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-1">Application Type</label>
-              <select 
-                value={newAppType}
-                onChange={e => setNewAppType(e.target.value)}
-                className="w-full border border-gray-400 p-2"
-              >
-                <option value="Work Permit">Work Permit</option>
-                <option value="Study Permit">Study Permit</option>
-                <option value="Visitor Visa">Visitor Visa</option>
-                <option value="Express Entry">Express Entry</option>
-              </select>
-            </div>
-            <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
-              Create Application Record
-            </button>
-          </form>
-        </div>
+      <div className="max-w-xl bg-gray-100 p-6 border border-gray-300">
+        <h2 className="text-xl font-bold mb-4">Create Applicant Profile</h2>
+        <form onSubmit={handleCreateProfile} className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold mb-1">Applicant Name</label>
+            <input 
+              type="text" 
+              value={newProfileName}
+              onChange={e => setNewProfileName(e.target.value)}
+              className="w-full border border-gray-400 p-2"
+              placeholder="e.g. John Doe"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold mb-1">Applicant Email (Used for Sign In)</label>
+            <input 
+              type="email" 
+              value={newProfileEmail}
+              onChange={e => setNewProfileEmail(e.target.value)}
+              className="w-full border border-gray-400 p-2"
+              placeholder="name@domain.ca"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold mb-1">Initial Application Type</label>
+            <select 
+              value={newProfileAppType}
+              onChange={e => setNewProfileAppType(e.target.value)}
+              className="w-full border border-gray-400 p-2"
+            >
+              <option value="Work Permit">Work Permit</option>
+              <option value="Visitor Visa">Visitor Visa</option>
+              <option value="Study Permit">Study Permit</option>
+              <option value="Permanent Residence">Permanent Residence</option>
+              <option value="Citizenship">Citizenship</option>
+              <option value="Passport">Passport</option>
+              <option value="Biometrics">Biometrics</option>
+            </select>
+          </div>
+          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
+            Create Profile
+          </button>
+          <p className="text-xs text-gray-600 mt-2">After creating, provide the email and password to the user.</p>
+        </form>
       </div>
 
       {loading ? (
@@ -896,12 +965,61 @@ export default function AdminDashboard() {
               {/* Timeline Preview */}
               <div className="bg-white p-4 border border-gray-300">
                 <h3 className="font-bold text-lg border-b border-gray-300 pb-2 mb-4">Application Timeline</h3>
+                
+                {/* Add Custom Timeline Event Form */}
+                <form onSubmit={handleAddCustomTimeline} className="bg-gray-50 border border-gray-300 p-4 mb-6 space-y-3">
+                  <h4 className="font-bold text-sm text-gray-800">Add Custom Timeline Event</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1">Date (Optional)</label>
+                      <input 
+                        type="date" 
+                        value={customTimelineDate}
+                        onChange={(e) => setCustomTimelineDate(e.target.value)}
+                        className="w-full border border-gray-400 p-1 text-xs bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1">Time (Optional)</label>
+                      <input 
+                        type="time" 
+                        value={customTimelineTime}
+                        onChange={(e) => setCustomTimelineTime(e.target.value)}
+                        className="w-full border border-gray-400 p-1 text-xs bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-600 mb-1">Event / Action</label>
+                      <input 
+                        type="text" 
+                        value={customTimelineAction}
+                        onChange={(e) => setCustomTimelineAction(e.target.value)}
+                        placeholder="e.g. Biometrics Request Sent"
+                        className="w-full border border-gray-400 p-1 text-xs bg-white"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button type="submit" className="bg-[#26374a] text-white text-xs font-bold px-3 py-1.5 hover:bg-[#111820]">
+                    Add Timeline Event
+                  </button>
+                </form>
+
                 <div className="space-y-4">
                   {(allApplications.find(a => a.app.id === selectedAppId)?.app.timeline || []).map((evt, idx) => (
-                    <div key={idx} className="border-l-4 border-[#26374a] pl-4 py-1">
-                      <div className="text-sm font-bold text-gray-800">{evt.date} - {evt.time}</div>
-                      <div className="text-base text-black mt-1">{evt.action}</div>
-                      {evt.documentName && <div className="text-sm text-gray-600 mt-1">File: {evt.documentName}</div>}
+                    <div key={evt.id || idx} className="border-l-4 border-[#26374a] pl-4 py-1 flex justify-between items-start gap-4">
+                      <div>
+                        <div className="text-sm font-bold text-gray-800">{evt.date} - {evt.time || 'N/A'}</div>
+                        <div className="text-base text-black mt-1">{evt.action}</div>
+                        {evt.documentName && <div className="text-sm text-gray-600 mt-1">File: {evt.documentName}</div>}
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => handleDeleteTimelineEvent(selectedUserEmail!, selectedAppId!, evt.id)}
+                        className="text-red-700 hover:text-red-900 hover:underline text-xs font-bold cursor-pointer whitespace-nowrap"
+                      >
+                        Delete
+                      </button>
                     </div>
                   ))}
                   {!(allApplications.find(a => a.app.id === selectedAppId)?.app.timeline?.length) && (
