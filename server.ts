@@ -122,7 +122,7 @@ const db = {
 // Default seed applications for fallback
 const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   {
-    id: "W439263015",
+    id: "W4392630150",
     type: "WORK VISA",
     typeFr: "VISA DE TRAVAIL",
     status: "Submitted",
@@ -242,7 +242,7 @@ async function startServer() {
 
     if (appType) {
       applications.push({
-        id: `APP-${Math.floor(100000 + Math.random() * 900000)}`,
+        id: "W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join(""),
         type: appType,
         typeFr: appType,
         status: "Draft",
@@ -420,10 +420,7 @@ async function startServer() {
       return res.status(400).json({ error: "Missing email parameters" });
     }
 
-    try {
-      const resend = new Resend('re_g3UP34Qx_2T8JqyQkgyP4ovzFYznE54h5');
-
-      const emailHtml = `
+    const emailHtml = `
 <div style="font-family: Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.5; border: 1px solid #ccc;">
   <div style="padding: 20px; border-bottom: 2px solid #26374a;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -448,10 +445,49 @@ async function startServer() {
     </div>
   </div>
 </div>
-      `;
+    `;
+
+    // Try SMTP if credentials are provided
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+      try {
+        console.log("Attempting to send email via SMTP...");
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || "smtp.gmail.com",
+          port: Number(process.env.SMTP_PORT) || 465,
+          secure: (process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) === 465 : true),
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        const fromName = process.env.SMTP_FROM || `"IRCC Portal" <${process.env.SMTP_USER}>`;
+
+        const info = await transporter.sendMail({
+          from: fromName,
+          to,
+          subject,
+          text: text || "IRCC Notification",
+          html: emailHtml,
+        });
+
+        console.log("Email sent successfully via SMTP:", info.messageId);
+        return res.json({ success: true, method: "smtp", messageId: info.messageId });
+      } catch (smtpErr: any) {
+        console.error("SMTP sending failed, falling back to Resend:", smtpErr);
+        // continue to Resend
+      }
+    }
+
+    // Fallback to Resend
+    try {
+      console.log("Attempting to send email via Resend...");
+      const apiKey = process.env.RESEND_API_KEY || 're_g3UP34Qx_2T8JqyQkgyP4ovzFYznE54h5';
+      const fromEmail = process.env.RESEND_FROM_EMAIL || 'IRCC / IRCC <onboarding@resend.dev>';
+      const resend = new Resend(apiKey);
 
       const data = await resend.emails.send({
-        from: 'IRCC / IRCC <onboarding@resend.dev>',
+        from: fromEmail,
         to: [to],
         subject,
         html: emailHtml,
@@ -459,14 +495,14 @@ async function startServer() {
 
       if (data.error) {
         console.warn("Resend email warning (likely unverified address):", data.error);
-        return res.json({ success: true, warning: data.error });
+        return res.json({ success: true, method: "resend", warning: data.error });
       }
 
       console.log("Email sent successfully via Resend", data);
-      res.json({ success: true, data });
+      res.json({ success: true, method: "resend", data });
     } catch (err: any) {
-      console.error("Email send failed:", err);
-      res.status(500).json({ error: "Failed to send email" });
+      console.error("Email send failed completely:", err);
+      res.status(500).json({ error: "Failed to send email. Ensure Resend or SMTP environment variables are configured." });
     }
   });
 

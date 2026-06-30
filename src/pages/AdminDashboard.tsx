@@ -279,7 +279,7 @@ export default function AdminDashboard() {
     if (!newAppEmail || !newAppType) return;
     
     const newApp: ApplicationInfo = {
-      id: `APP-${Math.floor(100000 + Math.random() * 900000)}`,
+      id: "W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join(""),
       type: newAppType,
       typeFr: newAppType,
       status: IMMIGRATION_JOURNEY_STEPS[0],
@@ -683,6 +683,7 @@ export default function AdminDashboard() {
                             className="border border-gray-400 p-1 w-full max-w-[200px]"
                           >
                             <option value="Pending">Pending</option>
+                            <option value="SUBMITTED">SUBMITTED</option>
                             {IMMIGRATION_JOURNEY_STEPS.map(step => (
                               <option key={step} value={step}>{step}</option>
                             ))}
@@ -769,8 +770,6 @@ export default function AdminDashboard() {
                         className="w-full border border-gray-400 p-2"
                       >
                         <option value="Custom Document">Custom Document</option>
-                        <option value="Passport">Passport</option>
-                        <option value="Passport Bio Data Page">Passport Bio Data Page</option>
                         <option value="Passport Request Letter">Passport Request Letter</option>
                         <option value="Work Permit Letter">Work Permit Letter</option>
                         <option value="Visitor Visa Documents">Visitor Visa Documents</option>
@@ -778,15 +777,7 @@ export default function AdminDashboard() {
                         <option value="Biometrics Instruction Letter (BIL)">Biometrics Instruction Letter (BIL)</option>
                         <option value="Biometrics Confirmation">Biometrics Confirmation</option>
                         <option value="Medical Request Letter">Medical Request Letter</option>
-                        <option value="Medical Results">Medical Results</option>
-                        <option value="IELTS Test Report">IELTS Test Report</option>
-                        <option value="Educational Certificates">Educational Certificates</option>
-                        <option value="Police Clearance Certificate">Police Clearance Certificate</option>
-                        <option value="Proof of Funds">Proof of Funds</option>
-                        <option value="Employment Letter">Employment Letter</option>
                         <option value="Invitation Letter">Invitation Letter</option>
-                        <option value="Marriage Certificate">Marriage Certificate</option>
-                        <option value="Birth Certificate">Birth Certificate</option>
                         <option value="Additional Supporting Documents">Additional Supporting Documents</option>
                         <option value="Approval Letter">Approval Letter</option>
                         <option value="Refusal Letter">Refusal Letter</option>

@@ -19,10 +19,15 @@ export default function Dashboard() {
     if (status === 'Approved') return 'bg-[#26374a] text-white border-[#26374a] border-2';
     if (status === 'Refused') return 'bg-red-700 text-white border-red-700 border-2';
     if (status === 'Action Required') return 'bg-[#d3080c] text-white border-[#d3080c] border-2';
+    if (status === 'SUBMITTED' || status === 'Submitted') return 'bg-[#26374a] text-white border-[#26374a] border-2';
     return 'bg-white text-black border-black border-2';
   };
 
   const getStepProgress = (status: string) => {
+    if (status === 'SUBMITTED' || status === 'Submitted') {
+      const idx = IMMIGRATION_JOURNEY_STEPS.indexOf("Application Submitted");
+      return idx !== -1 ? idx : 4;
+    }
     const idx = IMMIGRATION_JOURNEY_STEPS.indexOf(status);
     if (idx === -1) {
       if (status === 'Approved') return IMMIGRATION_JOURNEY_STEPS.length;
