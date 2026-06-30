@@ -179,47 +179,137 @@ export default function ApplicationDetails() {
       </div>
 
       {/* 4. Details About Your Application */}
-      <h2 className="text-xl font-bold mb-4">Details about your application</h2>
+      <h2 className="text-xl font-bold mb-4">Details about your application status</h2>
       <div className="overflow-x-auto mb-8">
         <table className="w-full text-left border-collapse text-[14px]">
           <thead>
-            <tr className="border-t-2 border-b-2 border-gray-300 text-gray-900">
-              <th className="py-2.5 px-3 font-bold">Application step</th>
-              <th className="py-2.5 px-3 font-bold text-center w-40">Status</th>
-              <th className="py-2.5 px-3 font-bold">Date updated</th>
-              <th className="py-2.5 px-3 font-bold">Remarks</th>
+            <tr className="border-t-2 border-b-2 border-gray-300 text-gray-900 bg-gray-50">
+              <th className="py-3 px-3 font-bold w-1/4">Application step</th>
+              <th className="py-3 px-3 font-bold w-2/4">Current status</th>
+              <th className="py-3 px-3 font-bold w-1/4">Help</th>
             </tr>
           </thead>
           <tbody>
-            {selectedApp.requestedDocuments && selectedApp.requestedDocuments.length > 0 ? (
-              selectedApp.requestedDocuments.map((doc, idx) => {
-                let displayStatus = 'Requested';
-                if (doc.status === 'Submitted') {
-                  displayStatus = 'Pending';
-                } else if (doc.status === 'Received') {
-                  displayStatus = 'Completed';
+            {(() => {
+              const docs = selectedApp.requestedDocuments || [];
+              const status = selectedApp.status || 'Submitted';
+
+              // 1. Biometrics status
+              const bioDoc = docs.find(d => d.name.toLowerCase().includes('biometrics') || d.name.toLowerCase().includes('fingerprint'));
+              let bioStatus = 'We do not need your fingerprints. We will send you a message if this changes.';
+              let bioHelp = 'We will notify you if we require a Biometrics Collection (fingerprints and photograph) for your application.';
+              if (bioDoc) {
+                if (bioDoc.status === 'Pending') {
+                  bioStatus = 'We need your fingerprints to process your application. Check your messages below for details.';
+                  bioHelp = 'Please print the Biometrics Instruction Letter (BIL) from your messages and visit an authorized collection point.';
+                } else if (bioDoc.status === 'Submitted') {
+                  bioStatus = 'We are reviewing the biometrics you provided.';
+                  bioHelp = 'We have received your biometrics and our officers are verifying the information.';
+                } else if (bioDoc.status === 'Received') {
+                  bioStatus = 'Completed.';
+                  bioHelp = 'Your biometrics have been successfully collected, verified, and linked to your profile.';
                 }
-                return (
-                  <tr key={idx} className="border-b border-gray-300">
-                    <td className="py-2.5 px-3 font-medium">{doc.name}</td>
-                    <td className="py-2.5 px-3 text-center w-40">
-                      <div className="flex items-center justify-center">
-                        {getStatusIcon(displayStatus)}
-                        <span className="font-medium">{displayStatus}</span>
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-3">{doc.dateUpdated || selectedApp.lastUpdated || 'N/A'}</td>
-                    <td className="py-2.5 px-3">{doc.remarks || `The administrator requires your ${doc.name} to continue processing.`}</td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={4} className="py-6 px-3 text-gray-500 italic text-center">
-                  No steps or documents have been requested by the administrator yet.
-                </td>
-              </tr>
-            )}
+              }
+
+              // 2. Medical results
+              const medDoc = docs.find(d => d.name.toLowerCase().includes('medical') || d.name.toLowerCase().includes('report'));
+              let medStatus = 'You do not need a medical exam. We will send you a message if this changes.';
+              let medHelp = 'Most temporary visa applicants do not need a medical exam unless specifically requested.';
+              if (medDoc) {
+                if (medDoc.status === 'Pending') {
+                  medStatus = 'We need a medical exam. Check your messages below for details.';
+                  medHelp = 'Please complete your medical examination with a panel physician as requested in your messages.';
+                } else if (medDoc.status === 'Submitted') {
+                  medStatus = 'We are reviewing your medical exam results.';
+                  medHelp = 'The results from the panel physician have been uploaded. Our medical officers are reviewing them.';
+                } else if (medDoc.status === 'Received') {
+                  medStatus = 'You passed the medical exam.';
+                  medHelp = 'The medical assessment is complete and you meet the health requirements.';
+                }
+              }
+
+              // 3. Additional documents
+              const otherDocs = docs.filter(d => 
+                !d.name.toLowerCase().includes('biometrics') && 
+                !d.name.toLowerCase().includes('fingerprint') &&
+                !d.name.toLowerCase().includes('medical') && 
+                !d.name.toLowerCase().includes('report')
+              );
+              let extraStatus = 'We do not need additional documents. We will send you a message if this changes.';
+              let extraHelp = 'We will let you know if we require any supporting documentation to make a decision.';
+              if (otherDocs.length > 0) {
+                const pendingCount = otherDocs.filter(d => d.status === 'Pending').length;
+                const submittedCount = otherDocs.filter(d => d.status === 'Submitted').length;
+                if (pendingCount > 0) {
+                  extraStatus = 'We need more documents from you. Check your messages below for details.';
+                  extraHelp = `Please upload the required document(s) (${otherDocs.filter(d => d.status === 'Pending').map(d => d.name).join(', ')}) in the section below.`;
+                } else if (submittedCount > 0) {
+                  extraStatus = 'We are reviewing the additional documents you provided.';
+                  extraHelp = 'Your uploaded documents have been successfully queued for officer review.';
+                } else {
+                  extraStatus = 'We have received the additional documents you provided.';
+                  extraHelp = 'All requested supplementary documents have been received and verified.';
+                }
+              }
+
+              // 4. Review of eligibility
+              let eligStatus = 'We are reviewing whether you meet the eligibility requirements.';
+              let eligHelp = 'Our immigration officers are assessing your profile against the standard visa eligibility criteria.';
+              if (status === 'Approved' || status === 'Refused' || status === 'Final Decision' || status === 'Completed') {
+                eligStatus = 'Review completed.';
+                eligHelp = 'The eligibility review phase for this application is finished.';
+              } else if (status === 'Draft') {
+                eligStatus = 'Not started.';
+                eligHelp = 'Eligibility assessment will begin once the application is submitted and fees are paid.';
+              }
+
+              // 5. Interview
+              let intStatus = 'You do not need an interview. We will send you a message if this changes.';
+              let intHelp = 'Interviews are only scheduled in rare cases if an officer requires clarification on your file.';
+
+              // 6. Background check
+              let bgStatus = 'We are processing your background check. We will send you a message if this changes.';
+              let bgHelp = 'We conduct security and criminality background checks on all applicants as part of our processing procedures.';
+              if (status === 'Draft') {
+                bgStatus = 'Not started.';
+                bgHelp = 'Background checks will initiate automatically upon application submission.';
+              } else if (status === 'Approved' || status === 'Completed') {
+                bgStatus = 'Completed.';
+                bgHelp = 'Your background and security checks have been fully completed and cleared.';
+              }
+
+              // 7. Final decision
+              let finalStatus = 'Your application is in progress. We will send you a message once a final decision has been made.';
+              let finalHelp = 'Once a decision is rendered, a final notification and official correspondence will be sent to your account.';
+              if (status === 'Approved') {
+                finalStatus = 'Your application was approved. Check your messages below for details.';
+                finalHelp = 'Your visa application has been approved! Please read the correspondence letter below for next steps.';
+              } else if (status === 'Refused') {
+                finalStatus = 'Your application was refused. Check your messages below for details.';
+                finalHelp = 'A decision letter outlining the reasons for refusal has been issued to your account messages.';
+              } else if (status === 'Draft') {
+                finalStatus = 'Not started.';
+                finalHelp = 'A final decision will be reached after your submission has been reviewed.';
+              }
+
+              const steps = [
+                { step: 'Review of eligibility', status: eligStatus, help: eligHelp },
+                { step: 'Review of medical results', status: medStatus, help: medHelp },
+                { step: 'Review of additional documents', status: extraStatus, help: extraHelp },
+                { step: 'Interview', status: intStatus, help: intHelp },
+                { step: 'Biometrics', status: bioStatus, help: bioHelp },
+                { step: 'Background check', status: bgStatus, help: bgHelp },
+                { step: 'Final decision', status: finalStatus, help: finalHelp },
+              ];
+
+              return steps.map((item, idx) => (
+                <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
+                  <td className="py-3 px-3 font-semibold text-gray-900">{item.step}</td>
+                  <td className="py-3 px-3 text-gray-700">{item.status}</td>
+                  <td className="py-3 px-3 text-gray-600 text-xs leading-normal">{item.help}</td>
+                </tr>
+              ));
+            })()}
           </tbody>
         </table>
       </div>

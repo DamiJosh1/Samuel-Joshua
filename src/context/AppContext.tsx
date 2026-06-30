@@ -121,7 +121,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
         })
         .catch((err) => {
-          console.error("Backend sync failed, using client fallback:", err);
+          // Use console.warn to indicate fallback, preventing false-positive error alerts during transient dev server restarts
+          console.warn("Backend sync status: running with offline client state.", err.message || err);
         });
     };
 
