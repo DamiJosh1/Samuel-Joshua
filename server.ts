@@ -8,10 +8,12 @@ import { Resend } from "resend";
 interface TimelineEvent {
   id: string;
   date: string;
-  time: string;
+  time?: string;
   action: string;
   details?: string;
   documentName?: string;
+  title?: string;
+  status?: string;
 }
 
 interface ApplicationInfo {
@@ -26,6 +28,7 @@ interface ApplicationInfo {
   details: string;
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
+  requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
   messages?: { id: string; subject: string; date: string; content: string; isRead: boolean }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
@@ -129,6 +132,18 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
     timeCreated: "09:00 AM",
     details: "Your application is in progress. We will send you a message once the final decision has been made.",
     detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise.",
+    requestedDocuments: [
+      { name: "Passport", status: "Pending", dateUpdated: "2026-03-18", remarks: "Please upload a clear copy of your passport bio-data page." },
+      { name: "Biometrics", status: "Pending", dateUpdated: "2026-03-20", remarks: "Biometrics Instruction Letter issued. Please scheduled appointment." },
+      { name: "Medical report", status: "Pending", dateUpdated: "2026-03-22", remarks: "Medical examination requested. Please complete at authorized physician." }
+    ],
+    timeline: [
+      { id: "evt-1", date: "2026-03-18 09:00 AM", title: "Profile Created", action: "Profile Created", status: "Completed" },
+      { id: "evt-2", date: "2026-03-18 09:15 AM", title: "Application Submitted", action: "Application Submitted", status: "Completed" },
+      { id: "evt-3", date: "2026-03-18 09:30 AM", title: "Confirmation of Transmission Sent", action: "System Action", status: "Completed" },
+      { id: "evt-4", date: "2026-03-20 10:00 AM", title: "Biometrics Instruction Letter Issued", action: "Admin Action", status: "Completed" },
+      { id: "evt-5", date: "2026-03-22 11:30 AM", title: "Medical Examination Requested", action: "Admin Action", status: "Completed" }
+    ],
     messages: [
       {
         id: "msg-1",
@@ -347,7 +362,8 @@ async function startServer() {
     const id = req.params.id;
     const { 
       status, statusFr, details, detailsFr, documents, timeline,
-      biometricStatus, workPermitStatus, visitorVisaStatus, studyPermitStatus, passportRequestStatus, medicalRequestStatus 
+      biometricStatus, workPermitStatus, visitorVisaStatus, studyPermitStatus, passportRequestStatus, medicalRequestStatus,
+      requestedDocuments, messages
     } = req.body;
 
     if (!db.applications.has(email)) {
@@ -375,6 +391,8 @@ async function startServer() {
       studyPermitStatus: studyPermitStatus ?? currentList[index].studyPermitStatus,
       passportRequestStatus: passportRequestStatus ?? currentList[index].passportRequestStatus,
       medicalRequestStatus: medicalRequestStatus ?? currentList[index].medicalRequestStatus,
+      requestedDocuments: requestedDocuments ?? currentList[index].requestedDocuments,
+      messages: messages ?? currentList[index].messages,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 

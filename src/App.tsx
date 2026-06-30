@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import GovernmentLayout from './layouts/GovernmentLayout';
 import LanguageGate from './components/LanguageGate';
@@ -46,6 +47,16 @@ export default function App() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function AppContent() {
   const { hasEntered } = useApp();
 
@@ -55,6 +66,7 @@ function AppContent() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         
         {/* Main Government Routing Template enclosing child views */}

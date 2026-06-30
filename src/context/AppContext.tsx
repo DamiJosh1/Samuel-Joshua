@@ -4,10 +4,12 @@ import { Language } from '../types';
 export interface TimelineEvent {
   id: string;
   date: string;
-  time: string;
+  time?: string;
   action: string;
   details?: string;
   documentName?: string;
+  title?: string;
+  status?: string;
 }
 
 export const IMMIGRATION_JOURNEY_STEPS = [
@@ -41,7 +43,7 @@ export interface ApplicationInfo {
   details: string;
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
-  requestedDocuments?: { name: string; status: 'Pending' | 'Received' }[];
+  requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
   messages?: { id: string; subject: string; date: string; content: string; isRead: boolean }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;

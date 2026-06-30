@@ -91,16 +91,21 @@ export default function Dashboard() {
             <tbody>
               {safeApplications.length > 0 ? (
                 safeApplications.map((app) => (
-                  <tr key={app.id || Math.random()} className="border-b border-gray-300 hover:bg-gray-50">
-                    <td className="py-3 px-2 text-[#26374a] underline cursor-pointer uppercase">{app.type || 'WORK VISA'}</td>
+                  <tr 
+                    key={app.id || Math.random()} 
+                    className={`border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${selectedAppId === app.id ? 'bg-gray-100 font-bold' : ''}`}
+                    onClick={() => setSelectedAppId(app.id)}
+                  >
+                    <td className="py-3 px-2 text-[#26374a] underline uppercase font-bold">{app.type || 'WORK VISA'}</td>
                     <td className="py-3 px-2">{app.id}</td>
                     <td className="py-3 px-2 uppercase">{user?.name}</td>
                     <td className="py-3 px-2 whitespace-nowrap">{app.dateCreated}</td>
-                    <td className="py-3 px-2">{app.status}</td>
+                    <td className="py-3 px-2 font-semibold text-gray-800">{app.status}</td>
                     <td className="py-3 px-2">New</td>
                     <td 
-                      className="py-3 px-2 text-[#26374a] underline cursor-pointer"
-                      onClick={() => {
+                      className="py-3 px-2 text-[#26374a] underline cursor-pointer font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevent setting selection again
                         navigate(`/application/${app.id}`);
                       }}
                     >
@@ -121,6 +126,56 @@ export default function Dashboard() {
           <button className="bg-[#26374a] text-white px-3 py-1 text-sm font-bold">1</button>
         </div>
       </div>
+
+      {/* Activity History of Selected Application */}
+      {selectedApp && (
+        <div className="mt-10 border-t border-gray-300 pt-8">
+          <h2 className="text-xl font-bold text-[#333] mb-2">
+            Activity history for application {selectedApp.id}
+          </h2>
+          <p className="text-[13px] text-gray-700 mb-4">
+            This section lists the timeline of official status updates, document submissions, and biometric actions for the selected application. Click on any row above to view its specific history.
+          </p>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-[13px]">
+              <thead>
+                <tr className="border-t-2 border-b-2 border-gray-300 text-gray-900">
+                  <th className="py-2.5 px-3 font-bold w-36">Date</th>
+                  <th className="py-2.5 px-3 font-bold w-32">Time</th>
+                  <th className="py-2.5 px-3 font-bold">Activity / Update</th>
+                  <th className="py-2.5 px-3 font-bold">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedApp.timeline && selectedApp.timeline.length > 0 ? (
+                  selectedApp.timeline.map((evt, idx) => {
+                    const parts = (evt.date || "").split(" ");
+                    const dStr = parts[0] || evt.date || "—";
+                    const tStr = parts[1] ? parts.slice(1).join(" ") : evt.time || "—";
+                    return (
+                      <tr key={evt.id || idx} className="border-b border-gray-300">
+                        <td className="py-2.5 px-3 font-medium whitespace-nowrap">{dStr}</td>
+                        <td className="py-2.5 px-3 whitespace-nowrap">{tStr}</td>
+                        <td className="py-2.5 px-3 text-gray-800">{evt.title || evt.action}</td>
+                        <td className="py-2.5 px-3">
+                          <span className="text-gray-900 border border-gray-300 px-2 py-0.5 rounded-sm text-xs bg-gray-50 font-semibold">
+                            {evt.status || 'Completed'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="py-6 px-3 text-gray-500 italic text-center">No timeline records found for this application.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
     </main>
   );

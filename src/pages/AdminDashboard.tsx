@@ -205,13 +205,48 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUpdateRequestedDocStatus = async (email: string, appId: string, docName: string, newStatus: 'Pending' | 'Received') => {
+  const handleUpdateRequestedDocStatus = async (email: string, appId: string, docName: string, newStatus: 'Pending' | 'Submitted' | 'Received') => {
     const targetAppItem = allApplications.find(a => a.app.id === appId);
     if (!targetAppItem) return;
     
     const targetApp = targetAppItem.app;
     const requested = targetApp.requestedDocuments || [];
-    const updatedRequested = requested.map(d => d.name === docName ? { ...d, status: newStatus } : d);
+    
+    // Auto-update remarks and timeline when admin changes status
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    let statusTextForRemarks = '';
+    let timelineTitle = '';
+    if (newStatus === 'Pending') {
+      statusTextForRemarks = `Document was requested by the visa officer on ${dateStr}.`;
+      timelineTitle = `Requested document: ${docName}`;
+    } else if (newStatus === 'Submitted') {
+      statusTextForRemarks = `Document was submitted on ${dateStr}. Pending review.`;
+      timelineTitle = `Submitted document: ${docName}`;
+    } else if (newStatus === 'Received') {
+      statusTextForRemarks = `Document was received and approved on ${dateStr}.`;
+      timelineTitle = `Approved and received document: ${docName}`;
+    }
+
+    const updatedRequested = requested.map(d => d.name === docName ? { 
+      ...d, 
+      status: newStatus,
+      dateUpdated: dateStr,
+      remarks: statusTextForRemarks
+    } : d);
+
+    // Append a timeline event reflecting the change
+    const newEvent = {
+      id: `evt-${Date.now()}`,
+      date: `${dateStr} ${timeStr}`,
+      time: timeStr,
+      title: timelineTitle,
+      action: `Officer updated ${docName} status to ${newStatus}`,
+      status: newStatus === 'Received' ? 'Completed' : (newStatus === 'Submitted' ? 'Pending Review' : 'Requested')
+    };
+    const updatedTimeline = [newEvent, ...(targetApp.timeline || [])];
     
     try {
       const res = await fetch(`/api/applications/${appId}`, {
@@ -219,13 +254,14 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           email, 
-          requestedDocuments: updatedRequested 
+          requestedDocuments: updatedRequested,
+          timeline: updatedTimeline
         })
       });
       if (res.ok) {
         setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
           email, 
-          app: { ...item.app, requestedDocuments: updatedRequested } 
+          app: { ...item.app, requestedDocuments: updatedRequested, timeline: updatedTimeline } 
         } : item));
       }
     } catch (e) {
@@ -746,26 +782,29 @@ export default function AdminDashboard() {
                           <thead>
                             <tr className="bg-gray-100 border-b border-gray-300">
                               <th className="p-2 font-bold">Document</th>
-                              <th className="p-2 font-bold w-32">Status</th>
-                              <th className="p-2 font-bold w-24">Action</th>
+                              <th className="p-2 font-bold w-48">Status</th>
+                              <th className="p-2 font-bold w-44">Action</th>
                             </tr>
                           </thead>
                           <tbody>
                             {reqDocs.map((doc, idx) => (
                               <tr key={idx} className="border-b border-gray-200">
-                                <td className="p-2">{doc.name}</td>
+                                <td className="p-2 font-medium">{doc.name}</td>
                                 <td className="p-2">
-                                  <span className={`px-2 py-1 text-xs font-bold ${doc.status === 'Received' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                    {doc.status}
+                                  <span className="px-2 py-0.5 rounded text-xs font-semibold text-gray-900 border border-gray-300 bg-gray-50">
+                                    {doc.status === 'Submitted' ? 'Submitted (Pending Review)' : doc.status}
                                   </span>
                                 </td>
                                 <td className="p-2">
-                                  <button
-                                    onClick={() => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, doc.status === 'Pending' ? 'Received' : 'Pending')}
-                                    className="text-blue-600 hover:underline text-xs"
+                                  <select
+                                    value={doc.status}
+                                    onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
+                                    className="border border-gray-300 rounded px-1.5 py-1 text-xs bg-white text-gray-700 font-medium"
                                   >
-                                    Mark as {doc.status === 'Pending' ? 'Received' : 'Pending'}
-                                  </button>
+                                    <option value="Pending">Requested (Incomplete)</option>
+                                    <option value="Submitted">Submitted (Pending Review)</option>
+                                    <option value="Received">Received (Approved)</option>
+                                  </select>
                                 </td>
                               </tr>
                             ))}
