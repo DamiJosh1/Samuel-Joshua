@@ -14,6 +14,8 @@ export default function AdminDashboard() {
 
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
+  const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('Passport (required)');
+  const [customRequestedDocName, setCustomRequestedDocName] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailText, setEmailText] = useState('');
   const [emailSuccess, setEmailSuccess] = useState(false);
@@ -329,6 +331,37 @@ export default function AdminDashboard() {
     } catch (e) {
       console.error(e);
       alert("Error requesting document.");
+    }
+  };
+
+  const handleDeleteRequestedDocument = async (email: string, appId: string, docName: string) => {
+    if (!window.confirm(`Are you sure you want to cancel the request for "${docName}"?`)) return;
+    const targetAppItem = allApplications.find(a => a.app.id === appId);
+    if (!targetAppItem) return;
+    
+    const targetApp = targetAppItem.app;
+    const requested = targetApp.requestedDocuments || [];
+    const updatedRequested = requested.filter(d => d.name !== docName);
+    
+    try {
+      const res = await fetch(`/api/applications/${appId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          requestedDocuments: updatedRequested 
+        })
+      });
+      if (res.ok) {
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
+          email, 
+          app: { ...item.app, requestedDocuments: updatedRequested } 
+        } : item));
+        alert(`Cancelled request for ${docName}`);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error deleting requested document.");
     }
   };
 
@@ -1384,10 +1417,151 @@ export default function AdminDashboard() {
                 </form>
               </div>
 
-              {/* SECTION E: System Messaging & Communications */}
+              {/* SECTION E: Request Documents & Checklist Manager */}
               <div className="bg-white p-5 border border-gray-300 space-y-4">
                 <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  5. Compose & Send Messages
+                  5. Request Documents from Applicant (Checklist & Upload Slots)
+                </h3>
+                <p className="text-xs text-gray-600">
+                  Manage the checklist of files requested from the applicant. Adding a document request here places a slot in the applicant's <strong>Document Checklist</strong> (where they can upload documents) and automatically notifies them.
+                </p>
+
+                {/* List of currently requested documents */}
+                <div className="bg-gray-50 p-4 border border-gray-200 space-y-2">
+                  <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">Currently Requested Documents (Checklist)</div>
+                  {(() => {
+                    const target = allApplications.find(a => a.app.id === selectedAppId);
+                    const requestedList = target?.app.requestedDocuments || [];
+                    if (requestedList.length === 0) {
+                      return (
+                        <p className="text-xs text-gray-500 italic py-2">No documents have been requested for this file yet.</p>
+                      );
+                    }
+                    return (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2">
+                          <thead>
+                            <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+                              <th className="p-2 border-r border-gray-200">Document Name</th>
+                              <th className="p-2 border-r border-gray-200 text-center w-32">Status</th>
+                              <th className="p-2 border-r border-gray-200">Date Updated</th>
+                              <th className="p-2 border-r border-gray-200">Remarks</th>
+                              <th className="p-2 text-center w-40">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {requestedList.map((doc, idx) => (
+                              <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                                <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
+                                <td className="p-2 border-r border-gray-200 text-center">
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
+                                    doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                                    'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                  }`}>
+                                    {doc.status}
+                                  </span>
+                                </td>
+                                <td className="p-2 border-r border-gray-200 text-gray-600">{doc.dateUpdated || 'N/A'}</td>
+                                <td className="p-2 border-r border-gray-200 text-gray-600 italic max-w-xs truncate" title={doc.remarks}>{doc.remarks || 'No remarks.'}</td>
+                                <td className="p-2">
+                                  <div className="flex gap-1 justify-center items-center">
+                                    <select
+                                      value={doc.status}
+                                      onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
+                                      className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
+                                    >
+                                      <option value="Pending">Pending</option>
+                                      <option value="Submitted">Submitted</option>
+                                      <option value="Received">Received</option>
+                                    </select>
+                                    <button
+                                      onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
+                                      className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Request New Document Form */}
+                <div className="bg-gray-100 p-4 border border-gray-300 space-y-4">
+                  <div className="text-sm font-bold text-[#26374a]">Request New Document (Add to Checklist)</div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                    <div>
+                      <label className="block mb-1 text-gray-700">Select standard document from list:</label>
+                      <select
+                        value={selectedPredefinedDoc}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSelectedPredefinedDoc(val);
+                          if (val !== 'Custom Document...') {
+                            setCustomRequestedDocName(val);
+                          } else {
+                            setCustomRequestedDocName('');
+                          }
+                        }}
+                        className="w-full border border-gray-400 p-2 bg-white font-medium"
+                      >
+                        <option value="Passport (required)">Passport (required)</option>
+                        <option value="Travel History (required)">Travel History (required)</option>
+                        <option value="Invitation Letter (required)">Invitation Letter (required)</option>
+                        <option value="Proof of Means of Financial Support (required)">Proof of Means of Financial Support (required)</option>
+                        <option value="Digital photo (required)">Digital photo (required)</option>
+                        <option value="Purpose of Travel - Other (required)">Purpose of Travel - Other (required)</option>
+                        <option value="Family Information (IMM5645) (required)">Family Information (IMM5645) (required)</option>
+                        <option value="Proof of Relationship (required)">Proof of Relationship (required)</option>
+                        <option value="Application for Visitor Visa (Temporary Resident Visa) Made Outside of Canada (IMM5257) (required)">Application Form (IMM5257) (required)</option>
+                        <option value="Schedule 1 - Application for a Temporary Resident Visa Made Outside Canada (IMM 5257)">Schedule 1 (IMM 5257)</option>
+                        <option value="Client Information">Client Information</option>
+                        <option value="Custom Document...">-- Custom Document (type custom name below) --</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 text-gray-700">Document Name to request:</label>
+                      <input
+                        type="text"
+                        value={customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '')}
+                        onChange={(e) => setCustomRequestedDocName(e.target.value)}
+                        placeholder="e.g. Police Clearance Certificate, IELTS Results"
+                        className="w-full border border-gray-400 p-2 bg-white font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 text-right">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const finalName = customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '');
+                        if (!finalName || !finalName.trim()) {
+                          alert("Please specify a document name to request.");
+                          return;
+                        }
+                        await handleRequestDocument(selectedUserEmail, selectedAppId, finalName.trim());
+                      }}
+                      className="bg-[#26374a] text-white px-5 py-2 font-bold hover:bg-[#111820] text-xs transition-colors"
+                    >
+                      Send Document Request to Applicant
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION F: System Messaging & Communications */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  6. Compose & Send Messages
                 </h3>
                 <p className="text-xs text-gray-600">Compose and send messages that appear inside the applicant's "Messages About Your Application" section.</p>
                 {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent successfully to Applicant!</div>}
