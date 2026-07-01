@@ -174,7 +174,7 @@ export default function ApplicationDetails() {
           >
             View submitted application or upload documents{" "}
           </span>
-          then the link will take them to this place
+          
         </p>
       </div>
 
