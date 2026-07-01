@@ -24,6 +24,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ApplicationDetails from './pages/ApplicationDetails';
+import DocumentChecklist from './pages/DocumentChecklist';
 
 // Secondary hubs pages
 import {
@@ -132,6 +133,7 @@ function AppContent() {
           <Route path="auth/register" element={<Login />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="application/:id" element={<ApplicationDetails />} />
+          <Route path="application/:id/checklist" element={<DocumentChecklist />} />
           <Route path="admin" element={<AdminDashboard />} />
 
           {/* General Catch-All fallback redirecting to root index */}

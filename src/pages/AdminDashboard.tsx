@@ -26,6 +26,64 @@ export default function AdminDashboard() {
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileEmail, setNewProfileEmail] = useState('');
   const [newProfileAppType, setNewProfileAppType] = useState('Work Permit');
+  const [newProfileAppNumber, setNewProfileAppNumber] = useState('');
+  const [newProfileUci, setNewProfileUci] = useState('');
+  const [newProfileDateCreated, setNewProfileDateCreated] = useState('');
+  const [newProfileDateSubmitted, setNewProfileDateSubmitted] = useState('');
+  const [newProfileStatus, setNewProfileStatus] = useState('Submitted');
+
+  // Selected Application Editing States
+  const [editFullName, setEditFullName] = useState('');
+  const [editUci, setEditUci] = useState('');
+  const [editDateReceived, setEditDateReceived] = useState('');
+  const [editDateSubmitted, setEditDateSubmitted] = useState('');
+  const [editStatus, setEditStatus] = useState('');
+  const [editBiometricsNumber, setEditBiometricsNumber] = useState('');
+  const [editBiometricsDate, setEditBiometricsDate] = useState('');
+  const [editBiometricsExpiry, setEditBiometricsExpiry] = useState('');
+  
+  const [editStatusSummary, setEditStatusSummary] = useState('');
+  const [editLatestUpdate, setEditLatestUpdate] = useState('');
+
+  // 7 Stages Edit States
+  const [stageEligibilityStatus, setStageEligibilityStatus] = useState('');
+  const [stageEligibilityDesc, setStageEligibilityDesc] = useState('');
+  const [stageEligibilityDate, setStageEligibilityDate] = useState('');
+
+  const [stageMedicalStatus, setStageMedicalStatus] = useState('');
+  const [stageMedicalDesc, setStageMedicalDesc] = useState('');
+  const [stageMedicalDate, setStageMedicalDate] = useState('');
+
+  const [stageAdditionalDocsStatus, setStageAdditionalDocsStatus] = useState('');
+  const [stageAdditionalDocsDesc, setStageAdditionalDocsDesc] = useState('');
+  const [stageAdditionalDocsDate, setStageAdditionalDocsDate] = useState('');
+
+  const [stageInterviewStatus, setStageInterviewStatus] = useState('');
+  const [stageInterviewDesc, setStageInterviewDesc] = useState('');
+  const [stageInterviewDate, setStageInterviewDate] = useState('');
+
+  const [stageBiometricsStatus, setStageBiometricsStatus] = useState('');
+  const [stageBiometricsDesc, setStageBiometricsDesc] = useState('');
+  const [stageBiometricsDateState, setStageBiometricsDateState] = useState('');
+
+  const [stageBackgroundStatus, setStageBackgroundStatus] = useState('');
+  const [stageBackgroundDesc, setStageBackgroundDesc] = useState('');
+  const [stageBackgroundDate, setStageBackgroundDate] = useState('');
+
+  const [stageFinalDecisionStatus, setStageFinalDecisionStatus] = useState('');
+  const [stageFinalDecisionDesc, setStageFinalDecisionDesc] = useState('');
+  const [stageFinalDecisionDate, setStageFinalDecisionDate] = useState('');
+
+  // New Document Status Table Row States
+  const [newDocRowName, setNewDocRowName] = useState('');
+  const [newDocRowUci, setNewDocRowUci] = useState('');
+  const [newDocRowType, setNewDocRowType] = useState('');
+  const [newDocRowNumber, setNewDocRowNumber] = useState('');
+  const [newDocRowStatus, setNewDocRowStatus] = useState('');
+  const [newDocRowExpiry, setNewDocRowExpiry] = useState('');
+  const [newDocRowUpdated, setNewDocRowUpdated] = useState('');
+  const [newDocRowTravelNum, setNewDocRowTravelNum] = useState('');
+  const [newDocRowCountry, setNewDocRowCountry] = useState('');
 
   const [subStatusEdits, setSubStatusEdits] = useState<Record<string, string>>({});
 
@@ -33,6 +91,56 @@ export default function AdminDashboard() {
   const [customTimelineDate, setCustomTimelineDate] = useState('');
   const [customTimelineTime, setCustomTimelineTime] = useState('');
   const [customTimelineAction, setCustomTimelineAction] = useState('');
+
+  // Effect to populate states upon choosing an application
+  useEffect(() => {
+    if (!selectedAppId) return;
+    const item = allApplications.find(a => a.app.id === selectedAppId);
+    if (item) {
+      const app = item.app;
+      setEditFullName(app.fullName || item.app.fullName || '');
+      setEditUci(app.uci || '');
+      setEditDateReceived(app.dateReceived || app.dateCreated || '');
+      setEditDateSubmitted(app.dateSubmitted || '');
+      setEditStatus(app.status || '');
+      setEditBiometricsNumber(app.biometricsNumber || '');
+      setEditBiometricsDate(app.biometricsDate || '');
+      setEditBiometricsExpiry(app.biometricsExpiry || '');
+      
+      setEditStatusSummary(app.statusSummary || app.details || '');
+      setEditLatestUpdate(app.latestUpdate || '');
+
+      setStageEligibilityStatus(app.stages?.eligibilityStatus || '');
+      setStageEligibilityDesc(app.stages?.eligibilityDesc || '');
+      setStageEligibilityDate(app.stages?.eligibilityDate || '');
+
+      setStageMedicalStatus(app.stages?.medicalStatus || '');
+      setStageMedicalDesc(app.stages?.medicalDesc || '');
+      setStageMedicalDate(app.stages?.medicalDate || '');
+
+      setStageAdditionalDocsStatus(app.stages?.additionalDocsStatus || '');
+      setStageAdditionalDocsDesc(app.stages?.additionalDocsDesc || '');
+      setStageAdditionalDocsDate(app.stages?.additionalDocsDate || '');
+
+      setStageInterviewStatus(app.stages?.interviewStatus || '');
+      setStageInterviewDesc(app.stages?.interviewDesc || '');
+      setStageInterviewDate(app.stages?.interviewDate || '');
+
+      setStageBiometricsStatus(app.stages?.biometricsStatus || '');
+      setStageBiometricsDesc(app.stages?.biometricsDesc || '');
+      setStageBiometricsDateState(app.stages?.biometricsDate || '');
+
+      setStageBackgroundStatus(app.stages?.backgroundStatus || '');
+      setStageBackgroundDesc(app.stages?.backgroundDesc || '');
+      setStageBackgroundDate(app.stages?.backgroundDate || '');
+
+      setStageFinalDecisionStatus(app.stages?.finalDecisionStatus || '');
+      setStageFinalDecisionDesc(app.stages?.finalDecisionDesc || '');
+      setStageFinalDecisionDate(app.stages?.finalDecisionDate || '');
+
+      setNewDocRowUci(app.uci || '');
+    }
+  }, [selectedAppId, allApplications]);
 
   const fetchApps = () => {
     Promise.all([
@@ -62,12 +170,26 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newProfileEmail, name: newProfileName, appType: newProfileAppType })
+        body: JSON.stringify({ 
+          email: newProfileEmail, 
+          name: newProfileName, 
+          appType: newProfileAppType,
+          appNumber: newProfileAppNumber,
+          uci: newProfileUci,
+          dateCreated: newProfileDateCreated,
+          dateSubmitted: newProfileDateSubmitted,
+          status: newProfileStatus
+        })
       });
       if (res.ok) {
         alert("Applicant profile created successfully! Application created.");
         setNewProfileEmail('');
         setNewProfileName('');
+        setNewProfileAppNumber('');
+        setNewProfileUci('');
+        setNewProfileDateCreated('');
+        setNewProfileDateSubmitted('');
+        setNewProfileStatus('Submitted');
         fetchApps();
       } else {
         alert("Failed to create profile.");
@@ -531,50 +653,115 @@ export default function AdminDashboard() {
       <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Immigration Case Management</h1>
 
       <div className="max-w-xl bg-gray-100 p-6 border border-gray-300">
-        <h2 className="text-xl font-bold mb-4">Create Applicant Profile</h2>
-        <form onSubmit={handleCreateProfile} className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold mb-1">Applicant Name</label>
-            <input 
-              type="text" 
-              value={newProfileName}
-              onChange={e => setNewProfileName(e.target.value)}
-              className="w-full border border-gray-400 p-2"
-              placeholder="e.g. John Doe"
-              required
-            />
+        <h2 className="text-xl font-bold mb-4 text-[#26374a] border-b border-gray-300 pb-2">Create Applicant Profile</h2>
+        <form onSubmit={handleCreateProfile} className="space-y-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Applicant Full Name</label>
+              <input 
+                type="text" 
+                value={newProfileName}
+                onChange={e => setNewProfileName(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. John Doe"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Email Address</label>
+              <input 
+                type="email" 
+                value={newProfileEmail}
+                onChange={e => setNewProfileEmail(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="name@domain.ca"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-bold mb-1">Applicant Email (Used for Sign In)</label>
-            <input 
-              type="email" 
-              value={newProfileEmail}
-              onChange={e => setNewProfileEmail(e.target.value)}
-              className="w-full border border-gray-400 p-2"
-              placeholder="name@domain.ca"
-              required
-            />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Application Type</label>
+              <select 
+                value={newProfileAppType}
+                onChange={e => setNewProfileAppType(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white font-medium"
+              >
+                <option value="Work Permit">Work Permit</option>
+                <option value="Visitor Visa">Visitor Visa</option>
+                <option value="Study Permit">Study Permit</option>
+                <option value="Permanent Residence">Permanent Residence</option>
+                <option value="Citizenship">Citizenship</option>
+                <option value="Passport">Passport</option>
+                <option value="Biometrics">Biometrics</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Application Number</label>
+              <input 
+                type="text" 
+                value={newProfileAppNumber}
+                onChange={e => setNewProfileAppNumber(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. W123456789 (leave empty for auto)"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-bold mb-1">Initial Application Type</label>
-            <select 
-              value={newProfileAppType}
-              onChange={e => setNewProfileAppType(e.target.value)}
-              className="w-full border border-gray-400 p-2"
-            >
-              <option value="Work Permit">Work Permit</option>
-              <option value="Visitor Visa">Visitor Visa</option>
-              <option value="Study Permit">Study Permit</option>
-              <option value="Permanent Residence">Permanent Residence</option>
-              <option value="Citizenship">Citizenship</option>
-              <option value="Passport">Passport</option>
-              <option value="Biometrics">Biometrics</option>
-            </select>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">UCI (optional)</label>
+              <input 
+                type="text" 
+                value={newProfileUci}
+                onChange={e => setNewProfileUci(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. 11-2222-3333"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Current Status</label>
+              <select
+                value={newProfileStatus}
+                onChange={e => setNewProfileStatus(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white font-medium"
+              >
+                <option value="Submitted">Submitted</option>
+                <option value="Processing">Processing</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Approved">Approved</option>
+                <option value="Refused">Refused</option>
+                <option value="Documents Requested">Documents Requested</option>
+              </select>
+            </div>
           </div>
-          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full">
-            Create Profile
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Date Created / Received</label>
+              <input 
+                type="date" 
+                value={newProfileDateCreated}
+                onChange={e => setNewProfileDateCreated(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Date Submitted</label>
+              <input 
+                type="date" 
+                value={newProfileDateSubmitted}
+                onChange={e => setNewProfileDateSubmitted(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full transition-colors">
+            Create Profile & Application Record
           </button>
-          <p className="text-xs text-gray-600 mt-2">After creating, provide the email and password to the user.</p>
+          <p className="text-xs text-gray-600 mt-2">After creating, provide the email to the user. All initial status stages will be prepared automatically.</p>
         </form>
       </div>
 
@@ -709,314 +896,527 @@ export default function AdminDashboard() {
 
           {selectedAppId && selectedUserEmail && (
             <div className="border border-gray-400 p-6 space-y-8 bg-gray-50 mt-8">
-              <h2 className="text-2xl font-bold border-b border-gray-300 pb-2">
-                Managing: {selectedAppId} ({selectedUserEmail})
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                {/* Specific Status Updates */}
-                <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Sub-Statuses</h3>
-                  
-                  {['workPermitStatus', 'visitorVisaStatus', 'studyPermitStatus', 'passportRequestStatus', 'medicalRequestStatus', 'biometricStatus'].map((statusKey) => {
-                    const originalVal = allApplications.find(a => a.app.id === selectedAppId)?.app[statusKey as keyof ApplicationInfo] as string || '';
-                    const currentVal = subStatusEdits[statusKey] !== undefined ? subStatusEdits[statusKey] : originalVal;
-                    const label = statusKey.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                    return (
-                      <div key={statusKey} className="flex justify-between items-center">
-                        <label className="text-sm font-bold w-1/2">{label}</label>
-                        <select 
-                          value={currentVal}
-                          onChange={(e) => setSubStatusEdits({ ...subStatusEdits, [statusKey]: e.target.value })}
-                          className="w-1/2 border border-gray-400 p-1 text-sm"
-                        >
-                          <option value="">-- Not Set --</option>
-                          <option value="Requested">Requested</option>
-                          <option value="Completed">Completed</option>
-                          <option value="Approved">Approved</option>
-                          <option value="Refused">Refused</option>
-                        </select>
-                      </div>
-                    );
-                  })}
-                  <div className="pt-2">
-                    <button 
-                      onClick={() => {
-                        Object.keys(subStatusEdits).forEach(key => {
-                          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                          handleUpdateApp(selectedUserEmail, selectedAppId, { [key]: subStatusEdits[key] }, `${label} Updated to ${subStatusEdits[key] || 'None'}`);
-                        });
-                        setSubStatusEdits({});
-                        alert("Sub-statuses saved.");
-                      }}
-                      disabled={Object.keys(subStatusEdits).length === 0}
-                      className="w-full bg-[#26374a] hover:bg-[#111820] disabled:bg-gray-400 text-white px-4 py-2 font-bold text-sm"
-                    >
-                      Save Sub-Statuses
-                    </button>
-                  </div>
-                </div>
-
-                {/* Document Upload */}
-                <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Upload Document</h3>
-                  <form onSubmit={handleUploadDoc} className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-bold mb-1">Document Category</label>
-                      <select 
-                        value={docCategory}
-                        onChange={(e) => setDocCategory(e.target.value)}
-                        className="w-full border border-gray-400 p-2"
-                      >
-                        <option value="Custom Document">Custom Document</option>
-                        <option value="Passport Request Letter">Passport Request Letter</option>
-                        <option value="Work Permit Letter">Work Permit Letter</option>
-                        <option value="Visitor Visa Documents">Visitor Visa Documents</option>
-                        <option value="Study Permit Documents">Study Permit Documents</option>
-                        <option value="Biometrics Instruction Letter (BIL)">Biometrics Instruction Letter (BIL)</option>
-                        <option value="Biometrics Confirmation">Biometrics Confirmation</option>
-                        <option value="Medical Request Letter">Medical Request Letter</option>
-                        <option value="Invitation Letter">Invitation Letter</option>
-                        <option value="Additional Supporting Documents">Additional Supporting Documents</option>
-                        <option value="Approval Letter">Approval Letter</option>
-                        <option value="Refusal Letter">Refusal Letter</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold mb-1">Filename (e.g. letter.pdf)</label>
-                      <input 
-                        type="text" 
-                        value={docName}
-                        onChange={(e) => setDocName(e.target.value)}
-                        className="w-full border border-gray-400 p-2"
-                        required
-                      />
-                    </div>
-                    <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820]">
-                      Upload to Applicant
-                    </button>
-                  </form>
-                </div>
-
-                {/* Required Documents / Checklist */}
-                <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Required Documents Checklist</h3>
-                  <p className="text-sm text-gray-700">Track and request documents from the applicant step-by-step.</p>
-                  
-                  <div className="flex gap-2">
-                    <select id={`requestDoc-${selectedAppId}`} className="flex-1 border border-gray-400 p-2 text-sm bg-gray-50">
-                      <option value="">-- Request a Document --</option>
-                      <option value="Work permit application form">Work permit application form</option>
-                      <option value="Job Contract letter">Job Contract letter</option>
-                      <option value="Proof of qualification">Proof of qualification</option>
-                      <option value="IELTS certificate">IELTS certificate</option>
-                      <option value="LMIA Letter">LMIA Letter</option>
-                      <option value="Proof of Funds">Proof of Funds</option>
-                      <option value="Police clearance certificate">Police clearance certificate</option>
-                      <option value="Medical report">Medical report</option>
-                      <option value="Biometrics">Biometrics</option>
-                      <option value="Passport">Passport</option>
-                    </select>
-                    <button 
-                      type="button"
-                      onClick={() => {
-                        const sel = document.getElementById(`requestDoc-${selectedAppId}`) as HTMLSelectElement;
-                        if (sel && sel.value) {
-                          handleRequestDocument(selectedUserEmail, selectedAppId, sel.value);
-                          sel.value = '';
-                        }
-                      }}
-                      className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820]"
-                    >
-                      Request
-                    </button>
-                  </div>
-
-                  {(() => {
-                    const reqDocs = allApplications.find(a => a.app.id === selectedAppId)?.app.requestedDocuments;
-                    if (!reqDocs || reqDocs.length === 0) return null;
-                    return (
-                      <div className="mt-4">
-                        <table className="w-full text-left text-sm border-collapse">
-                          <thead>
-                            <tr className="bg-gray-100 border-b border-gray-300">
-                              <th className="p-2 font-bold">Document</th>
-                              <th className="p-2 font-bold w-48">Status</th>
-                              <th className="p-2 font-bold w-44">Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {reqDocs.map((doc, idx) => (
-                              <tr key={idx} className="border-b border-gray-200">
-                                <td className="p-2 font-medium">{doc.name}</td>
-                                <td className="p-2">
-                                  <span className="px-2 py-0.5 rounded text-xs font-semibold text-gray-900 border border-gray-300 bg-gray-50">
-                                    {doc.status === 'Submitted' ? 'Submitted (Pending Review)' : doc.status}
-                                  </span>
-                                </td>
-                                <td className="p-2">
-                                  <select
-                                    value={doc.status}
-                                    onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
-                                    className="border border-gray-300 rounded px-1.5 py-1 text-xs bg-white text-gray-700 font-medium"
-                                  >
-                                    <option value="Pending">Requested (Incomplete)</option>
-                                    <option value="Submitted">Submitted (Pending Review)</option>
-                                    <option value="Received">Received (Approved)</option>
-                                  </select>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                {/* Email Sender */}
-                <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <div className="flex justify-between items-center border-b border-gray-300 pb-1">
-                    <h3 className="font-bold text-lg">Send Follow-up / Request Document</h3>
-                    <select 
-                      className="border border-gray-400 p-1 text-sm bg-gray-50"
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (!val) return;
-                        setEmailSubject(`Action Required: Please submit your ${val}`);
-                        setEmailText(`Dear Applicant,\n\nWe are currently reviewing your application.\n\nIn order to proceed to the next step, please provide the following document as soon as possible:\n- ${val}\n\nYou can upload this document or send it as instructed.\n\nThank you,\nImmigration, Refugees and Citizenship Canada`);
-                        e.target.value = '';
-                      }}
-                    >
-                      <option value="">-- Quick Request Document --</option>
-                      <option value="Work permit application form">Work permit application form</option>
-                      <option value="Job Contract letter">Job Contract letter</option>
-                      <option value="Proof of qualification">Proof of qualification</option>
-                      <option value="IELTS certificate">IELTS certificate</option>
-                      <option value="LMIA Letter">LMIA Letter</option>
-                      <option value="Proof of Funds">Proof of Funds</option>
-                      <option value="Police clearance certificate">Police clearance certificate</option>
-                      <option value="Medical report">Medical report</option>
-                      <option value="Biometrics">Biometrics</option>
-                      <option value="Passport">Passport</option>
-                    </select>
-                  </div>
-                  {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent!</div>}
-                  <form onSubmit={handleSendEmail} className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-bold mb-1">Subject</label>
-                      <input 
-                        type="text" 
-                        value={emailSubject}
-                        onChange={(e) => setEmailSubject(e.target.value)}
-                        className="w-full border border-gray-400 p-2"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold mb-1">Message</label>
-                      <textarea 
-                        value={emailText}
-                        onChange={(e) => setEmailText(e.target.value)}
-                        className="w-full border border-gray-400 p-2 h-24"
-                        required
-                      />
-                    </div>
-                    <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820]">
-                      Send Email
-                    </button>
-                  </form>
-                </div>
-                
-                {/* Notes & Next Action */}
-                <div className="space-y-4 bg-white p-4 border border-gray-300">
-                  <h3 className="font-bold text-lg border-b border-gray-300 pb-1">Update Notes / Next Action</h3>
-                  <form onSubmit={(e) => {
-                    e.preventDefault();
-                    const form = e.target as HTMLFormElement;
-                    const notes = (form.elements.namedItem('notes') as HTMLTextAreaElement).value;
-                    handleUpdateApp(selectedUserEmail, selectedAppId, { details: notes, detailsFr: notes }, `Notes Updated: ${notes.substring(0,20)}...`);
-                    form.reset();
-                  }} className="space-y-3">
-                    <textarea 
-                      name="notes"
-                      className="w-full border border-gray-400 p-2 h-24"
-                      placeholder="Enter next required action or note..."
-                      required
-                    />
-                    <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820]">
-                      Save Note
-                    </button>
-                  </form>
-                </div>
-
+              <div className="flex justify-between items-center border-b border-gray-300 pb-2">
+                <h2 className="text-2xl font-bold text-[#26374a]">
+                  Case Management: ID {selectedAppId}
+                </h2>
+                <button 
+                  onClick={() => { setSelectedAppId(null); setSelectedUserEmail(null); }}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-1.5 text-sm"
+                >
+                  Close File
+                </button>
               </div>
-              
-              {/* Timeline Preview */}
-              <div className="bg-white p-4 border border-gray-300">
-                <h3 className="font-bold text-lg border-b border-gray-300 pb-2 mb-4">Application Timeline</h3>
+
+              {/* SECTION A: Applicant Profile & Information */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  1. Applicant Information & Metadata
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Full Name</label>
+                    <input 
+                      type="text" 
+                      value={editFullName}
+                      onChange={e => setEditFullName(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="Principal Applicant"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">UCI (Unique Client Identifier)</label>
+                    <input 
+                      type="text" 
+                      value={editUci}
+                      onChange={e => setEditUci(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. 11-2222-3333"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Application Number (Read-only)</label>
+                    <input 
+                      type="text" 
+                      value={selectedAppId}
+                      className="w-full border border-gray-300 p-2 bg-gray-100 cursor-not-allowed"
+                      disabled
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Date Received / Created</label>
+                    <input 
+                      type="text" 
+                      value={editDateReceived}
+                      onChange={e => setEditDateReceived(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. March 18, 2026"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Date Submitted</label>
+                    <input 
+                      type="text" 
+                      value={editDateSubmitted}
+                      onChange={e => setEditDateSubmitted(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. March 18, 2026"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Overall Current Status</label>
+                    <select
+                      value={editStatus}
+                      onChange={e => setEditStatus(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white font-semibold"
+                    >
+                      <option value="Submitted">Submitted</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Under Review">Under Review</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Refused">Refused</option>
+                      <option value="Documents Requested">Documents Requested</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Biometrics Number</label>
+                    <input 
+                      type="text" 
+                      value={editBiometricsNumber}
+                      onChange={e => setEditBiometricsNumber(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. 123456789012"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Biometrics Date of Enrolment</label>
+                    <input 
+                      type="text" 
+                      value={editBiometricsDate}
+                      onChange={e => setEditBiometricsDate(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. June 15, 2026"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Biometrics Expiry Date</label>
+                    <input 
+                      type="text" 
+                      value={editBiometricsExpiry}
+                      onChange={e => setEditBiometricsExpiry(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. June 15, 2036"
+                    />
+                  </div>
+                </div>
+                <div className="pt-2 text-right">
+                  <button 
+                    onClick={async () => {
+                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                        fullName: editFullName,
+                        uci: editUci,
+                        dateReceived: editDateReceived,
+                        dateSubmitted: editDateSubmitted,
+                        status: editStatus,
+                        biometricsNumber: editBiometricsNumber,
+                        biometricsDate: editBiometricsDate,
+                        biometricsExpiry: editBiometricsExpiry
+                      }, "Profile Information Updated");
+                      alert("Applicant Information saved!");
+                    }}
+                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+                  >
+                    Save Applicant Info
+                  </button>
+                </div>
+              </div>
+
+              {/* SECTION B: Application Status Summary & Latest Update */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  2. Status Summary & Latest Update text
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Application Status Summary message (appears at top left)</label>
+                    <textarea 
+                      value={editStatusSummary}
+                      onChange={e => setEditStatusSummary(e.target.value)}
+                      rows={3}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. Your application is in progress. We will send you a message..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Latest Update text description</label>
+                    <textarea 
+                      value={editLatestUpdate}
+                      onChange={e => setEditLatestUpdate(e.target.value)}
+                      rows={3}
+                      className="w-full border border-gray-400 p-2 bg-white"
+                      placeholder="e.g. Final decision - April 29, 2021: Your application was approved..."
+                    />
+                  </div>
+                </div>
+                <div className="pt-2 text-right">
+                  <button 
+                    onClick={async () => {
+                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                        statusSummary: editStatusSummary,
+                        latestUpdate: editLatestUpdate,
+                        details: editStatusSummary // Fallback sync
+                      }, "Status Summary Updated");
+                      alert("Status summaries saved!");
+                    }}
+                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+                  >
+                    Save Status Summaries
+                  </button>
+                </div>
+              </div>
+
+              {/* SECTION C: 7 Processing Stages */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  3. Immigration Processing Stages (7 Stages)
+                </h3>
+                <p className="text-xs text-gray-600">Update each processing stage individually with its current status text, date, and detailed description.</p>
                 
-                {/* Add Custom Timeline Event Form */}
-                <form onSubmit={handleAddCustomTimeline} className="bg-gray-50 border border-gray-300 p-4 mb-6 space-y-3">
-                  <h4 className="font-bold text-sm text-gray-800">Add Custom Timeline Event</h4>
+                <div className="space-y-6 divide-y divide-gray-200">
+                  
+                  {/* Stage 1: Eligibility */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 1: Review of Eligibility</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageEligibilityStatus} onChange={e => setStageEligibilityStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. We are reviewing..." />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageEligibilityDate} onChange={e => setStageEligibilityDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageEligibilityDesc} onChange={e => setStageEligibilityDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="Officer notes or explanatory details" />
+                    </div>
+                  </div>
+
+                  {/* Stage 2: Medical */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 2: Review of Medical Results</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageMedicalStatus} onChange={e => setStageMedicalStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. You do not need a medical exam..." />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageMedicalDate} onChange={e => setStageMedicalDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageMedicalDesc} onChange={e => setStageMedicalDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                  {/* Stage 3: Additional Documents */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 3: Review of Additional Documents</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageAdditionalDocsStatus} onChange={e => setStageAdditionalDocsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageAdditionalDocsDate} onChange={e => setStageAdditionalDocsDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageAdditionalDocsDesc} onChange={e => setStageAdditionalDocsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                  {/* Stage 4: Interview */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 4: Interview</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageInterviewStatus} onChange={e => setStageInterviewStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageInterviewDate} onChange={e => setStageInterviewDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageInterviewDesc} onChange={e => setStageInterviewDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                  {/* Stage 5: Biometrics */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 5: Biometrics</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageBiometricsStatus} onChange={e => setStageBiometricsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageBiometricsDateState} onChange={e => setStageBiometricsDateState(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageBiometricsDesc} onChange={e => setStageBiometricsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                  {/* Stage 6: Background check */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 6: Background Check</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageBackgroundStatus} onChange={e => setStageBackgroundStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageBackgroundDate} onChange={e => setStageBackgroundDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageBackgroundDesc} onChange={e => setStageBackgroundDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                  {/* Stage 7: Final decision */}
+                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 7: Final Decision</div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Status Message</label>
+                      <input type="text" value={stageFinalDecisionStatus} onChange={e => setStageFinalDecisionStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Date Update</label>
+                      <input type="text" value={stageFinalDecisionDate} onChange={e => setStageFinalDecisionDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                      <input type="text" value={stageFinalDecisionDesc} onChange={e => setStageFinalDecisionDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                    </div>
+                  </div>
+
+                </div>
+
+                <div className="pt-4 text-right border-t border-gray-200">
+                  <button 
+                    onClick={async () => {
+                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                        stages: {
+                          eligibilityStatus: stageEligibilityStatus,
+                          eligibilityDesc: stageEligibilityDesc,
+                          eligibilityDate: stageEligibilityDate,
+                          medicalStatus: stageMedicalStatus,
+                          medicalDesc: stageMedicalDesc,
+                          medicalDate: stageMedicalDate,
+                          additionalDocsStatus: stageAdditionalDocsStatus,
+                          additionalDocsDesc: stageAdditionalDocsDesc,
+                          additionalDocsDate: stageAdditionalDocsDate,
+                          interviewStatus: stageInterviewStatus,
+                          interviewDesc: stageInterviewDesc,
+                          interviewDate: stageInterviewDate,
+                          biometricsStatus: stageBiometricsStatus,
+                          biometricsDesc: stageBiometricsDesc,
+                          biometricsDate: stageBiometricsDateState,
+                          backgroundStatus: stageBackgroundStatus,
+                          backgroundDesc: stageBackgroundDesc,
+                          backgroundDate: stageBackgroundDate,
+                          finalDecisionStatus: stageFinalDecisionStatus,
+                          finalDecisionDesc: stageFinalDecisionDesc,
+                          finalDecisionDate: stageFinalDecisionDate
+                        }
+                      }, "Immigration Stage Progress Updated");
+                      alert("7 Processing Stages Saved!");
+                    }}
+                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+                  >
+                    Save 7 Stages Progress
+                  </button>
+                </div>
+              </div>
+
+              {/* SECTION D: Document Table Row Management */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  4. Document Status Table Rows
+                </h3>
+                <p className="text-xs text-gray-600">
+                  Every document listed here will automatically appear inside the applicant's read-only "Document Status" table.
+                </p>
+
+                {/* Existing Rows */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+                        <th className="p-2 border-r border-gray-200">Name / Category</th>
+                        <th className="p-2 border-r border-gray-200">Doc Type</th>
+                        <th className="p-2 border-r border-gray-200">Doc Number</th>
+                        <th className="p-2 border-r border-gray-200">Status</th>
+                        <th className="p-2 border-r border-gray-200">Expiry</th>
+                        <th className="p-2 border-r border-gray-200">Updated</th>
+                        <th className="p-2 border-r border-gray-200">Country of Issue</th>
+                        <th className="p-2">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(() => {
+                        const target = allApplications.find(a => a.app.id === selectedAppId);
+                        const docRows = target?.app.documentStatuses || [];
+                        if (docRows.length === 0) {
+                          return (
+                            <tr>
+                              <td colSpan={8} className="p-3 text-center text-gray-500 italic">No document rows generated yet.</td>
+                            </tr>
+                          );
+                        }
+                        return docRows.map((docRow) => (
+                          <tr key={docRow.id} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="p-2 border-r border-gray-200 font-medium">{docRow.name}</td>
+                            <td className="p-2 border-r border-gray-200">{docRow.documentType}</td>
+                            <td className="p-2 border-r border-gray-200">{docRow.documentNumber || 'N/A'}</td>
+                            <td className="p-2 border-r border-gray-200 font-semibold text-blue-800">{docRow.status}</td>
+                            <td className="p-2 border-r border-gray-200">{docRow.expiryDate || 'N/A'}</td>
+                            <td className="p-2 border-r border-gray-200">{docRow.statusUpdatedDate || 'N/A'}</td>
+                            <td className="p-2 border-r border-gray-200">{docRow.countryOfIssue || 'N/A'}</td>
+                            <td className="p-2">
+                              <button 
+                                onClick={async () => {
+                                  if (!confirm("Are you sure you want to delete this document row?")) return;
+                                  const updated = docRows.filter(r => r.id !== docRow.id);
+                                  await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Deleted Document Record: ${docRow.name}`);
+                                  alert("Row deleted!");
+                                }}
+                                className="text-red-600 hover:text-red-900 font-bold hover:underline"
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ));
+                      })()}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Add Row Form */}
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!newDocRowName) return;
+                    const target = allApplications.find(a => a.app.id === selectedAppId);
+                    const docRows = target?.app.documentStatuses || [];
+                    const newRow = {
+                      id: 'doc-' + Date.now(),
+                      name: newDocRowName,
+                      uci: newDocRowUci || editUci,
+                      documentType: newDocRowType,
+                      documentNumber: newDocRowNumber,
+                      status: newDocRowStatus,
+                      expiryDate: newDocRowExpiry,
+                      statusUpdatedDate: newDocRowUpdated,
+                      travelDocumentNumber: newDocRowTravelNum,
+                      countryOfIssue: newDocRowCountry
+                    };
+                    const updated = [...docRows, newRow];
+                    await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Added Document Record: ${newDocRowName}`);
+                    alert("Document Row Added!");
+                    setNewDocRowName('');
+                    setNewDocRowType('');
+                    setNewDocRowNumber('');
+                    setNewDocRowStatus('');
+                    setNewDocRowExpiry('');
+                    setNewDocRowUpdated('');
+                    setNewDocRowTravelNum('');
+                    setNewDocRowCountry('');
+                  }} 
+                  className="bg-gray-100 p-4 border border-gray-300 space-y-3 text-xs font-semibold"
+                >
+                  <div className="text-sm font-bold text-[#26374a] mb-2">Add Document Status Row</div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1">Date (Optional)</label>
-                      <input 
-                        type="date" 
-                        value={customTimelineDate}
-                        onChange={(e) => setCustomTimelineDate(e.target.value)}
-                        className="w-full border border-gray-400 p-1 text-xs bg-white"
-                      />
+                      <label className="block mb-1">Document Category / Name</label>
+                      <input type="text" value={newDocRowName} onChange={e => setNewDocRowName(e.target.value)} placeholder="e.g. Passport, IELTS Certificate" required className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1">Time (Optional)</label>
-                      <input 
-                        type="time" 
-                        value={customTimelineTime}
-                        onChange={(e) => setCustomTimelineTime(e.target.value)}
-                        className="w-full border border-gray-400 p-1 text-xs bg-white"
-                      />
+                      <label className="block mb-1">UCI (Defaults to Applicant UCI)</label>
+                      <input type="text" value={newDocRowUci} onChange={e => setNewDocRowUci(e.target.value)} placeholder="e.g. 11-2222-3333" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 mb-1">Event / Action</label>
-                      <input 
-                        type="text" 
-                        value={customTimelineAction}
-                        onChange={(e) => setCustomTimelineAction(e.target.value)}
-                        placeholder="e.g. Biometrics Request Sent"
-                        className="w-full border border-gray-400 p-1 text-xs bg-white"
-                        required
-                      />
+                      <label className="block mb-1">Document Type</label>
+                      <input type="text" value={newDocRowType} onChange={e => setNewDocRowType(e.target.value)} placeholder="e.g. Work Permit, Passport" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Document Number</label>
+                      <input type="text" value={newDocRowNumber} onChange={e => setNewDocRowNumber(e.target.value)} placeholder="e.g. E819203" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Status Message</label>
+                      <input type="text" value={newDocRowStatus} onChange={e => setNewDocRowStatus(e.target.value)} placeholder="e.g. Your document is valid." className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Expiry Date</label>
+                      <input type="text" value={newDocRowExpiry} onChange={e => setNewDocRowExpiry(e.target.value)} placeholder="e.g. 2030/12/31" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Status Updated Date</label>
+                      <input type="text" value={newDocRowUpdated} onChange={e => setNewDocRowUpdated(e.target.value)} placeholder="e.g. 2026/03/18" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Travel Document Number</label>
+                      <input type="text" value={newDocRowTravelNum} onChange={e => setNewDocRowTravelNum(e.target.value)} placeholder="e.g. 51000000" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                    </div>
+                    <div>
+                      <label className="block mb-1">Country of Issue</label>
+                      <input type="text" value={newDocRowCountry} onChange={e => setNewDocRowCountry(e.target.value)} placeholder="e.g. Philippines" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
                     </div>
                   </div>
-                  <button type="submit" className="bg-[#26374a] text-white text-xs font-bold px-3 py-1.5 hover:bg-[#111820]">
-                    Add Timeline Event
+                  <button type="submit" className="bg-[#26374a] text-white px-4 py-1.5 font-bold hover:bg-[#111820]">
+                    Add Row To Applicant Table
                   </button>
                 </form>
+              </div>
 
-                <div className="space-y-4">
-                  {(allApplications.find(a => a.app.id === selectedAppId)?.app.timeline || []).map((evt, idx) => (
-                    <div key={evt.id || idx} className="border-l-4 border-[#26374a] pl-4 py-1 flex justify-between items-start gap-4">
-                      <div>
-                        <div className="text-sm font-bold text-gray-800">{evt.date} - {evt.time || 'N/A'}</div>
-                        <div className="text-base text-black mt-1">{evt.action}</div>
-                        {evt.documentName && <div className="text-sm text-gray-600 mt-1">File: {evt.documentName}</div>}
-                      </div>
-                      <button 
-                        type="button"
-                        onClick={() => handleDeleteTimelineEvent(selectedUserEmail!, selectedAppId!, evt.id)}
-                        className="text-red-700 hover:text-red-900 hover:underline text-xs font-bold cursor-pointer whitespace-nowrap"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                  {!(allApplications.find(a => a.app.id === selectedAppId)?.app.timeline?.length) && (
-                    <p className="text-sm text-gray-500 italic">No timeline events yet.</p>
-                  )}
-                </div>
+              {/* SECTION E: System Messaging & Communications */}
+              <div className="bg-white p-5 border border-gray-300 space-y-4">
+                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                  5. Compose & Send Messages
+                </h3>
+                <p className="text-xs text-gray-600">Compose and send messages that appear inside the applicant's "Messages About Your Application" section.</p>
+                {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent successfully to Applicant!</div>}
+                <form onSubmit={handleSendEmail} className="space-y-3 text-sm">
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Subject</label>
+                    <input 
+                      type="text" 
+                      value={emailSubject}
+                      onChange={e => setEmailSubject(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white font-medium"
+                      placeholder="e.g. Correspondence Letter"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Message Content (HTML Allowed)</label>
+                    <textarea 
+                      value={emailText}
+                      onChange={e => setEmailText(e.target.value)}
+                      className="w-full border border-gray-400 p-2 h-32 bg-white"
+                      placeholder="Type your official correspondence..."
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820] text-sm">
+                    Send System Message
+                  </button>
+                </form>
               </div>
 
             </div>

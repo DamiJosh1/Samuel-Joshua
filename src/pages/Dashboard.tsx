@@ -1,186 +1,488 @@
-import React, { useState, useEffect } from 'react';
-import { useApp, ApplicationInfo, IMMIGRATION_JOURNEY_STEPS } from '../context/AppContext';
+import React, { useState, useMemo } from 'react';
+import { useApp, ApplicationInfo } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Activity, 
-  ArrowRight,
-  Download,
-  FileText,
-  Clock,
-  CheckCircle,
-  Circle
-} from 'lucide-react';
 
 export default function Dashboard() {
-  const { currentLang, user, applications } = useApp();
+  const { user, applications, logout } = useApp();
   const navigate = useNavigate();
 
-  const getStatusBadge = (status: string) => {
-    if (status === 'Approved') return 'bg-[#26374a] text-white border-[#26374a] border-2';
-    if (status === 'Refused') return 'bg-red-700 text-white border-red-700 border-2';
-    if (status === 'Action Required') return 'bg-[#d3080c] text-white border-[#d3080c] border-2';
-    if (status === 'SUBMITTED' || status === 'Submitted') return 'bg-[#26374a] text-white border-[#26374a] border-2';
-    return 'bg-white text-black border-black border-2';
+  // Search, Pagination, and Sort state for Table 1 (Submitted Applications)
+  const [searchTerm1, setSearchTerm1] = useState('');
+  const [pageSize1, setPageSize1] = useState(5);
+  const [currentPage1, setCurrentPage1] = useState(1);
+  const [sortField1, setSortField1] = useState<keyof ApplicationInfo | 'applicantName' | 'dateSubmitted'>('dateSubmitted');
+  const [sortDir1, setSortDir1] = useState<'asc' | 'desc'>('desc');
+
+  // Search, Pagination, and Sort state for Table 2 (Unsubmitted Applications)
+  const [searchTerm2, setSearchTerm2] = useState('');
+  const [pageSize2, setPageSize2] = useState(5);
+  const [currentPage2, setCurrentPage2] = useState(1);
+  const [sortField2, setSortField2] = useState<'type' | 'dateCreated' | 'daysLeft' | 'dateSaved'>('dateCreated');
+  const [sortDir2, setSortDir2] = useState<'asc' | 'desc'>('desc');
+
+  // Static or state-driven empty list for unsubmitted/draft applications
+  const unsubmittedApps = useMemo<any[]>(() => [], []);
+
+  const safeApplications = useMemo(() => {
+    return Array.isArray(applications) ? applications : [];
+  }, [applications]);
+
+  // Handle Sort Toggle for Table 1
+  const handleSort1 = (field: keyof ApplicationInfo | 'applicantName' | 'dateSubmitted') => {
+    if (sortField1 === field) {
+      setSortDir1(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField1(field);
+      setSortDir1('desc'); // Default to descending
+    }
+    setCurrentPage1(1);
   };
 
-  const getStepProgress = (status: string) => {
-    if (status === 'SUBMITTED' || status === 'Submitted') {
-      const idx = IMMIGRATION_JOURNEY_STEPS.indexOf("Application Submitted");
-      return idx !== -1 ? idx : 4;
+  // Handle Sort Toggle for Table 2
+  const handleSort2 = (field: 'type' | 'dateCreated' | 'daysLeft' | 'dateSaved') => {
+    if (sortField2 === field) {
+      setSortDir2(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField2(field);
+      setSortDir2('desc');
     }
-    const idx = IMMIGRATION_JOURNEY_STEPS.indexOf(status);
-    if (idx === -1) {
-      if (status === 'Approved') return IMMIGRATION_JOURNEY_STEPS.length;
-      return -1; // If "Pending" or something else
-    }
-    return idx;
+    setCurrentPage2(1);
   };
 
-  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  // Filtered & Sorted Applications for Table 1
+  const processedApps1 = useMemo(() => {
+    let result = [...safeApplications];
 
-  useEffect(() => {
-    if (Array.isArray(applications) && applications.length > 0 && !selectedAppId) {
-      setSelectedAppId(applications[0]?.id || null);
+    // 1. Filter
+    if (searchTerm1.trim()) {
+      const term = searchTerm1.toLowerCase().trim();
+      result = result.filter(app => {
+        const typeStr = (app.type || '').toLowerCase();
+        const idStr = (app.id || '').toLowerCase();
+        const nameStr = (app.fullName || user?.name || 'ChatWithOlu Webinar').toLowerCase();
+        const statusStr = (app.status || '').toLowerCase();
+        return typeStr.includes(term) || idStr.includes(term) || nameStr.includes(term) || statusStr.includes(term);
+      });
     }
-  }, [applications, selectedAppId]);
 
-  const safeApplications = Array.isArray(applications) ? applications : [];
-  const selectedApp = safeApplications.find(a => a.id === selectedAppId) || safeApplications[0];
+    // 2. Sort
+    result.sort((a, b) => {
+      let valA: any = '';
+      let valB: any = '';
+
+      if (sortField1 === 'applicantName') {
+        valA = a.fullName || user?.name || 'ChatWithOlu Webinar';
+        valB = b.fullName || user?.name || 'ChatWithOlu Webinar';
+      } else if (sortField1 === 'dateSubmitted') {
+        valA = a.dateSubmitted || a.dateCreated || '';
+        valB = b.dateSubmitted || b.dateCreated || '';
+      } else {
+        valA = a[sortField1] || '';
+        valB = b[sortField1] || '';
+      }
+
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+        valB = valB.toLowerCase();
+      }
+
+      if (valA < valB) return sortDir1 === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDir1 === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [safeApplications, searchTerm1, sortField1, sortDir1, user?.name]);
+
+  // Paginated Applications for Table 1
+  const paginatedApps1 = useMemo(() => {
+    const startIndex = (currentPage1 - 1) * pageSize1;
+    return processedApps1.slice(startIndex, startIndex + pageSize1);
+  }, [processedApps1, currentPage1, pageSize1]);
+
+  const totalPages1 = Math.ceil(processedApps1.length / pageSize1) || 1;
+
+  // Filtered & Sorted Applications for Table 2 (Unsubmitted)
+  const processedApps2 = useMemo(() => {
+    let result = [...unsubmittedApps];
+
+    if (searchTerm2.trim()) {
+      const term = searchTerm2.toLowerCase().trim();
+      result = result.filter(app => {
+        const typeStr = (app.type || '').toLowerCase();
+        return typeStr.includes(term);
+      });
+    }
+
+    return result;
+  }, [unsubmittedApps, searchTerm2]);
+
+  const paginatedApps2 = useMemo(() => {
+    const startIndex = (currentPage2 - 1) * pageSize2;
+    return processedApps2.slice(startIndex, startIndex + pageSize2);
+  }, [processedApps2, currentPage2, pageSize2]);
+
+  const totalPages2 = Math.ceil(processedApps2.length / pageSize2) || 1;
 
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
       
       {/* Top Breadcrumb & User Menu */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-8">
-        <div className="text-[#26374a] mb-4 sm:mb-0">
-          <span className="underline cursor-pointer">Home</span> <span className="no-underline text-black px-1">&rarr;</span> Your Account
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6">
+        <div className="text-[#05355c] mb-3 sm:mb-0">
+          <span className="underline cursor-pointer hover:text-blue-800" onClick={() => navigate('/')}>Home</span>
+          <span className="no-underline text-black px-1.5">&rarr;</span>
+          <span className="text-gray-600 font-semibold">Your Account</span>
         </div>
-        <div className="flex gap-4 items-center">
-          <span className="text-gray-600">Signed in as <span className="uppercase">{user?.name}</span></span>
-          <span className="text-[#26374a] underline cursor-pointer font-bold">Account Home</span>
-          <span className="text-[#26374a] underline cursor-pointer font-bold">Account Profile</span>
-          <span className="text-[#26374a] underline cursor-pointer font-bold">Logout</span>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 items-center text-gray-700">
+          <span>Signed in as <strong className="uppercase">{user?.name || 'ChatWithOlu Webinar'}</strong></span>
+          <span className="text-gray-300">|</span>
+          <span className="text-[#05355c] underline cursor-pointer font-bold hover:text-blue-800" onClick={() => navigate('/')}>Account Home</span>
+          <span className="text-gray-300">|</span>
+          <span className="text-[#05355c] underline cursor-pointer font-bold hover:text-blue-800" onClick={logout}>Sign Out</span>
         </div>
       </div>
 
-      <h1 className="text-3xl font-medium text-[#333] mb-4">
-        <span className="uppercase">{user?.name}</span> account
-      </h1>
-      
-      <hr className="border-gray-300 mb-8" />
+      {/* Account Owner Page Title with the Canada.ca Red Accent Line */}
+      <div className="mb-8">
+        <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
+          {user?.name ? `${user.name}'s account` : "ChatWithOlu Webinar's account"}
+        </h1>
+        <div className="h-[2px] bg-[#af3c43] w-full mt-2"></div>
+      </div>
 
-      {/* View the applications you submitted */}
-      <div className="space-y-2 mb-10">
-        <h2 className="text-2xl font-medium text-[#333]">View the applications you submitted</h2>
-        <p className="text-[13px] text-gray-700">Review, check the status or read messages about your submitted application.</p>
-        
-        <div className="flex items-center gap-2 text-[13px] mt-4">
-          <label className="font-bold">Search</label>
-          <input type="text" className="border border-gray-400 p-1 w-48 focus:outline-none focus:border-blue-500" />
-          <span className="text-gray-600 ml-4">Showing 1 to {safeApplications.length} of {safeApplications.length} entries |</span>
+      {/* Section 1: View the applications you submitted */}
+      <section className="mb-12">
+        <h2 className="text-[22px] font-bold text-gray-900 mb-1">
+          View the applications you submitted
+        </h2>
+        <p className="text-[14px] text-gray-700 mb-4 leading-normal">
+          Review, check the status or read messages about your submitted application.
+        </p>
+
+        {/* Search and entries display row - Styled exactly like DataTables in screenshot */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
+          <div className="flex items-center gap-2">
+            <label htmlFor="search-table-1" className="font-bold">Search:</label>
+            <input
+              id="search-table-1"
+              type="text"
+              value={searchTerm1}
+              onChange={(e) => {
+                setSearchTerm1(e.target.value);
+                setCurrentPage1(1);
+              }}
+              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span>
+              Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length} entries
+            </span>
+            <span className="mx-2 text-gray-300">|</span>
+            <label htmlFor="pagesize-table-1" className="font-bold">Show</label>
+            <select
+              id="pagesize-table-1"
+              value={pageSize1}
+              onChange={(e) => {
+                setPageSize1(Number(e.target.value));
+                setCurrentPage1(1);
+              }}
+              className="border border-gray-300 bg-white px-1 py-0.5 font-normal rounded-none"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+            <span>entries</span>
+          </div>
         </div>
 
-        <div className="overflow-x-auto mt-4">
-          <table className="w-full text-left border-collapse text-[13px]">
+        {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse text-[14px]">
             <thead>
-              <tr className="border-t-2 border-b-2 border-gray-300 text-gray-700">
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Application type <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Application number <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Applicant name <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Date Submitted <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Current status <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Messages <span className="text-[10px] text-gray-400">↓↑</span></th>
-                <th className="py-2 px-2 font-bold whitespace-nowrap">Action <span className="text-[10px] text-gray-400">↓↑</span></th>
+              <tr className="border-t border-b border-[#333] text-gray-900 select-none">
+                <th 
+                  onClick={() => handleSort1('type')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Application type {sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort1('id')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Application number {sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort1('applicantName')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Applicant name {sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort1('dateSubmitted')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 bg-[#ebebeb] whitespace-nowrap text-left"
+                >
+                  Date submitted {sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}
+                </th>
+                <th 
+                  onClick={() => handleSort1('status')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Current status {sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort1('messages')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Messages {sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
-              {safeApplications.length > 0 ? (
-                safeApplications.map((app) => (
-                  <tr 
-                    key={app.id || Math.random()} 
-                    className={`border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${selectedAppId === app.id ? 'bg-gray-100 font-bold' : ''}`}
-                    onClick={() => setSelectedAppId(app.id)}
-                  >
-                    <td className="py-3 px-2 text-[#26374a] underline uppercase font-bold">{app.type || 'WORK VISA'}</td>
-                    <td className="py-3 px-2">{app.id}</td>
-                    <td className="py-3 px-2 uppercase">{user?.name}</td>
-                    <td className="py-3 px-2 whitespace-nowrap">{app.dateCreated}</td>
-                    <td className="py-3 px-2 font-semibold text-gray-800">{app.status}</td>
-                    <td className="py-3 px-2">New</td>
-                    <td 
-                      className="py-3 px-2 text-[#26374a] underline cursor-pointer font-bold"
-                      onClick={(e) => {
-                        e.stopPropagation(); // prevent setting selection again
-                        navigate(`/application/${app.id}`);
-                      }}
-                    >
-                      Check full application status
+              {paginatedApps1.length > 0 ? (
+                paginatedApps1.map((app) => (
+                  <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
+                    <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
+                    <td className="py-2.5 px-3 text-gray-800 font-mono">{app.id}</td>
+                    <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
+                    <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">{app.dateSubmitted || app.dateCreated || '2026-03-18'}</td>
+                    <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
+                    <td className="py-2.5 px-3 text-gray-800 font-medium">
+                      {app.messages && app.messages.some(m => !m.isRead) ? (
+                        <span className="text-red-700 font-bold">New</span>
+                      ) : (
+                        <span>Read</span>
+                      )}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <button
+                        onClick={() => navigate(`/application/${app.id}`)}
+                        className="text-[#05355c] underline font-bold hover:text-blue-800 text-left cursor-pointer"
+                      >
+                        Check status and messages
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-4 text-center text-gray-500 italic">No applications found.</td>
+                  <td colSpan={7} className="py-4 text-center text-gray-700 font-normal border-b border-gray-300">
+                    No data available in table
+                  </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-        
-        <div className="mt-2">
-          <button className="bg-[#26374a] text-white px-3 py-1 text-sm font-bold">1</button>
-        </div>
-      </div>
 
-      {/* Activity History of Selected Application */}
-      {selectedApp && (
-        <div className="mt-10 border-t border-gray-300 pt-8">
-          <h2 className="text-xl font-bold text-[#333] mb-2">
-            Activity history for application {selectedApp.id}
-          </h2>
-          <p className="text-[13px] text-gray-700 mb-4">
-            This section lists the timeline of official status updates, document submissions, and biometric actions for the selected application. Click on any row above to view its specific history.
-          </p>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-[13px]">
-              <thead>
-                <tr className="border-t-2 border-b-2 border-gray-300 text-gray-900">
-                  <th className="py-2.5 px-3 font-bold w-36">Date</th>
-                  <th className="py-2.5 px-3 font-bold w-32">Time</th>
-                  <th className="py-2.5 px-3 font-bold">Activity / Update</th>
-                  <th className="py-2.5 px-3 font-bold">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedApp.timeline && selectedApp.timeline.length > 0 ? (
-                  selectedApp.timeline.map((evt, idx) => {
-                    const parts = (evt.date || "").split(" ");
-                    const dStr = parts[0] || evt.date || "—";
-                    const tStr = parts[1] ? parts.slice(1).join(" ") : evt.time || "—";
-                    return (
-                      <tr key={evt.id || idx} className="border-b border-gray-300">
-                        <td className="py-2.5 px-3 font-medium whitespace-nowrap">{dStr}</td>
-                        <td className="py-2.5 px-3 whitespace-nowrap">{tStr}</td>
-                        <td className="py-2.5 px-3 text-gray-800">{evt.title || evt.action}</td>
-                        <td className="py-2.5 px-3">
-                          <span className="text-gray-900 border border-gray-300 px-2 py-0.5 rounded-sm text-xs bg-gray-50 font-semibold">
-                            {evt.status || 'Completed'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="py-6 px-3 text-gray-500 italic text-center">No timeline records found for this application.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+        {/* Pagination controls for Table 1 (Visible only when data exists) */}
+        {processedApps1.length > pageSize1 && (
+          <div className="flex justify-end gap-1 mt-3">
+            <button
+              onClick={() => setCurrentPage1(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage1 === 1}
+              className={`px-3 py-1 text-xs border ${currentPage1 === 1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages1 }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage1(i + 1)}
+                className={`px-3 py-1 text-xs font-bold border ${currentPage1 === i + 1 ? 'bg-[#05355c] border-[#05355c] text-white' : 'border-gray-300 text-[#05355c] hover:bg-gray-100'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage1(prev => Math.min(prev + 1, totalPages1))}
+              disabled={currentPage1 === totalPages1}
+              className={`px-3 py-1 text-xs border ${currentPage1 === totalPages1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        {/* Paper Application Link Box */}
+        <p className="text-[14px] text-gray-700 mt-4 leading-relaxed font-normal">
+          Did you apply on paper or don't see your online application in your account?{' '}
+          <span 
+            className="underline text-[#05355c] font-bold cursor-pointer hover:text-blue-800"
+            onClick={() => navigate('/immigration-citizenship')}
+          >
+            Add (link) your application to your account
+          </span>{' '}
+          to access it and check your status online.
+        </p>
+      </section>
+
+      {/* Section 2: Continue an application you haven't submitted */}
+      <section className="mb-12">
+        <h2 className="text-[22px] font-bold text-gray-900 mb-1">
+          Continue an application you haven't submitted
+        </h2>
+        <p className="text-[14px] text-gray-700 mb-4 leading-normal">
+          Continue working on an application or profile you haven't submitted or delete it from your account.
+        </p>
+
+        {/* Search and entries display row - Match screenshot */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
+          <div className="flex items-center gap-2">
+            <label htmlFor="search-table-2" className="font-bold">Search:</label>
+            <input
+              id="search-table-2"
+              type="text"
+              value={searchTerm2}
+              onChange={(e) => {
+                setSearchTerm2(e.target.value);
+                setCurrentPage2(1);
+              }}
+              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span>
+              Showing {processedApps2.length === 0 ? '0 to 0' : `${(currentPage2 - 1) * pageSize2 + 1} to ${Math.min(currentPage2 * pageSize2, processedApps2.length)}`} of {processedApps2.length} entries
+            </span>
+            <span className="mx-2 text-gray-300">|</span>
+            <label htmlFor="pagesize-table-2" className="font-bold">Show</label>
+            <select
+              id="pagesize-table-2"
+              value={pageSize2}
+              onChange={(e) => {
+                setPageSize2(Number(e.target.value));
+                setCurrentPage2(1);
+              }}
+              className="border border-gray-300 bg-white px-1 py-0.5 font-normal rounded-none"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+            <span>entries</span>
           </div>
         </div>
-      )}
+
+        {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse text-[14px]">
+            <thead>
+              <tr className="border-t border-b border-[#333] text-gray-900 select-none">
+                <th 
+                  onClick={() => handleSort2('type')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Application type {sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort2('dateCreated')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 bg-[#ebebeb] whitespace-nowrap text-left"
+                >
+                  Date Created {sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓'}
+                </th>
+                <th 
+                  onClick={() => handleSort2('daysLeft')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Days left to submit {sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th 
+                  onClick={() => handleSort2('dateSaved')}
+                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                >
+                  Date last saved {sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                </th>
+                <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedApps2.length > 0 ? (
+                paginatedApps2.map((app, index) => (
+                  <tr key={index} className="border-b border-gray-300 hover:bg-gray-50">
+                    <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type}</td>
+                    <td className="py-2.5 px-3 text-gray-800">{app.dateCreated}</td>
+                    <td className="py-2.5 px-3 text-gray-800">{app.daysLeft}</td>
+                    <td className="py-2.5 px-3 text-gray-800">{app.dateSaved}</td>
+                    <td className="py-2.5 px-3">
+                      <button className="text-[#05355c] underline font-bold hover:text-blue-800 text-left">
+                        Continue Application
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="py-4 text-center text-gray-700 font-normal border-b border-gray-300">
+                    No data available in table
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Section 3: Start an application */}
+      <section className="mb-8">
+        <h2 className="text-[24px] font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2">
+          Start an application
+        </h2>
+
+        {/* 3-Column Grid for options */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-[14px]">
+          
+          {/* Column 1 */}
+          <div className="space-y-2">
+            <span 
+              onClick={() => navigate('/immigration-citizenship')}
+              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+            >
+              Apply to come to Canada
+            </span>
+            <p className="text-gray-700 leading-relaxed font-normal">
+              Includes applications for visitor visas, work and study permits, Express Entry and International Experience Canada. You will need your personal reference code if you have one.
+            </p>
+          </div>
+
+          {/* Column 2 */}
+          <div className="space-y-2">
+            <span 
+              onClick={() => navigate('/benefits')}
+              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+            >
+              Refugees: Apply for temporary health care benefits
+            </span>
+            <p className="text-gray-700 leading-relaxed font-normal">
+              Use this application if you are a protected person or refugee claimant who wants to apply for the Interim Federal Health Program.
+            </p>
+          </div>
+
+          {/* Column 3 */}
+          <div className="space-y-2">
+            <span 
+              onClick={() => navigate('/immigration-citizenship/citizenship')}
+              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+            >
+              Citizenship: Apply for a search or proof of citizenship
+            </span>
+            <p className="text-gray-700 leading-relaxed font-normal">
+              Use this application to apply for proof of citizenship (citizenship certificate) or to search citizenship records.
+            </p>
+          </div>
+
+        </div>
+      </section>
 
     </main>
   );

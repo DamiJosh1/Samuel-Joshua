@@ -44,7 +44,7 @@ export interface ApplicationInfo {
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
   requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
-  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean }[];
+  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean; dateRead?: string }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
   workPermitStatus?: string;
@@ -52,6 +52,58 @@ export interface ApplicationInfo {
   studyPermitStatus?: string;
   passportRequestStatus?: string;
   medicalRequestStatus?: string;
+
+  // Admin controlled fields:
+  fullName?: string;
+  uci?: string;
+  dateReceived?: string;
+  dateSubmitted?: string;
+  biometricsNumber?: string;
+  biometricsDate?: string;
+  biometricsExpiry?: string;
+  statusSummary?: string;
+  latestUpdate?: string;
+  stages?: {
+    eligibilityStatus?: string;
+    eligibilityDesc?: string;
+    eligibilityDate?: string;
+    
+    medicalStatus?: string;
+    medicalDesc?: string;
+    medicalDate?: string;
+    
+    additionalDocsStatus?: string;
+    additionalDocsDesc?: string;
+    additionalDocsDate?: string;
+    
+    interviewStatus?: string;
+    interviewDesc?: string;
+    interviewDate?: string;
+    
+    biometricsStatus?: string;
+    biometricsDesc?: string;
+    biometricsDate?: string;
+    
+    backgroundStatus?: string;
+    backgroundDesc?: string;
+    backgroundDate?: string;
+    
+    finalDecisionStatus?: string;
+    finalDecisionDesc?: string;
+    finalDecisionDate?: string;
+  };
+  documentStatuses?: {
+    id: string;
+    name: string;
+    uci: string;
+    documentType: string;
+    documentNumber: string;
+    status: string;
+    expiryDate: string;
+    statusUpdatedDate: string;
+    travelDocumentNumber: string;
+    countryOfIssue: string;
+  }[];
 }
 
 interface AppContextType {

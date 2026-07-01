@@ -30,7 +30,7 @@ interface ApplicationInfo {
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
   requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
-  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean }[];
+  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean; dateRead?: string }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
   workPermitStatus?: string;
@@ -38,6 +38,58 @@ interface ApplicationInfo {
   studyPermitStatus?: string;
   passportRequestStatus?: string;
   medicalRequestStatus?: string;
+
+  // Admin controlled fields:
+  fullName?: string;
+  uci?: string;
+  dateReceived?: string;
+  dateSubmitted?: string;
+  biometricsNumber?: string;
+  biometricsDate?: string;
+  biometricsExpiry?: string;
+  statusSummary?: string;
+  latestUpdate?: string;
+  stages?: {
+    eligibilityStatus?: string;
+    eligibilityDesc?: string;
+    eligibilityDate?: string;
+    
+    medicalStatus?: string;
+    medicalDesc?: string;
+    medicalDate?: string;
+    
+    additionalDocsStatus?: string;
+    additionalDocsDesc?: string;
+    additionalDocsDate?: string;
+    
+    interviewStatus?: string;
+    interviewDesc?: string;
+    interviewDate?: string;
+    
+    biometricsStatus?: string;
+    biometricsDesc?: string;
+    biometricsDate?: string;
+    
+    backgroundStatus?: string;
+    backgroundDesc?: string;
+    backgroundDate?: string;
+    
+    finalDecisionStatus?: string;
+    finalDecisionDesc?: string;
+    finalDecisionDate?: string;
+  };
+  documentStatuses?: {
+    id: string;
+    name: string;
+    uci: string;
+    documentType: string;
+    documentNumber: string;
+    status: string;
+    expiryDate: string;
+    statusUpdatedDate: string;
+    travelDocumentNumber: string;
+    countryOfIssue: string;
+  }[];
 }
 
 interface UserProfile {
@@ -228,40 +280,72 @@ async function startServer() {
   });
 
   app.post("/api/admin/users", (req, res) => {
-    const { email, name, appType } = req.body;
+    const { email, name, appType, appNumber, uci, dateCreated, dateSubmitted, status } = req.body;
     if (!email || !name) return res.status(400).json({ error: "Email and name required" });
     
     const lowerEmail = email.toLowerCase();
+    const finalDateCreated = dateCreated || new Date().toISOString().split('T')[0];
+    const timeCreated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    const now = new Date();
-    const dateCreated = now.toISOString().split('T')[0];
-    const timeCreated = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    db.users.set(lowerEmail, { email: lowerEmail, name, dateCreated, timeCreated });
+    db.users.set(lowerEmail, { email: lowerEmail, name, dateCreated: finalDateCreated, timeCreated, uci: uci || "" });
     
     const applications = [];
+    const finalAppNumber = appNumber || ("W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join(""));
 
-    if (appType) {
-      applications.push({
-        id: "W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join(""),
-        type: appType,
-        typeFr: appType,
-        status: "Draft",
-        statusFr: "Brouillon",
-        lastUpdated: dateCreated,
-        dateCreated,
-        timeCreated,
-        details: "Application profile created by administration.",
-        detailsFr: "Profil de demande créé par l'administration.",
-        documents: [],
-        timeline: [{
-          id: `evt-${Date.now()}`,
-          date: dateCreated,
-          time: timeCreated,
-          action: "Application Profile Created"
-        }]
-      });
-    }
+    applications.push({
+      id: finalAppNumber,
+      type: appType || "Work Permit",
+      typeFr: appType || "Work Permit",
+      status: status || "Submitted",
+      statusFr: status || "Submitted",
+      lastUpdated: finalDateCreated,
+      dateCreated: finalDateCreated,
+      timeCreated,
+      fullName: name,
+      uci: uci || "",
+      dateReceived: finalDateCreated,
+      dateSubmitted: dateSubmitted || finalDateCreated,
+      details: "Your application is in progress. We will send you a message once a final decision has been made.",
+      detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise.",
+      statusSummary: "Your application is in progress. We will send you a message once a final decision has been made.",
+      latestUpdate: "Application profile created.",
+      biometricsNumber: "",
+      biometricsDate: "",
+      biometricsExpiry: "",
+      requestedDocuments: [],
+      documents: [],
+      messages: [],
+      timeline: [{
+        id: `evt-${Date.now()}`,
+        date: finalDateCreated,
+        time: timeCreated,
+        action: "Application Profile Created"
+      }],
+      stages: {
+        eligibilityStatus: "We are reviewing whether you meet the eligibility requirements.",
+        eligibilityDesc: "Our immigration officers are assessing your profile against the standard visa eligibility criteria.",
+        eligibilityDate: finalDateCreated,
+        medicalStatus: "You do not need a medical exam. We will send you a message if this changes.",
+        medicalDesc: "Most temporary visa applicants do not need a medical exam unless specifically requested.",
+        medicalDate: finalDateCreated,
+        additionalDocsStatus: "We do not need additional documents. We will send you a message if this changes.",
+        additionalDocsDesc: "We will let you know if we require any supporting documentation to make a decision.",
+        additionalDocsDate: finalDateCreated,
+        interviewStatus: "You do not need an interview. We will send you a message if this changes.",
+        interviewDesc: "Interviews are only scheduled in rare cases if an officer requires clarification on your file.",
+        interviewDate: finalDateCreated,
+        biometricsStatus: "We do not need your fingerprints. We will send you a message if this changes.",
+        biometricsDesc: "We will notify you if we require a Biometrics Collection (fingerprints and photograph) for your application.",
+        biometricsDate: finalDateCreated,
+        backgroundStatus: "We are processing your background check. We will send you a message if this changes.",
+        backgroundDesc: "We conduct security and criminality background checks on all applicants as part of our processing procedures.",
+        backgroundDate: finalDateCreated,
+        finalDecisionStatus: "Your application is in progress. We will send you a message once a final decision has been made.",
+        finalDecisionDesc: "Once a decision is rendered, a final notification and official correspondence will be sent to your account.",
+        finalDecisionDate: finalDateCreated
+      },
+      documentStatuses: []
+    });
 
     db.applications.set(lowerEmail, applications);
     saveData();
@@ -364,7 +448,10 @@ async function startServer() {
     const { 
       status, statusFr, details, detailsFr, documents, timeline,
       biometricStatus, workPermitStatus, visitorVisaStatus, studyPermitStatus, passportRequestStatus, medicalRequestStatus,
-      requestedDocuments, messages
+      requestedDocuments, messages,
+      fullName, uci, dateReceived, dateSubmitted,
+      biometricsNumber, biometricsDate, biometricsExpiry,
+      statusSummary, latestUpdate, stages, documentStatuses
     } = req.body;
 
     if (!db.applications.has(email)) {
@@ -394,6 +481,17 @@ async function startServer() {
       medicalRequestStatus: medicalRequestStatus ?? currentList[index].medicalRequestStatus,
       requestedDocuments: requestedDocuments ?? currentList[index].requestedDocuments,
       messages: messages ?? currentList[index].messages,
+      fullName: fullName ?? currentList[index].fullName,
+      uci: uci ?? currentList[index].uci,
+      dateReceived: dateReceived ?? currentList[index].dateReceived,
+      dateSubmitted: dateSubmitted ?? currentList[index].dateSubmitted,
+      biometricsNumber: biometricsNumber ?? currentList[index].biometricsNumber,
+      biometricsDate: biometricsDate ?? currentList[index].biometricsDate,
+      biometricsExpiry: biometricsExpiry ?? currentList[index].biometricsExpiry,
+      statusSummary: statusSummary ?? currentList[index].statusSummary,
+      latestUpdate: latestUpdate ?? currentList[index].latestUpdate,
+      stages: stages ?? currentList[index].stages,
+      documentStatuses: documentStatuses ?? currentList[index].documentStatuses,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 
