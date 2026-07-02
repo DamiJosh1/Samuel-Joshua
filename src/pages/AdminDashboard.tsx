@@ -978,7 +978,7 @@ export default function AdminDashboard() {
                   <tbody>
                     {allApplications.map((item, idx) => (
                       <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
-                        <td className="p-3 border-r border-gray-300">{item.app.id}</td>
+                        <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
                         <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
                         <td className="p-3 border-r border-gray-300">{item.app.type}</td>
                         <td className="p-3 border-r border-gray-300">

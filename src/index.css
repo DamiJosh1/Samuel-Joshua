@@ -1,5 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Noto Sans", "Lato", ui-sans-serif, system-ui, sans-serif;
+}
+
+.app-number-font {
+  font-family: 'IBM Plex Sans', "Noto Sans", sans-serif !important;
+  font-variant-numeric: slashed-zero !important;
+  font-feature-settings: "zero" 1 !important;
+  -webkit-font-feature-settings: "zero" 1 !important;
+  -moz-font-feature-settings: "zero" 1 !important;
+  text-rendering: optimizeLegibility;
+  font-weight: 400;
+  font-size: 16px;
+  color: #333333;
 }

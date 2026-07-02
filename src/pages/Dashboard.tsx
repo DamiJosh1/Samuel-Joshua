@@ -285,7 +285,7 @@ export default function Dashboard() {
                   return (
                     <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
                       <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
-                      <td className="py-2.5 px-3 text-gray-800 font-mono tracking-tight font-normal text-[14px]">{app.id}</td>
+                      <td className="py-2.5 px-3 app-number-font text-[16px]">{app.id}</td>
                       <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
                       <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">
                         {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2026-03-18')}
@@ -303,7 +303,7 @@ export default function Dashboard() {
                           onClick={() => navigate(`/application/${app.id}`)}
                           className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
                         >
-                          {isRefused ? 'Check full application status' : 'Check status and messages'}
+                          Check full application status
                         </button>
                       </td>
                     </tr>

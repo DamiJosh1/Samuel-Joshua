@@ -284,7 +284,7 @@ export default function ApplicationDetails() {
             </div>
             <div>
               <span className="font-bold text-gray-900">Application number:</span>{" "}
-              <span className="font-mono tracking-tight font-normal text-[14px]">{selectedApp.id}</span>
+              <span className="app-number-font text-[16px]">{selectedApp.id}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Date Received:</span>{" "}
