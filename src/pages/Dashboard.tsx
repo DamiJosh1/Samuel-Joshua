@@ -135,7 +135,7 @@ export default function Dashboard() {
           <span className="text-gray-600 font-semibold">Your Account</span>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1 items-center text-gray-700">
-          <span>Signed in as <strong className="uppercase">{user?.name || 'ChatWithOlu Webinar'}</strong></span>
+          <span>Signed in as <span className="uppercase font-light">{user?.name || 'ChatWithOlu Webinar'}</span></span>
           <span className="text-gray-300">|</span>
           <span className="text-[#05355c] underline cursor-pointer font-bold hover:text-blue-800" onClick={() => navigate('/')}>Account Home</span>
           <span className="text-gray-300">|</span>

@@ -14,7 +14,7 @@ export default function AdminDashboard() {
 
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
-  const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('Passport (required)');
+  const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('Work permit application form');
   const [customRequestedDocName, setCustomRequestedDocName] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [emailText, setEmailText] = useState('');
@@ -93,6 +93,91 @@ export default function AdminDashboard() {
   const [customTimelineDate, setCustomTimelineDate] = useState('');
   const [customTimelineTime, setCustomTimelineTime] = useState('');
   const [customTimelineAction, setCustomTimelineAction] = useState('');
+
+  // Standard document checklist state (which admin can remove items from)
+  const [standardDocs, setStandardDocs] = useState<string[]>([
+    "Work permit application form",
+    "Job Contract letter",
+    "Proof of qualification",
+    "ielts certificate",
+    "LMIA Letter",
+    "Proof of Funds",
+    "Police clearance certificate",
+    "Medical report",
+    "Biometrics",
+    "Passport"
+  ]);
+
+  // Editing requested document state
+  const [editingDocName, setEditingDocName] = useState<string | null>(null);
+  const [editRemarks, setEditRemarks] = useState('');
+  const [editDateUpdated, setEditDateUpdated] = useState('');
+
+  const handleRemoveStandardDoc = (docToRemove: string) => {
+    setStandardDocs(prev => {
+      const updated = prev.filter(d => d !== docToRemove);
+      if (selectedPredefinedDoc === docToRemove) {
+        if (updated.length > 0) {
+          setSelectedPredefinedDoc(updated[0]);
+          setCustomRequestedDocName(updated[0]);
+        } else {
+          setSelectedPredefinedDoc('Custom Document...');
+          setCustomRequestedDocName('');
+        }
+      }
+      return updated;
+    });
+  };
+
+  const startEditingDoc = (doc: { name: string; status: string; dateUpdated?: string; remarks?: string }) => {
+    setEditingDocName(doc.name);
+    setEditRemarks(doc.remarks || '');
+    if (doc.dateUpdated) {
+      setEditDateUpdated(doc.dateUpdated);
+    } else {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      setEditDateUpdated(`${dateStr} at ${timeStr}`);
+    }
+  };
+
+  const handleSaveDocEdits = async (email: string | null, appId: string | null, docName: string) => {
+    if (!email || !appId) return;
+    const targetAppItem = allApplications.find(a => a.app.id === appId);
+    if (!targetAppItem) return;
+    
+    const targetApp = targetAppItem.app;
+    const requested = targetApp.requestedDocuments || [];
+    
+    const updatedRequested = requested.map(d => d.name === docName ? { 
+      ...d, 
+      dateUpdated: editDateUpdated,
+      remarks: editRemarks
+    } : d);
+
+    try {
+      const res = await fetch(`/api/applications/${appId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email, 
+          requestedDocuments: updatedRequested
+        })
+      });
+      if (res.ok) {
+        setAllApplications(prev => prev.map(item => item.app.id === appId ? { 
+          email, 
+          app: { ...item.app, requestedDocuments: updatedRequested } 
+        } : item));
+        setEditingDocName(null);
+        alert("Document remarks and date/time updated successfully.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error saving document edits.");
+    }
+  };
 
   // Effect to populate states upon choosing an application
   useEffect(() => {
@@ -1443,53 +1528,131 @@ export default function AdminDashboard() {
                           <thead>
                             <tr className="bg-gray-100 border-b border-gray-300 font-bold">
                               <th className="p-2 border-r border-gray-200">Document Name</th>
-                              <th className="p-2 border-r border-gray-200 text-center w-32">Status</th>
-                              <th className="p-2 border-r border-gray-200">Date Updated</th>
-                              <th className="p-2 border-r border-gray-200">Remarks</th>
-                              <th className="p-2 text-center w-40">Actions</th>
+                              <th className="p-2 border-r border-gray-200 text-center w-24">Status</th>
+                              <th className="p-2 border-r border-gray-200 w-48">Date & Time Updated</th>
+                              <th className="p-2 border-r border-gray-200">Remarks / Feedback</th>
+                              <th className="p-2 text-center w-64">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {requestedList.map((doc, idx) => (
-                              <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
-                                <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
-                                <td className="p-2 border-r border-gray-200 text-center">
-                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                    doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
-                                    doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
-                                    'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                  }`}>
-                                    {doc.status}
-                                  </span>
-                                </td>
-                                <td className="p-2 border-r border-gray-200 text-gray-600">{doc.dateUpdated || 'N/A'}</td>
-                                <td className="p-2 border-r border-gray-200 text-gray-600 italic max-w-xs truncate" title={doc.remarks}>{doc.remarks || 'No remarks.'}</td>
-                                <td className="p-2">
-                                  <div className="flex gap-1 justify-center items-center">
-                                    <select
-                                      value={doc.status}
-                                      onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
-                                      className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
-                                    >
-                                      <option value="Pending">Pending</option>
-                                      <option value="Submitted">Submitted</option>
-                                      <option value="Received">Received</option>
-                                    </select>
-                                    <button
-                                      onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
-                                      className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
+                            {requestedList.map((doc, idx) => {
+                              const isEditing = editingDocName === doc.name;
+                              return (
+                                <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                                  <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
+                                  <td className="p-2 border-r border-gray-200 text-center">
+                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                      doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
+                                      doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                                      'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                    }`}>
+                                      {doc.status}
+                                    </span>
+                                  </td>
+                                  <td className="p-2 border-r border-gray-200 text-gray-600">
+                                    {isEditing ? (
+                                      <input
+                                        type="text"
+                                        value={editDateUpdated}
+                                        onChange={e => setEditDateUpdated(e.target.value)}
+                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white font-medium"
+                                        placeholder="e.g. July 2, 2026, 10:15 AM"
+                                      />
+                                    ) : (
+                                      doc.dateUpdated || 'N/A'
+                                    )}
+                                  </td>
+                                  <td className="p-2 border-r border-gray-200 text-gray-600 italic">
+                                    {isEditing ? (
+                                      <textarea
+                                        value={editRemarks}
+                                        onChange={e => setEditRemarks(e.target.value)}
+                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white h-12 font-medium"
+                                        placeholder="Enter remarks about this document..."
+                                      />
+                                    ) : (
+                                      doc.remarks || 'No remarks.'
+                                    )}
+                                  </td>
+                                  <td className="p-2">
+                                    <div className="flex gap-1 justify-center items-center flex-wrap">
+                                      {isEditing ? (
+                                        <>
+                                          <button
+                                            onClick={() => handleSaveDocEdits(selectedUserEmail, selectedAppId, doc.name)}
+                                            className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+                                          >
+                                            Save
+                                          </button>
+                                          <button
+                                            onClick={() => setEditingDocName(null)}
+                                            className="bg-gray-500 hover:bg-gray-600 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <button
+                                            onClick={() => startEditingDoc(doc)}
+                                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded px-2 py-1 text-[11px] font-bold"
+                                            title="Edit date/time and remarks directly"
+                                          >
+                                            Edit Details
+                                          </button>
+                                          <select
+                                            value={doc.status}
+                                            onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
+                                            className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
+                                          >
+                                            <option value="Pending">Pending</option>
+                                            <option value="Submitted">Submitted</option>
+                                            <option value="Received">Received</option>
+                                          </select>
+                                          <button
+                                            onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
+                                            className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
                     );
                   })()}
+                </div>
+
+                {/* Manage Standard Documents Options */}
+                <div className="bg-blue-50 p-4 border border-blue-200 space-y-3 rounded">
+                  <div className="text-xs font-bold text-[#26374a] uppercase tracking-wider flex justify-between items-center">
+                    <span>Standard Documents Checklist Options</span>
+                    <span className="text-[10px] text-gray-500 font-normal lowercase italic">(click ✕ to remove any option from the standard checklist)</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {standardDocs.map((doc, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm">
+                        <span>{doc}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveStandardDoc(doc)}
+                          className="text-red-500 hover:text-red-700 font-extrabold ml-1 hover:bg-red-50 rounded-full w-4 h-4 flex items-center justify-center transition-colors text-sm"
+                          title={`Remove "${doc}" from standard list`}
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                    {standardDocs.length === 0 && (
+                      <p className="text-xs text-gray-500 italic">No standard documents remaining in the option list. You can still request custom documents below.</p>
+                    )}
+                  </div>
                 </div>
 
                 {/* Request New Document Form */}
@@ -1512,17 +1675,9 @@ export default function AdminDashboard() {
                         }}
                         className="w-full border border-gray-400 p-2 bg-white font-medium"
                       >
-                        <option value="Passport (required)">Passport (required)</option>
-                        <option value="Travel History (required)">Travel History (required)</option>
-                        <option value="Invitation Letter (required)">Invitation Letter (required)</option>
-                        <option value="Proof of Means of Financial Support (required)">Proof of Means of Financial Support (required)</option>
-                        <option value="Digital photo (required)">Digital photo (required)</option>
-                        <option value="Purpose of Travel - Other (required)">Purpose of Travel - Other (required)</option>
-                        <option value="Family Information (IMM5645) (required)">Family Information (IMM5645) (required)</option>
-                        <option value="Proof of Relationship (required)">Proof of Relationship (required)</option>
-                        <option value="Application for Visitor Visa (Temporary Resident Visa) Made Outside of Canada (IMM5257) (required)">Application Form (IMM5257) (required)</option>
-                        <option value="Schedule 1 - Application for a Temporary Resident Visa Made Outside Canada (IMM 5257)">Schedule 1 (IMM 5257)</option>
-                        <option value="Client Information">Client Information</option>
+                        {standardDocs.map((doc, idx) => (
+                          <option key={idx} value={doc}>{doc}</option>
+                        ))}
                         <option value="Custom Document...">-- Custom Document (type custom name below) --</option>
                       </select>
                     </div>

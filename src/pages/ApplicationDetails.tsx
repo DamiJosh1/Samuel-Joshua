@@ -172,9 +172,8 @@ export default function ApplicationDetails() {
             onClick={() => navigate(`/application/${selectedApp.id}/checklist`)}
             className="text-[#05355c] underline font-bold cursor-pointer hover:text-blue-800"
           >
-            View submitted application or upload documents{" "}
+            View submitted application or upload documents
           </span>
-          then the link will take them to this place
         </p>
       </div>
 
@@ -191,9 +190,24 @@ export default function ApplicationDetails() {
             </p>
             <div>
               <span className="font-bold text-gray-900 block mb-1">Latest update:</span>
-              <p className="text-gray-800 leading-relaxed font-normal">
-                {selectedApp.latestUpdate || 'Your application is in progress.'}
-              </p>
+              {(() => {
+                const text = selectedApp.latestUpdate || 'Your application is in progress.';
+                const idx = text.indexOf(':');
+                if (idx !== -1) {
+                  const prefix = text.slice(0, idx + 1);
+                  const body = text.slice(idx + 1);
+                  return (
+                    <p className="text-gray-800 leading-relaxed font-light">
+                      <strong className="font-bold">{prefix}</strong>{body}
+                    </p>
+                  );
+                }
+                return (
+                  <p className="text-gray-800 leading-relaxed font-light">
+                    {text}
+                  </p>
+                );
+              })()}
             </div>
           </div>
         </div>
