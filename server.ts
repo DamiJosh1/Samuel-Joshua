@@ -218,6 +218,14 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
 
 const DATA_FILE = path.join(process.cwd(), "db_data.json");
 
+function createDefaultApplicationsForUser(email: string): ApplicationInfo[] {
+  const randomId = "W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join("");
+  return DEFAULT_APPLICATIONS.map(app => ({
+    ...app,
+    id: randomId
+  }));
+}
+
 function saveData() {
   const data = {
     users: Array.from(db.users.entries()),
@@ -240,7 +248,7 @@ function loadData() {
   
   // Seed initial database if no file exists
   db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "YASIR IQBAL", dateCreated: "2026-03-18", timeCreated: "09:00 AM" });
-  db.applications.set("applicant@domain.ca", [...DEFAULT_APPLICATIONS]);
+  db.applications.set("applicant@domain.ca", createDefaultApplicationsForUser("applicant@domain.ca"));
   saveData();
 }
 
@@ -410,7 +418,8 @@ async function startServer() {
   app.get("/api/applications", (req, res) => {
     const email = String(req.query.email || "guest").trim().toLowerCase();
     if (!db.applications.has(email)) {
-      db.applications.set(email, [...DEFAULT_APPLICATIONS]);
+      db.applications.set(email, createDefaultApplicationsForUser(email));
+      saveData();
     }
     res.json(db.applications.get(email));
   });
@@ -430,7 +439,7 @@ async function startServer() {
     }
 
     if (!db.applications.has(email)) {
-      db.applications.set(email, [...DEFAULT_APPLICATIONS]);
+      db.applications.set(email, createDefaultApplicationsForUser(email));
     }
 
     const currentList = db.applications.get(email) || [];
@@ -455,7 +464,8 @@ async function startServer() {
     } = req.body;
 
     if (!db.applications.has(email)) {
-      db.applications.set(email, [...DEFAULT_APPLICATIONS]);
+      db.applications.set(email, createDefaultApplicationsForUser(email));
+      saveData();
     }
 
     const currentList = db.applications.get(email) || [];
