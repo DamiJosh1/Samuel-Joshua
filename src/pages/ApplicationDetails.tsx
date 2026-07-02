@@ -192,7 +192,18 @@ export default function ApplicationDetails() {
               <span className="font-bold text-gray-900 block mb-1">Latest update:</span>
               {(() => {
                 const text = selectedApp.latestUpdate || 'Your application is in progress.';
-                const idx = text.indexOf(':');
+                let idx = text.indexOf(': ');
+                if (idx === -1) {
+                  for (let i = 0; i < text.length; i++) {
+                    if (text[i] === ':') {
+                      const isTime = i > 0 && i < text.length - 1 && /\d/.test(text[i - 1]) && /\d/.test(text[i + 1]);
+                      if (!isTime) {
+                        idx = i;
+                        break;
+                      }
+                    }
+                  }
+                }
                 if (idx !== -1) {
                   const prefix = text.slice(0, idx + 1);
                   const body = text.slice(idx + 1);

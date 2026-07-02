@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   const [docCategory, setDocCategory] = useState('Custom Document');
   const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('Work permit application form');
   const [customRequestedDocName, setCustomRequestedDocName] = useState('');
-  const [emailSubject, setEmailSubject] = useState('');
+  const [emailSubject, setEmailSubject] = useState('please submit your original passport.');
   const [emailText, setEmailText] = useState('');
   const [emailSuccess, setEmailSuccess] = useState(false);
 
@@ -1166,7 +1166,23 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold mb-1">Latest Update text description</label>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-xs font-bold">Latest Update text description</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const now = new Date();
+                          const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                          const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                          const dateTimeStr = `${dateStr} at ${timeStr}: `;
+                          setEditLatestUpdate(prev => prev ? `${dateTimeStr}${prev}` : `${dateTimeStr}`);
+                        }}
+                        className="text-xs text-[#05355c] hover:underline font-bold"
+                        title="Click to prepend the current date and time to your latest update text."
+                      >
+                        + Insert Date and Time
+                      </button>
+                    </div>
                     <textarea 
                       value={editLatestUpdate}
                       onChange={e => setEditLatestUpdate(e.target.value)}

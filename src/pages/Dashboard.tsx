@@ -256,7 +256,7 @@ export default function Dashboard() {
                     <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
                     <td className="py-2.5 px-3 text-gray-800 font-medium">
                       {app.messages && app.messages.some(m => !m.isRead) ? (
-                        <span className="text-red-700 font-bold">New</span>
+                        <span className="font-bold text-gray-950">New</span>
                       ) : (
                         <span>Read</span>
                       )}
