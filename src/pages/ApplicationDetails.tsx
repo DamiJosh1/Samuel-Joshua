@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { CheckCircle2, Clock, Hourglass, Circle, Info, FileText, Activity, Files, Users, Fingerprint, UserCheck, Scale, HelpCircle } from 'lucide-react';
+import { CheckCircle2, Clock, Hourglass, Circle, Info, FileText, Activity, Files, Users, Fingerprint, UserCheck, Scale, HelpCircle, X } from 'lucide-react';
 
 export default function ApplicationDetails() {
   const { id } = useParams<{ id: string }>();
@@ -489,86 +489,77 @@ export default function ApplicationDetails() {
       {/* Message Modal Overlay */}
       {selectedMessage && (
         <div 
-          className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 overflow-y-auto" 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto" 
           onClick={() => setSelectedMessage(null)}
           id="message-modal-overlay"
         >
           <div 
-            className="bg-[#faf8f5] w-full max-w-2xl border border-gray-300 shadow-2xl relative flex flex-col my-8 rounded-none"
+            className="bg-white w-full max-w-[620px] shadow-2xl relative flex flex-col my-auto rounded-[4px] overflow-hidden border border-gray-300"
             onClick={(e) => e.stopPropagation()}
             id="message-modal-container"
           >
             {/* Modal Header */}
-            <div className="bg-[#2d353c] text-white px-4 py-3 flex items-center justify-between select-none border-b border-gray-400">
-              <span className="font-normal text-[16px] truncate pr-4">{selectedMessage.subject}</span>
+            <div className="bg-[#2d5073] text-white px-5 py-4 flex items-start justify-between select-none">
+              <span className="font-semibold text-[17px] sm:text-[18px] leading-snug select-text pr-6">
+                {selectedMessage.subject}
+              </span>
               <button 
                 onClick={() => setSelectedMessage(null)}
-                className="text-white hover:text-gray-300 focus:outline-none text-[22px] font-light leading-none cursor-pointer"
+                className="text-white/90 hover:text-white focus:outline-none cursor-pointer mt-0.5 transition-colors"
                 aria-label="Close"
                 id="message-modal-close-button-header"
               >
-                &times;
+                <X className="w-[18px] h-[18px] stroke-[2.5]" />
               </button>
             </div>
             
             {/* Modal Body */}
-            <div className="p-6 md:p-8 overflow-y-auto max-h-[80vh] text-[#333] text-[14.5px] leading-relaxed">
+            <div className="p-6 sm:p-8 overflow-y-auto max-h-[85vh] text-[#333333] text-[15.5px] leading-relaxed">
               {selectedMessage.id === 'msg-1' || selectedMessage.subject === 'Confirmation of Online Application Transmission' ? (
-                <div className="space-y-4 font-normal text-gray-800">
-                  <p className="font-normal text-[14.5px]">Hello,</p>
+                <div className="space-y-5 font-normal text-[#333333]">
+                  <p>Hello,</p>
                   
-                  <p className="font-normal text-[14.5px]">
+                  <p>
                     You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. <span className="underline select-text decoration-dotted cursor-help" title="Eastern Daylight Time">EDT</span>.
                   </p>
                   
-                  <p className="font-normal text-[14.5px]">
+                  <p>
                     Your payment receipt number is # <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">O689745557</span>.
                   </p>
                   
-                  <div className="pt-2">
-                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">What happens next?</h3>
-                    <p className="font-normal text-[14.5px]">We will review the information and documents that you provided and processing will begin.</p>
+                  <div className="pt-1.5">
+                    <h3 className="font-bold text-gray-900 text-[15.5px] mb-1">What happens next?</h3>
+                    <p>We will review the information and documents that you provided and processing will begin.</p>
                   </div>
                   
-                  <p className="font-normal text-[14.5px]">
-                    We will notify you by e-mail if we require additional information or documents. You do not need to log into your account to check for messages or updates until you receive an e-mail advising you that you have one..
+                  <p>
+                    We will notify you by e-mail if we require additional information or documents. You do not need to log into your account to check for messages or updates until you receive an e-mail advising you that you have one. .
                   </p>
                   
-                  <div className="pt-2">
-                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">What if information regarding my application changes?</h3>
-                    <p className="font-normal text-[14.5px]">
+                  <div className="pt-1.5">
+                    <h3 className="font-bold text-[#333333] text-[15.5px] mb-1">What if information regarding my application changes?</h3>
+                    <p>
                       It is your responsibility to notify us of any changes to your application. Examples of changes include if you move, get a new phone number, etc.
                     </p>
                   </div>
                   
-                  <div className="pt-2">
-                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">How long will it take to process my application?</h3>
-                    <p className="font-normal text-[14.5px]">
+                  <div className="pt-1.5">
+                    <h3 className="font-bold text-[#333333] text-[15.5px] mb-1">How long will it take to process my application?</h3>
+                    <p>
                       Processing times vary. <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">Find out what the average processing times are.</span>
                     </p>
                   </div>
                   
-                  <p className="pt-2 font-normal text-[14.5px]">
+                  <p className="pt-1.5">
                     If you require additional information on the status of your application after consulting the processing times, contact the <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">Call Centre.</span>
                   </p>
                 </div>
               ) : (
                 <div 
-                  className="prose max-w-none text-gray-800" 
+                  className="prose max-w-none text-[#333333]" 
                   dangerouslySetInnerHTML={{ __html: selectedMessage.content }} 
                 />
               )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-[#f5f5f5] px-4 py-2.5 border-t border-gray-200 flex justify-end">
-              <button
-                onClick={() => setSelectedMessage(null)}
-                className="bg-[#e8e8e8] hover:bg-[#d8d8d8] text-gray-800 font-bold px-4 py-1.5 border border-gray-300 text-[13.5px] select-none cursor-pointer rounded-[3px]"
-                id="message-modal-close-button-footer"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
