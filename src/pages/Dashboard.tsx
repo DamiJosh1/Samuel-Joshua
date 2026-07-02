@@ -143,7 +143,7 @@ export default function Dashboard() {
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
           <span className="text-gray-300 px-1">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-700 hover:text-black cursor-pointer font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>

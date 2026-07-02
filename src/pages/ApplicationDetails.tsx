@@ -29,34 +29,28 @@ export default function ApplicationDetails() {
     );
   }
 
-  if (selectedMessage) {
-    return (
-      <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
-        <div className="text-[#284162] text-sm mb-6 font-medium">
-          <span className="underline cursor-pointer" onClick={() => navigate('/')}>Home</span> 
-          <span className="no-underline text-black px-2">&gt;</span> 
-          <span className="underline cursor-pointer" onClick={() => navigate('/dashboard')}>Your Account</span>
-          <span className="no-underline text-black px-2">&gt;</span> 
-          <span className="underline cursor-pointer" onClick={() => setSelectedMessage(null)}>Application Details</span>
-          <span className="no-underline text-black px-2">&gt;</span> Message
-        </div>
-        <h1 className="text-3xl font-bold mb-6 text-[#333] border-b-2 border-red-700 pb-2">{selectedMessage.subject}</h1>
-        <div className="mb-8 font-medium">
-          Date: {selectedMessage.date}<br />
-          Application: {selectedApp?.id}
-        </div>
-        <div className="prose max-w-none text-black leading-relaxed" dangerouslySetInnerHTML={{ __html: selectedMessage.content }} />
-        <div className="mt-8">
-          <button 
-            onClick={() => setSelectedMessage(null)}
-            className="bg-gray-200 text-black px-4 py-2 border border-gray-400 hover:bg-gray-300 font-bold text-[13px]"
-          >
-            Return to Application Details
-          </button>
-        </div>
-      </main>
-    );
-  }
+  const handleSelectMessage = async (msg: any) => {
+    setSelectedMessage(msg);
+    if (!msg.isRead) {
+      const today = new Date();
+      const dateReadStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const updatedMessages = (selectedApp.messages || []).map(m => 
+        m.id === msg.id ? { ...m, isRead: true, dateRead: dateReadStr } : m
+      );
+      try {
+        await fetch(`/api/applications/${selectedApp.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: user?.email || 'applicant@domain.ca',
+            messages: updatedMessages
+          })
+        });
+      } catch (e) {
+        console.error("Failed to mark message as read:", e);
+      }
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -175,7 +169,7 @@ export default function ApplicationDetails() {
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
           <span className="text-gray-300 px-1">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-700 hover:text-black cursor-pointer font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>
@@ -452,7 +446,7 @@ export default function ApplicationDetails() {
                     <td className="py-2.5 px-3 border-r border-gray-300 font-normal">
                       <span 
                         className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" 
-                        onClick={() => setSelectedMessage(msg)}
+                        onClick={() => handleSelectMessage(msg)}
                       >
                         {msg.subject}
                       </span>
@@ -491,6 +485,94 @@ export default function ApplicationDetails() {
         </div>
 
       </div>
+
+      {/* Message Modal Overlay */}
+      {selectedMessage && (
+        <div 
+          className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4 overflow-y-auto" 
+          onClick={() => setSelectedMessage(null)}
+          id="message-modal-overlay"
+        >
+          <div 
+            className="bg-[#faf8f5] w-full max-w-2xl border border-gray-300 shadow-2xl relative flex flex-col my-8 rounded-none"
+            onClick={(e) => e.stopPropagation()}
+            id="message-modal-container"
+          >
+            {/* Modal Header */}
+            <div className="bg-[#2d353c] text-white px-4 py-3 flex items-center justify-between select-none border-b border-gray-400">
+              <span className="font-normal text-[16px] truncate pr-4">{selectedMessage.subject}</span>
+              <button 
+                onClick={() => setSelectedMessage(null)}
+                className="text-white hover:text-gray-300 focus:outline-none text-[22px] font-light leading-none cursor-pointer"
+                aria-label="Close"
+                id="message-modal-close-button-header"
+              >
+                &times;
+              </button>
+            </div>
+            
+            {/* Modal Body */}
+            <div className="p-6 md:p-8 overflow-y-auto max-h-[80vh] text-[#333] text-[14.5px] leading-relaxed">
+              {selectedMessage.id === 'msg-1' || selectedMessage.subject === 'Confirmation of Online Application Transmission' ? (
+                <div className="space-y-4 font-normal text-gray-800">
+                  <p className="font-normal text-[14.5px]">Hello,</p>
+                  
+                  <p className="font-normal text-[14.5px]">
+                    You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. <span className="underline select-text decoration-dotted cursor-help" title="Eastern Daylight Time">EDT</span>.
+                  </p>
+                  
+                  <p className="font-normal text-[14.5px]">
+                    Your payment receipt number is # <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">O689745557</span>.
+                  </p>
+                  
+                  <div className="pt-2">
+                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">What happens next?</h3>
+                    <p className="font-normal text-[14.5px]">We will review the information and documents that you provided and processing will begin.</p>
+                  </div>
+                  
+                  <p className="font-normal text-[14.5px]">
+                    We will notify you by e-mail if we require additional information or documents. You do not need to log into your account to check for messages or updates until you receive an e-mail advising you that you have one..
+                  </p>
+                  
+                  <div className="pt-2">
+                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">What if information regarding my application changes?</h3>
+                    <p className="font-normal text-[14.5px]">
+                      It is your responsibility to notify us of any changes to your application. Examples of changes include if you move, get a new phone number, etc.
+                    </p>
+                  </div>
+                  
+                  <div className="pt-2">
+                    <h3 className="font-bold text-gray-900 text-[14.5px] mb-1">How long will it take to process my application?</h3>
+                    <p className="font-normal text-[14.5px]">
+                      Processing times vary. <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">Find out what the average processing times are.</span>
+                    </p>
+                  </div>
+                  
+                  <p className="pt-2 font-normal text-[14.5px]">
+                    If you require additional information on the status of your application after consulting the processing times, contact the <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">Call Centre.</span>
+                  </p>
+                </div>
+              ) : (
+                <div 
+                  className="prose max-w-none text-gray-800" 
+                  dangerouslySetInnerHTML={{ __html: selectedMessage.content }} 
+                />
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-[#f5f5f5] px-4 py-2.5 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setSelectedMessage(null)}
+                className="bg-[#e8e8e8] hover:bg-[#d8d8d8] text-gray-800 font-bold px-4 py-1.5 border border-gray-300 text-[13.5px] select-none cursor-pointer rounded-[3px]"
+                id="message-modal-close-button-footer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </main>
   );
