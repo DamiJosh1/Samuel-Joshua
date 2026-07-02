@@ -6,7 +6,7 @@ import { CheckCircle2, Clock, Hourglass, Circle, Info, FileText, Activity, Files
 export default function ApplicationDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, applications } = useApp();
+  const { user, applications, logout } = useApp();
 
   const safeApplications = Array.isArray(applications) ? applications : [];
   const selectedApp = safeApplications.find(a => a.id === id);
@@ -153,43 +153,68 @@ export default function ApplicationDetails() {
     msg.date.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const unreadCount = (selectedApp.messages || []).filter(msg => !msg.isRead).length;
+  const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
+
   return (
-    <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
+    <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
-      {/* 1. Breadcrumb Navigation */}
-      <div className="text-[#284162] text-sm mb-6 font-medium">
-        <span className="underline cursor-pointer" onClick={() => navigate('/')}>Home</span> 
-        <span className="no-underline text-black px-2">&gt;</span> 
-        <span className="underline cursor-pointer" onClick={() => navigate('/dashboard')}>Your Account</span>
-        <span className="no-underline text-black px-2">&gt;</span> Application Details
+      {/* Top Breadcrumb & User Menu */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
+        <div className="text-[#2572b4] mb-3 sm:mb-0 font-normal">
+          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/')}>Home</span>
+          <span className="no-underline text-gray-400 px-2">&gt;</span>
+          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/dashboard')}>Your account</span>
+          <span className="no-underline text-gray-400 px-2">&gt;</span>
+          <span className="text-gray-600 font-normal">Application status and messages</span>
+        </div>
+        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700">
+          <span>Signed in as <span className="font-normal">{userName}</span></span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
+        </div>
       </div>
 
-      <div className="border-b-2 border-[#26374a] pb-2 mb-6">
-        <h1 className="text-[32px] font-bold text-[#333] mb-2">Application details</h1>
-        <p className="text-[16px] text-gray-800 leading-relaxed font-normal">
-          Check the status, review the details and read messages about your application so the next words will be a clickable link{" "}
+      {/* Title Section */}
+      <div className="border-b border-gray-300 pb-4 mb-4">
+        <h1 className="text-[32px] font-normal text-[#333] mb-2 leading-snug">Application status and messages</h1>
+        <p className="text-[14px] text-gray-700 leading-normal font-normal">
+          Check the status, review the details and read messages for your application.{' '}
           <span 
             onClick={() => navigate(`/application/${selectedApp.id}/checklist`)}
-            className="text-[#05355c] underline font-bold cursor-pointer hover:text-blue-800"
+            className="text-[#2572b4] underline font-normal cursor-pointer hover:text-[#05355c]"
           >
             View submitted application or upload documents
           </span>
         </p>
       </div>
 
+      {/* Unread Message Notification Bar */}
+      {unreadCount > 0 && (
+        <div className="border-l-4 border-gray-400 pl-4 py-2 my-5 text-[14px] text-[#333] font-normal">
+          You have <a href="#messages-table-section" className="text-[#2572b4] underline hover:text-[#05355c] font-normal">{unreadCount} unread message(s).</a>
+        </div>
+      )}
+
       {/* 2. Side-by-Side Status & Information panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-[14px]">
         {/* Application status Box */}
         <div className="border border-gray-300 rounded-none shadow-none bg-white overflow-hidden">
-          <div className="bg-[#f5f5f5] px-4 py-2.5 border-b border-gray-300">
-            <h2 className="font-bold text-[16px] text-gray-900">Application status</h2>
+          <div className="bg-[#f5f5f5] px-4 py-2 border-b border-gray-300">
+            <h2 className="font-bold text-[15px] text-gray-900">Application status</h2>
           </div>
           <div className="p-4">
             <p className="text-gray-800 font-normal leading-relaxed mb-4">
               {selectedApp.statusSummary || selectedApp.details || 'Your application is in progress. We will send you a message if we need more information or if further actions are required.'}
             </p>
             <div>
-              <span className="font-bold text-gray-900 block mb-1">Latest update:</span>
+              <span className="font-bold text-gray-900 block mb-0.5">Latest update:</span>
               {(() => {
                 const text = selectedApp.latestUpdate || 'Your application is in progress.';
                 let idx = text.indexOf(': ');
@@ -208,13 +233,13 @@ export default function ApplicationDetails() {
                   const prefix = text.slice(0, idx + 1);
                   const body = text.slice(idx + 1);
                   return (
-                    <p className="text-gray-800 leading-relaxed font-light">
+                    <p className="text-gray-800 leading-relaxed font-normal">
                       <strong className="font-bold">{prefix}</strong>{body}
                     </p>
                   );
                 }
                 return (
-                  <p className="text-gray-800 leading-relaxed font-light">
+                  <p className="text-gray-800 leading-relaxed font-normal">
                     {text}
                   </p>
                 );
@@ -225,42 +250,33 @@ export default function ApplicationDetails() {
 
         {/* Applicant information Box */}
         <div className="border border-gray-300 rounded-none shadow-none bg-white overflow-hidden">
-          <div className="bg-[#f5f5f5] px-4 py-2.5 border-b border-gray-300">
-            <h2 className="font-bold text-[16px] text-gray-900">Applicant information</h2>
+          <div className="bg-[#f5f5f5] px-4 py-2 border-b border-gray-300">
+            <h2 className="font-bold text-[15px] text-gray-900">Applicant information</h2>
           </div>
-          <div className="p-4 text-gray-800 space-y-2 leading-relaxed">
+          <div className="p-4 text-gray-800 space-y-2 leading-normal">
             <div>
               <span className="font-bold text-gray-900">Principal Applicant:</span>{" "}
-              <span className="uppercase font-semibold">{selectedApp.fullName || user?.name || 'Applicant Name'}</span>
+              <span className="uppercase">{selectedApp.fullName || user?.name || 'Applicant Name'}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Unique Client Identifier (UCI):</span>{" "}
-              <span className="font-mono text-xs">{selectedApp.uci || '—'}</span>
+              <span>{selectedApp.uci || '—'}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Application number:</span>{" "}
-              <span className="font-mono text-xs">{selectedApp.id}</span>
+              <span>{selectedApp.id}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Date Received:</span>{" "}
               <span>{selectedApp.dateReceived || selectedApp.dateCreated || '—'}</span>
             </div>
-            <div className="pt-1">
-              <span className="font-bold text-gray-900 block mb-1">Biometrics:</span>
-              <div className="pl-4 space-y-1">
-                <div>
-                  <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
-                  <span className="font-mono text-xs">{selectedApp.biometricsNumber || '—'}</span>
-                </div>
-                <div>
-                  <span className="font-bold text-gray-900">Date of Biometrics Enrolment:</span>{" "}
-                  <span>{selectedApp.biometricsDate || '—'}</span>
-                </div>
-                <div>
-                  <span className="font-bold text-gray-900">Expiry Date:</span>{" "}
-                  <span>{selectedApp.biometricsExpiry || '—'}</span>
-                </div>
-              </div>
+            <div>
+              <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
+              <span>{selectedApp.biometricsNumber || '—'}</span>
+            </div>
+            <div>
+              <span className="font-bold text-gray-900">Date of Biometrics Enrolment:</span>{" "}
+              <span>{selectedApp.biometricsDate || '—'}</span>
             </div>
           </div>
         </div>
@@ -273,48 +289,48 @@ export default function ApplicationDetails() {
           When we get your application, there are a series of steps it may go through before we make a decision. Use the following table to find out the current status of each application step.
         </p>
 
-        <div className="mt-4">
+        <div className="mt-4 border-t border-gray-200">
           {renderStep(
             "Review of eligibility",
             selectedApp.stages?.eligibilityStatus || "We are reviewing whether you meet the eligibility requirements.",
             selectedApp.stages?.eligibilityDate,
-            <FileText className="w-7 h-7" />
+            <FileText className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Review of medical results",
             selectedApp.stages?.medicalStatus || "You do not need a medical exam. We will send you a message if this changes.",
             selectedApp.stages?.medicalDate,
-            <Activity className="w-7 h-7" />
+            <Activity className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Review of additional documents",
             selectedApp.stages?.additionalDocsStatus || "We do not need additional documents.",
             selectedApp.stages?.additionalDocsDate,
-            <Files className="w-7 h-7" />
+            <Files className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Interview",
             selectedApp.stages?.interviewStatus || "You do not need an interview. We will send you a message if this changes.",
             selectedApp.stages?.interviewDate,
-            <Users className="w-7 h-7" />
+            <Users className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Biometrics",
             selectedApp.stages?.biometricsStatus || "We do not need your fingerprints. We will send you a message if this changes.",
             selectedApp.stages?.biometricsDate,
-            <Fingerprint className="w-7 h-7" />
+            <Fingerprint className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Background check",
             selectedApp.stages?.backgroundStatus || "Not applicable.",
             selectedApp.stages?.backgroundDate,
-            <UserCheck className="w-7 h-7" />
+            <UserCheck className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
             "Final decision",
             selectedApp.stages?.finalDecisionStatus || "Your application is in progress. We will send you a message once a final decision has been made.",
             selectedApp.stages?.finalDecisionDate,
-            <Scale className="w-7 h-7" />
+            <Scale className="w-7 h-7 text-gray-600" />
           )}
         </div>
       </div>
@@ -366,34 +382,39 @@ export default function ApplicationDetails() {
       </div>
 
       {/* 5. Messages about your application */}
-      <div className="mb-10 text-[14px]">
-        <h2 className="text-[22px] font-bold mb-4 text-[#333]">Messages about your application</h2>
+      <div className="mb-10 text-[14px]" id="messages-table-section">
+        <h2 className="text-[22px] font-bold mb-1 text-[#333]">Messages about your application</h2>
         
         {/* Help Banner */}
-        <div className="bg-[#f5f5f5] border-l-4 border-[#269abc] p-3 mb-6 flex items-start gap-3 rounded-none">
+        <div className="bg-[#f5f5f5] border-l-4 border-[#269abc] p-3 mb-4 flex items-start gap-3 rounded-none">
           <Info className="w-5 h-5 text-[#269abc] flex-shrink-0 mt-0.5" />
           <p className="text-gray-800 leading-normal font-normal">
             Links and document titles are shown in the language you chose for your portal account when they were generated.
           </p>
         </div>
 
+        {/* Dynamic New Message Subtext */}
+        <p className="text-[14px] text-[#333] mb-4 italic font-normal">
+          ({unreadCount} New message{unreadCount !== 1 ? 's' : ''})
+        </p>
+
         {/* Filter Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-3">
           <div className="flex items-center gap-2">
-            <label htmlFor="search-messages" className="font-bold text-[#333]">Search:</label>
+            <span className="font-bold">Search:</span>
             <input 
               id="search-messages"
               type="text" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-400 px-2 py-1 bg-white text-[13px] focus:outline-none focus:border-[#2572b5] rounded-none"
+              className="border border-gray-400 px-2 py-0.5 bg-white text-[13.5px] focus:outline-none focus:border-[#2572b5] rounded-none"
             />
           </div>
-          <div className="text-gray-700 text-[13px]">
+          <div className="text-gray-700 text-[13.5px]">
             Showing {filteredMessages.length > 0 ? 1 : 0} to {filteredMessages.length} of {filteredMessages.length} entries 
             <span className="mx-2">|</span> 
             Show{" "}
-            <select className="border border-gray-300 rounded-none px-1 py-0.5 bg-white font-medium" defaultValue="10">
+            <select className="border border-gray-300 rounded-none px-1 py-0.5 bg-white font-normal" defaultValue="10">
               <option value="10">10</option>
               <option value="25">25</option>
               <option value="50">50</option>
@@ -430,14 +451,20 @@ export default function ApplicationDetails() {
                   <tr key={msg.id || idx} className="border-b border-gray-300 hover:bg-gray-50">
                     <td className="py-2.5 px-3 border-r border-gray-300 font-normal">
                       <span 
-                        className="text-blue-700 underline cursor-pointer hover:text-blue-900 font-medium" 
+                        className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" 
                         onClick={() => setSelectedMessage(msg)}
                       >
                         {msg.subject}
                       </span>
                     </td>
                     <td className="py-2.5 px-3 border-r border-gray-300 font-normal">{msg.date}</td>
-                    <td className="py-2.5 px-3 font-normal">{msg.dateRead || msg.date}</td>
+                    <td className="py-2.5 px-3 font-normal text-[#333]">
+                      {!msg.isRead ? (
+                        <span className="font-semibold text-gray-900">New Message</span>
+                      ) : (
+                        msg.dateRead || msg.date
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -448,6 +475,21 @@ export default function ApplicationDetails() {
             </tbody>
           </table>
         </div>
+
+        {/* Center pagination box */}
+        <div className="flex justify-center my-4">
+          <button className="bg-[#2572b4] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+            1
+          </button>
+        </div>
+
+        {/* Small report problem block at bottom left */}
+        <div className="mt-8">
+          <button className="bg-[#f5f5f5] hover:bg-[#e8e8e8] text-gray-700 px-4 py-1.5 border border-gray-300 font-normal text-[13.5px] rounded-[3px] select-none cursor-pointer">
+            Report a problem or mistake on this page
+          </button>
+        </div>
+
       </div>
 
     </main>

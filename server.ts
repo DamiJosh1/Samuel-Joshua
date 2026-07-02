@@ -240,6 +240,32 @@ function loadData() {
       const fileData = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
       db.users = new Map(fileData.users);
       db.applications = new Map(fileData.applications);
+
+      // Self-healing check: Recreate missing users from applications to prevent accidental data deletion
+      for (const [email, apps] of db.applications.entries()) {
+        const lowerEmail = email.toLowerCase().trim();
+        if (lowerEmail !== "guest" && lowerEmail !== "admin@canada.ca" && !db.users.has(lowerEmail)) {
+          const firstApp = apps[0];
+          db.users.set(lowerEmail, {
+            email: lowerEmail,
+            name: firstApp?.fullName || "Applicant",
+            dateCreated: firstApp?.dateCreated || "2026-03-18",
+            timeCreated: firstApp?.timeCreated || "09:00 AM",
+            uci: firstApp?.uci || ""
+          });
+        }
+      }
+
+      // Ensure default user is always seeded if not present
+      const defaultEmail = "applicant@domain.ca";
+      if (!db.users.has(defaultEmail)) {
+        db.users.set(defaultEmail, { email: defaultEmail, name: "YASIR IQBAL", dateCreated: "2026-03-18", timeCreated: "09:00 AM" });
+      }
+      if (!db.applications.has(defaultEmail)) {
+        db.applications.set(defaultEmail, createDefaultApplicationsForUser(defaultEmail));
+      }
+
+      saveData();
       return;
     } catch (e) {
       console.error("Error loading data file:", e);

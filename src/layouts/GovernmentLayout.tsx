@@ -97,9 +97,9 @@ export default function GovernmentLayout() {
     <div className="min-h-screen flex flex-col bg-white text-[#333] font-sans antialiased" style={{ fontFamily: '"Noto Sans", sans-serif' }}>
       
       {/* 2-TIERED WET GOVERNMENT HEADER */}
-      <header className="border-b border-gray-300 bg-white text-[#333]">
-        <div className="mx-auto max-w-6xl px-4 py-3 md:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <header className="bg-white text-[#333] pt-4 pb-2">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="flex justify-between items-start pb-4">
             
             {/* Logo Signature Section */}
             <Link to="/" className="flex items-center" id="gov-can-logo">
@@ -109,114 +109,81 @@ export default function GovernmentLayout() {
                   : "https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg"
                 }
                 alt={currentLang === 'en' ? "Government of Canada" : "Gouvernement du Canada"} 
-                className="h-8 md:h-10 w-auto object-contain"
+                className="h-8 md:h-[34px] w-auto object-contain"
                 id="gov-canada-sig-logo-header"
                 referrerPolicy="no-referrer"
               />
             </Link>
 
-            {/* Actions Panel */}
-            <div className="flex flex-col gap-3 w-full sm:w-auto sm:items-end">
-              <div className="flex justify-between items-center w-full gap-4 sm:gap-8">
-                {/* Language Toggle Button */}
+            {/* Language Toggle Link */}
+            <button
+              onClick={handleLangToggle}
+              className="text-sm font-normal text-[#2572b4] hover:text-[#05355c] hover:underline focus:outline-none cursor-pointer"
+              title={t.langToggleLabel}
+              aria-label={t.langToggleLabel}
+              id="lang-toggle-button"
+            >
+              {currentLang === 'en' ? 'Français' : 'English'}
+            </button>
+            
+          </div>
+          
+          {/* Main horizontal rule separating signature from menu */}
+          <div className="h-[1px] bg-gray-300 w-full"></div>
+          
+          {/* MENU Bar & Secondary Search Row */}
+          <div className="flex justify-between items-center py-2.5">
+            {/* Authentic MENU Dropdown Button */}
+            <button 
+              className="bg-[#333333] hover:bg-[#222222] text-white px-4 py-2 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-[3px] cursor-pointer"
+              id="header-gckey-menu-btn"
+            >
+              <span>MENU</span>
+              <span className="text-[10px] opacity-90">▼</span>
+            </button>
+
+            {/* Inline search or blank depending on page state, matches image 7 */}
+            <div className="hidden md:flex items-center">
+              <form onSubmit={handleSearchSubmit} className="flex items-center border border-gray-400 bg-white" id="search-box-form">
+                <input
+                  type="text"
+                  value={searchVal}
+                  onChange={(e) => setSearchVal(e.target.value)}
+                  placeholder="Search Canada.ca"
+                  className="px-3 py-1 text-[13.5px] outline-none w-52 text-gray-800"
+                  aria-label="Search Canada.ca"
+                />
                 <button
-                  onClick={handleLangToggle}
-                  className="text-sm font-semibold text-[#284162] hover:text-[#05355c] hover:underline focus:outline-none focus:ring-1 focus:ring-[#2572b4] rounded cursor-pointer"
-                  title={t.langToggleLabel}
-                  aria-label={t.langToggleLabel}
-                  id="lang-toggle-button"
+                  type="submit"
+                  className="bg-[#333] text-white px-2.5 py-1.5 flex items-center justify-center hover:bg-black transition-colors"
+                  aria-label="Search"
                 >
-                  {t.langToggle}
+                  <Search className="w-4 h-4" />
                 </button>
-                
-                {/* Account State Greeting (Unified layout used everywhere) */}
-                <div className="text-sm">
-                  {user ? (
-                    <div className="flex items-center gap-3">
-                      <Link 
-                        to={user.email === 'admin@canada.ca' ? '/admin' : '/dashboard'} 
-                        className="text-[#2572b4] hover:underline font-semibold"
-                        id="header-console-account-btn"
-                      >
-                        {currentLang === 'en' ? 'Account' : 'Compte'}
-                      </Link>
-                      <span className="text-gray-300">|</span>
-                      <button 
-                        onClick={logout} 
-                        className="text-red-700 hover:underline font-semibold cursor-pointer"
-                      >
-                        {currentLang === 'en' ? 'Sign Out' : 'Quitter'}
-                      </button>
-                    </div>
-                  ) : (
-                    <Link 
-                      to="/auth/login" 
-                      className="text-[#2572b4] hover:underline font-semibold"
-                      id="header-signin-btn"
-                    >
-                      {currentLang === 'en' ? 'Sign in' : 'Connexion'}
-                    </Link>
-                  )}
-                </div>
-              </div>
-
-              {/* Central Header Search Form */}
-              <div className="w-full flex sm:justify-end">
-                <form onSubmit={handleSearchSubmit} className="flex items-center w-full sm:w-72" id="search-box-form">
-                  <input
-                    type="text"
-                    value={searchVal}
-                    onChange={(e) => setSearchVal(e.target.value)}
-                    placeholder="Search Canada.ca"
-                    className="w-full border border-gray-400 border-r-0 px-3 py-1.5 text-base outline-none focus:border-[#2572b4] focus:ring-1 focus:ring-[#2572b4]"
-                    aria-label="Search Canada.ca"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1.5 cursor-pointer transition-colors border border-[#26374a] flex items-center justify-center focus:outline-none"
-                    id="search-submit-btn"
-                    aria-label="Search"
-                  >
-                    <Search className="w-5 h-5" />
-                  </button>
-                </form>
-              </div>
-
+              </form>
             </div>
           </div>
+
         </div>
       </header>
 
-      {/* TOP NAVIGATION BAR LINKS (Mandated header categories navigation) */}
-      <nav className="bg-[#26374a] text-white border-b border-[#111820] shadow-sm select-none overflow-x-auto scrollbar-none" id="header-categories-nav">
-        <div className="mx-auto max-w-6xl flex items-center h-10">
-           <ul className="flex flex-row w-full h-full text-sm font-semibold text-center divide-x divide-gray-500 border-l border-r border-gray-500 min-w-max sm:min-w-0">
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Jobs</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors bg-[#111820] whitespace-nowrap">Immigration</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Travel</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Business</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Benefits</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Health</li>
-             <li className="flex-1 px-4 hover:bg-[#111820] flex items-center justify-center cursor-pointer transition-colors whitespace-nowrap">Taxes</li>
-           </ul>
-        </div>
-      </nav>
-
       {/* DYNAMIC BREADCRUMBS BAR */}
-      <div className="bg-[#f5f5f5] border-b border-[#e5e5e5] py-2.5 text-xs text-[#555]" id="breadcrumbs-container">
-        <div className="mx-auto max-w-6xl px-4 flex flex-wrap items-center gap-1.5 font-sans">
+      <div className="bg-white py-1 text-xs text-[#333]" id="breadcrumbs-container">
+        <div className="mx-auto max-w-6xl px-4 flex flex-wrap items-center gap-1 font-sans">
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
-              <div key={crumb.url} className="flex items-center gap-1.5">
+              <div key={crumb.url} className="flex items-center gap-1">
                 {isLast ? (
-                  <span className="text-[#333] font-semibold truncate max-w-xs">{crumb.label}</span>
+                  <span className="text-gray-600 truncate font-normal max-w-xs">
+                    {crumb.label === 'My Console' || crumb.label === 'Your account' || crumb.label === 'Dashboard' ? 'Your account' : crumb.label}
+                  </span>
                 ) : (
                   <>
-                    <Link to={crumb.url} className="text-[#2572b4] hover:text-[#05355c] hover:underline focus:underline">
-                      {crumb.label}
+                    <Link to={crumb.url} className="text-[#2572b4] hover:text-[#05355c] hover:underline">
+                      {crumb.label === 'Home' ? 'Home' : crumb.label}
                     </Link>
-                    <ChevronRight className="w-3 h-3 text-gray-300" />
+                    <span className="text-gray-400 px-1 font-normal">&gt;</span>
                   </>
                 )}
               </div>

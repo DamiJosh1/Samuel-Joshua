@@ -124,36 +124,42 @@ export default function Dashboard() {
 
   const totalPages2 = Math.ceil(processedApps2.length / pageSize2) || 1;
 
+  const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
+
   return (
-    <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
+    <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
       {/* Top Breadcrumb & User Menu */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6">
-        <div className="text-[#05355c] mb-3 sm:mb-0">
-          <span className="underline cursor-pointer hover:text-blue-800" onClick={() => navigate('/')}>Home</span>
-          <span className="no-underline text-black px-1.5">&rarr;</span>
-          <span className="text-gray-600 font-semibold">Your Account</span>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
+        <div className="text-[#2572b4] mb-3 sm:mb-0 font-normal">
+          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/')}>Home</span>
+          <span className="no-underline text-gray-400 px-2">&gt;</span>
+          <span className="text-gray-600 font-normal">Your account</span>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 items-center text-gray-700">
-          <span>Signed in as <span className="uppercase font-light">{user?.name || 'ChatWithOlu Webinar'}</span></span>
-          <span className="text-gray-300">|</span>
-          <span className="text-[#05355c] underline cursor-pointer font-bold hover:text-blue-800" onClick={() => navigate('/')}>Account Home</span>
-          <span className="text-gray-300">|</span>
-          <span className="text-[#05355c] underline cursor-pointer font-bold hover:text-blue-800" onClick={logout}>Sign Out</span>
+        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700">
+          <span>Signed in as <span className="font-normal">{userName}</span></span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-300 px-1">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
 
       {/* Account Owner Page Title with the Canada.ca Red Accent Line */}
-      <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900 tracking-tight leading-tight">
-          {user?.name ? `${user.name}'s account` : "ChatWithOlu Webinar's account"}
+      <div className="mb-6">
+        <h1 className="text-[32px] font-normal text-[#333] tracking-tight leading-tight">
+          {userName}'s account
         </h1>
-        <div className="h-[2px] bg-[#af3c43] w-full mt-2"></div>
+        <hr className="border-gray-300 mt-3" />
       </div>
 
       {/* Section 1: View the applications you submitted */}
       <section className="mb-12">
-        <h2 className="text-[22px] font-bold text-gray-900 mb-1">
+        <h2 className="text-[22px] font-bold text-[#333] mb-1">
           View the applications you submitted
         </h2>
         <p className="text-[14px] text-gray-700 mb-4 leading-normal">
@@ -163,7 +169,7 @@ export default function Dashboard() {
         {/* Search and entries display row - Styled exactly like DataTables in screenshot */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
           <div className="flex items-center gap-2">
-            <label htmlFor="search-table-1" className="font-bold">Search:</label>
+            <span className="font-bold">Search:</span>
             <input
               id="search-table-1"
               type="text"
@@ -175,12 +181,12 @@ export default function Dashboard() {
               className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
             />
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-[13.5px]">
             <span>
               Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <label htmlFor="pagesize-table-1" className="font-bold">Show</label>
+            <span className="font-bold">Show</span>
             <select
               id="pagesize-table-1"
               value={pageSize1}
@@ -201,44 +207,44 @@ export default function Dashboard() {
 
         {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse text-[14px]">
+          <table className="w-full text-left border-collapse text-[13.5px]">
             <thead>
               <tr className="border-t border-b border-[#333] text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort1('type')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'type' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application type {sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Application type {sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'id' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application number {sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Application number {sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Applicant name {sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Applicant name {sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 bg-[#ebebeb] whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date submitted {sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}
+                  Date submitted {sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'status' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Current status {sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Current status {sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Messages {sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Messages {sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
                   Action
@@ -247,30 +253,35 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {paginatedApps1.length > 0 ? (
-                paginatedApps1.map((app) => (
-                  <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
-                    <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
-                    <td className="py-2.5 px-3 text-gray-800 font-mono">{app.id}</td>
-                    <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
-                    <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">{app.dateSubmitted || app.dateCreated || '2026-03-18'}</td>
-                    <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
-                    <td className="py-2.5 px-3 text-gray-800 font-medium">
-                      {app.messages && app.messages.some(m => !m.isRead) ? (
-                        <span className="font-bold text-gray-950">New</span>
-                      ) : (
-                        <span>Read</span>
-                      )}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <button
-                        onClick={() => navigate(`/application/${app.id}`)}
-                        className="text-[#05355c] underline font-bold hover:text-blue-800 text-left cursor-pointer"
-                      >
-                        Check status and messages
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                paginatedApps1.map((app) => {
+                  const isRefused = app.status?.toLowerCase() === 'refused';
+                  return (
+                    <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
+                      <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
+                      <td className="py-2.5 px-3 text-gray-800">{app.id}</td>
+                      <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
+                      <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">
+                        {app.dateSubmitted || app.dateCreated || '2026-03-18'}
+                      </td>
+                      <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
+                      <td className="py-2.5 px-3 text-gray-800 font-medium">
+                        {app.messages && app.messages.some(m => !m.isRead) ? (
+                          <span className="font-bold text-gray-950">New</span>
+                        ) : (
+                          <span>Read</span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <button
+                          onClick={() => navigate(`/application/${app.id}`)}
+                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
+                        >
+                          {isRefused ? 'Check full application status' : 'Check status and messages'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={7} className="py-4 text-center text-gray-700 font-normal border-b border-gray-300">
@@ -282,40 +293,18 @@ export default function Dashboard() {
           </table>
         </div>
 
-        {/* Pagination controls for Table 1 (Visible only when data exists) */}
-        {processedApps1.length > pageSize1 && (
-          <div className="flex justify-end gap-1 mt-3">
-            <button
-              onClick={() => setCurrentPage1(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage1 === 1}
-              className={`px-3 py-1 text-xs border ${currentPage1 === 1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages1 }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage1(i + 1)}
-                className={`px-3 py-1 text-xs font-bold border ${currentPage1 === i + 1 ? 'bg-[#05355c] border-[#05355c] text-white' : 'border-gray-300 text-[#05355c] hover:bg-gray-100'}`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage1(prev => Math.min(prev + 1, totalPages1))}
-              disabled={currentPage1 === totalPages1}
-              className={`px-3 py-1 text-xs border ${currentPage1 === totalPages1 ? 'border-gray-200 text-gray-400 cursor-not-allowed' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
-            >
-              Next
-            </button>
-          </div>
-        )}
+        {/* Center pagination box exactly matching screenshot */}
+        <div className="flex justify-center my-4">
+          <button className="bg-[#2572b4] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+            1
+          </button>
+        </div>
 
         {/* Paper Application Link Box */}
         <p className="text-[14px] text-gray-700 mt-4 leading-relaxed font-normal">
           Did you apply on paper or don't see your online application in your account?{' '}
           <span 
-            className="underline text-[#05355c] font-bold cursor-pointer hover:text-blue-800"
+            className="underline text-[#2572b4] font-normal cursor-pointer hover:text-[#05355c]"
             onClick={() => navigate('/immigration-citizenship')}
           >
             Add (link) your application to your account
@@ -326,7 +315,7 @@ export default function Dashboard() {
 
       {/* Section 2: Continue an application you haven't submitted */}
       <section className="mb-12">
-        <h2 className="text-[22px] font-bold text-gray-900 mb-1">
+        <h2 className="text-[22px] font-bold text-[#333] mb-1">
           Continue an application you haven't submitted
         </h2>
         <p className="text-[14px] text-gray-700 mb-4 leading-normal">
@@ -336,7 +325,7 @@ export default function Dashboard() {
         {/* Search and entries display row - Match screenshot */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
           <div className="flex items-center gap-2">
-            <label htmlFor="search-table-2" className="font-bold">Search:</label>
+            <span className="font-bold">Search:</span>
             <input
               id="search-table-2"
               type="text"
@@ -348,12 +337,12 @@ export default function Dashboard() {
               className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
             />
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-[13.5px]">
             <span>
               Showing {processedApps2.length === 0 ? '0 to 0' : `${(currentPage2 - 1) * pageSize2 + 1} to ${Math.min(currentPage2 * pageSize2, processedApps2.length)}`} of {processedApps2.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <label htmlFor="pagesize-table-2" className="font-bold">Show</label>
+            <span className="font-bold">Show</span>
             <select
               id="pagesize-table-2"
               value={pageSize2}
@@ -374,32 +363,32 @@ export default function Dashboard() {
 
         {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse text-[14px]">
+          <table className="w-full text-left border-collapse text-[13.5px]">
             <thead>
               <tr className="border-t border-b border-[#333] text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort2('type')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'type' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application type {sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Application type {sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 bg-[#ebebeb] whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date Created {sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓'}
+                  Date Created {sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Days left to submit {sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Days left to submit {sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
-                  className="py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left"
+                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date last saved {sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}
+                  Date last saved {sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
                 </th>
                 <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
                   Action
@@ -415,7 +404,7 @@ export default function Dashboard() {
                     <td className="py-2.5 px-3 text-gray-800">{app.daysLeft}</td>
                     <td className="py-2.5 px-3 text-gray-800">{app.dateSaved}</td>
                     <td className="py-2.5 px-3">
-                      <button className="text-[#05355c] underline font-bold hover:text-blue-800 text-left">
+                      <button className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer">
                         Continue Application
                       </button>
                     </td>
@@ -435,7 +424,7 @@ export default function Dashboard() {
 
       {/* Section 3: Start an application */}
       <section className="mb-8">
-        <h2 className="text-[24px] font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2">
+        <h2 className="text-[22px] font-bold text-[#333] mb-6 border-b border-gray-200 pb-2">
           Start an application
         </h2>
 
@@ -446,7 +435,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship')}
-              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Apply to come to Canada
             </span>
@@ -459,7 +448,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/benefits')}
-              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Refugees: Apply for temporary health care benefits
             </span>
@@ -472,7 +461,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship/citizenship')}
-              className="text-[#05355c] hover:text-blue-800 underline font-bold text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Citizenship: Apply for a search or proof of citizenship
             </span>
