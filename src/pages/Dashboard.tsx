@@ -151,6 +151,41 @@ export default function Dashboard() {
     return dateStr;
   };
 
+  const renderSortArrows = (field: string, currentField: string, direction: 'asc' | 'desc') => {
+    const isSorted = field === currentField;
+    if (isSorted) {
+      if (direction === 'asc') {
+        return (
+          <span className="block mt-1 text-left">
+            <svg className="w-2.5 h-3.5 inline-block align-middle text-[#333333]" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 14V2M2 6l4-4 4 4" />
+            </svg>
+          </span>
+        );
+      } else {
+        return (
+          <span className="block mt-1 text-left">
+            <svg className="w-2.5 h-3.5 inline-block align-middle text-[#333333]" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2v12M2 10l4 4 4-4" />
+            </svg>
+          </span>
+        );
+      }
+    }
+    return (
+      <span className="block mt-1 text-left">
+        <span className="inline-flex gap-[1.5px] align-middle text-[#333333]/70 shrink-0">
+          <svg className="w-2 h-3" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2v12M2 10l4 4 4-4" />
+          </svg>
+          <svg className="w-2 h-3" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 14V2M2 6l4-4 4 4" />
+          </svg>
+        </span>
+      </span>
+    );
+  };
+
   const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
 
   return (
@@ -241,37 +276,37 @@ export default function Dashboard() {
                   onClick={() => handleSort1('type')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'type' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application type {sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Application type {renderSortArrows('type', sortField1, sortDir1)}
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'id' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application number {sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Application number {renderSortArrows('id', sortField1, sortDir1)}
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Applicant name {sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Applicant name {renderSortArrows('applicantName', sortField1, sortDir1)}
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date submitted {sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Date submitted {renderSortArrows('dateSubmitted', sortField1, sortDir1)}
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'status' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Current status {sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Current status {renderSortArrows('status', sortField1, sortDir1)}
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Messages {sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Messages {renderSortArrows('messages', sortField1, sortDir1)}
                 </th>
                 <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
                   Action
@@ -397,25 +432,25 @@ export default function Dashboard() {
                   onClick={() => handleSort2('type')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'type' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Application type {sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Application type {renderSortArrows('type', sortField2, sortDir2)}
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date Created {sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Date Created {renderSortArrows('dateCreated', sortField2, sortDir2)}
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Days left to submit {sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Days left to submit {renderSortArrows('daysLeft', sortField2, sortDir2)}
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
                   className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : ''}`}
                 >
-                  Date last saved {sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '⇅'}
+                  Date last saved {renderSortArrows('dateSaved', sortField2, sortDir2)}
                 </th>
                 <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
                   Action
