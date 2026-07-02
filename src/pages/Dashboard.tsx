@@ -124,6 +124,33 @@ export default function Dashboard() {
 
   const totalPages2 = Math.ceil(processedApps2.length / pageSize2) || 1;
 
+  const formatSubmittedDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    // If it already has letters (like 'August 2, 2023'), return it as is
+    if (/[a-zA-Z]/.test(dateStr)) {
+      return dateStr;
+    }
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const dateObj = new Date(year, month, day);
+        if (!isNaN(dateObj.getTime())) {
+          return dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+      }
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    } catch (e) {
+      // fallback
+    }
+    return dateStr;
+  };
+
   const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
 
   return (
@@ -258,15 +285,15 @@ export default function Dashboard() {
                   return (
                     <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
                       <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
-                      <td className="py-2.5 px-3 text-gray-800">{app.id}</td>
+                      <td className="py-2.5 px-3 text-gray-800 font-mono tracking-tight font-normal text-[14px]">{app.id}</td>
                       <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
                       <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">
-                        {app.dateSubmitted || app.dateCreated || '2026-03-18'}
+                        {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2026-03-18')}
                       </td>
                       <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
-                      <td className="py-2.5 px-3 text-gray-800 font-medium">
+                      <td className="py-2.5 px-3 text-gray-800 font-normal">
                         {app.messages && app.messages.some(m => !m.isRead) ? (
-                          <span className="font-bold text-gray-950">New</span>
+                          <span>New</span>
                         ) : (
                           <span>Read</span>
                         )}

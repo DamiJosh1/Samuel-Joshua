@@ -14,6 +14,32 @@ export default function ApplicationDetails() {
   const [selectedMessage, setSelectedMessage] = React.useState<any>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
 
+  const formatSubmittedDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    if (/[a-zA-Z]/.test(dateStr)) {
+      return dateStr;
+    }
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const dateObj = new Date(year, month, day);
+        if (!isNaN(dateObj.getTime())) {
+          return dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+      }
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    } catch (e) {
+      // fallback
+    }
+    return dateStr;
+  };
+
   if (!selectedApp) {
     return (
       <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
@@ -258,11 +284,11 @@ export default function ApplicationDetails() {
             </div>
             <div>
               <span className="font-bold text-gray-900">Application number:</span>{" "}
-              <span>{selectedApp.id}</span>
+              <span className="font-mono tracking-tight font-normal text-[14px]">{selectedApp.id}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Date Received:</span>{" "}
-              <span>{selectedApp.dateReceived || selectedApp.dateCreated || '—'}</span>
+              <span>{formatSubmittedDate(selectedApp.dateReceived || selectedApp.dateCreated || '') || '—'}</span>
             </div>
             <div>
               <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
