@@ -156,32 +156,21 @@ export default function Dashboard() {
     if (isSorted) {
       if (direction === 'asc') {
         return (
-          <span className="block mt-1 text-left">
-            <svg className="w-2.5 h-3.5 inline-block align-middle text-[#333333]" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 14V2M2 6l4-4 4 4" />
-            </svg>
+          <span className="block mt-0.5 text-left font-bold text-[#333333] text-[15px] select-none leading-none">
+            ↑
           </span>
         );
       } else {
         return (
-          <span className="block mt-1 text-left">
-            <svg className="w-2.5 h-3.5 inline-block align-middle text-[#333333]" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 2v12M2 10l4 4 4-4" />
-            </svg>
+          <span className="block mt-0.5 text-left font-bold text-[#333333] text-[15px] select-none leading-none">
+            ↓
           </span>
         );
       }
     }
     return (
-      <span className="block mt-1 text-left">
-        <span className="inline-flex gap-[1.5px] align-middle text-[#333333]/70 shrink-0">
-          <svg className="w-2 h-3" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 2v12M2 10l4 4 4-4" />
-          </svg>
-          <svg className="w-2 h-3" viewBox="0 0 12 16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 14V2M2 6l4-4 4 4" />
-          </svg>
-        </span>
+      <span className="block mt-0.5 text-left font-bold text-[#333333]/80 text-[15px] select-none leading-none tracking-tighter">
+        ↓↑
       </span>
     );
   };
