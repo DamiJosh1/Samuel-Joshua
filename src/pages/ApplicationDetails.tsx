@@ -179,16 +179,9 @@ export default function ApplicationDetails() {
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
-      {/* Top Breadcrumb & User Menu */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
-        <div className="text-[#2572b4] mb-3 sm:mb-0 font-normal">
-          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/')}>Home</span>
-          <span className="no-underline text-gray-400 px-2">&gt;</span>
-          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/dashboard')}>Your account</span>
-          <span className="no-underline text-gray-400 px-2">&gt;</span>
-          <span className="text-gray-600 font-normal">Application status and messages</span>
-        </div>
-        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700">
+      {/* Top User Menu */}
+      <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
+        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700 justify-end w-full">
           <span>Signed in as <span className="font-normal">{userName}</span></span>
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
@@ -546,11 +539,11 @@ export default function ApplicationDetails() {
                   <p>Hello,</p>
                   
                   <p>
-                    You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. <span className="underline select-text decoration-dotted cursor-help" title="Eastern Daylight Time">EDT</span>.
+                    You have successfully transmitted your Online Application on {selectedMessage.transmissionDate || '2 August 2023'} {selectedMessage.transmissionTime || '06:40:02 p.m.'} <span className="underline select-text decoration-dotted cursor-help" title="Eastern Daylight Time">{selectedMessage.transmissionTimezone || 'EDT'}</span>.
                   </p>
                   
                   <p>
-                    Your payment receipt number is # <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">O689745557</span>.
+                    Your payment receipt number is # <span className="underline font-normal text-[#2572b4] hover:text-[#05355c] cursor-pointer">{selectedMessage.receiptNumber || 'O689745557'}</span>.
                   </p>
                   
                   <div className="pt-1.5">

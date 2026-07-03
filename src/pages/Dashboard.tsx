@@ -180,14 +180,9 @@ export default function Dashboard() {
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
-      {/* Top Breadcrumb & User Menu */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
-        <div className="text-[#2572b4] mb-3 sm:mb-0 font-normal">
-          <span className="underline cursor-pointer hover:text-[#05355c]" onClick={() => navigate('/')}>Home</span>
-          <span className="no-underline text-gray-400 px-2">&gt;</span>
-          <span className="text-gray-600 font-normal">Your account</span>
-        </div>
-        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700">
+      {/* Top User Menu */}
+      <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
+        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700 justify-end w-full">
           <span>Signed in as <span className="font-normal">{userName}</span></span>
           <span className="text-gray-300 px-1">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
@@ -258,73 +253,73 @@ export default function Dashboard() {
 
         {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border border-gray-400 border-collapse text-[13.5px]">
+          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px]">
             <thead>
-              <tr className="text-gray-900 select-none">
+              <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort1('type')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'type' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'type' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Application</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       type
-                      <span className="text-[14px] font-black leading-none">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'id' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'id' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Application</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       number
-                      <span className="text-[14px] font-black leading-none">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Applicant name</span>
-                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Date submitted</span>
-                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
+                    <span className="text-[14px] font-bold text-gray-900 leading-none mt-1">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'status' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'status' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Current</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       status
-                      <span className="text-[14px] font-black leading-none">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'messages' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Messages</span>
-                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold border border-gray-400 text-left whitespace-nowrap select-none bg-[#e8ecf4]">
+                <th className="p-2.5 font-bold text-left whitespace-nowrap select-none bg-transparent">
                   <div className="flex flex-col">
                     <span>Action</span>
                   </div>
@@ -333,53 +328,50 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {paginatedApps1.length > 0 ? (
-                paginatedApps1.map((app) => {
+                paginatedApps1.map((app, idx) => {
+                  const isEvenRow = idx % 2 === 1;
+                  const rowBgClass = isEvenRow ? 'bg-[#f9f9f9]' : 'bg-white';
+                  
+                  const getCellBg = (field: string) => {
+                    const isSorted = sortField1 === field;
+                    if (isEvenRow) {
+                      return isSorted ? 'bg-[#f1f1f1]' : 'bg-[#f9f9f9]';
+                    } else {
+                      return isSorted ? 'bg-[#f9f9f9]' : 'bg-white';
+                    }
+                  };
+
                   return (
-                    <tr key={app.id} className="hover:bg-gray-50">
-                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">
+                    <tr key={app.id} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
+                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('type')}`}>
                         {app.type === 'Online Application' || app.type?.toLowerCase() === 'online application' ? (
                           <>Online<br />Application</>
                         ) : (
                           app.type || 'Online Application'
                         )}
                       </td>
-                      <td className="p-2.5 border border-gray-300 font-normal">
-                        {app.id === 'V348291039' || app.id.startsWith('V348') ? (
-                          <div className="flex items-center gap-1.5">
-                            <span className="app-number-font">V348</span>
-                            <span className="inline-block w-8 h-4 bg-[#c8e2f3] border border-[#a2c8e3] opacity-90 rounded-sm"></span>
-                          </div>
-                        ) : app.id === 'S309183021' || app.id.startsWith('S309') ? (
-                          <div className="flex items-center gap-1.5">
-                            <span className="app-number-font">S309</span>
-                            <span className="inline-block w-8 h-4 bg-[#4a4a4a] border border-[#333] opacity-90 rounded-sm"></span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="app-number-font">{app.id.substring(0, 4)}</span>
-                            <span className="inline-block w-8 h-4 bg-gray-400 border border-gray-500 opacity-90 rounded-sm"></span>
-                          </div>
-                        )}
+                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('id')}`}>
+                        {app.id}
                       </td>
-                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">
+                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('applicantName')}`}>
                         {app.fullName === 'TESTIMONY ABIOLA NASIRU' || (!app.fullName && user?.name === 'TESTIMONY ABIOLA NASIRU') ? (
                           <>TESTIMONY<br />ABIOLA NASIRU</>
                         ) : (
                           (app.fullName || user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase()
                         )}
                       </td>
-                      <td className="p-2.5 border border-gray-300 text-gray-800 whitespace-nowrap font-normal">
+                      <td className={`p-2.5 text-gray-800 whitespace-nowrap font-normal ${getCellBg('dateSubmitted')}`}>
                         {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2023-08-02')}
                       </td>
-                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">{app.status || 'Refused'}</td>
-                      <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">
+                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('status')}`}>{app.status || 'Refused'}</td>
+                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('messages')}`}>
                         {app.messages && app.messages.some(m => !m.isRead) ? (
                           <span>New</span>
                         ) : (
                           <span>Read</span>
                         )}
                       </td>
-                      <td className="p-2.5 border border-gray-300">
+                      <td className="p-2.5">
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
                           className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
@@ -392,7 +384,7 @@ export default function Dashboard() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={7} className="p-4 text-center text-gray-700 font-normal border border-gray-300">
+                  <td colSpan={7} className="p-4 text-center text-gray-700 font-normal">
                     No data available in table
                   </td>
                 </tr>
@@ -471,55 +463,55 @@ export default function Dashboard() {
 
         {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border border-gray-400 border-collapse text-[13.5px]">
+          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px]">
             <thead>
-              <tr className="text-gray-900 select-none">
+              <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort2('type')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'type' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'type' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Application</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       type
-                      <span className="text-[14px] font-black leading-none">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Date Created</span>
-                    <span className="text-[14px] font-black leading-none mt-1">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Days left</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       to submit
-                      <span className="text-[14px] font-black leading-none">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
-                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
                 >
                   <div className="flex flex-col">
                     <span>Date last</span>
                     <span className="flex items-center gap-1 leading-none mt-0.5">
                       saved
-                      <span className="text-[14px] font-black leading-none">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                     </span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold border border-gray-400 text-left whitespace-nowrap bg-[#e8ecf4]">
+                <th className="p-2.5 font-bold text-left whitespace-nowrap select-none bg-transparent">
                   <div className="flex flex-col">
                     <span>Action</span>
                   </div>
@@ -528,22 +520,36 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {paginatedApps2.length > 0 ? (
-                paginatedApps2.map((app, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="p-2.5 border border-gray-300 font-normal text-gray-800 uppercase">{app.type}</td>
-                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.dateCreated}</td>
-                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.daysLeft}</td>
-                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.dateSaved}</td>
-                    <td className="p-2.5 border border-gray-300">
-                      <button className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer">
-                        Continue Application
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                paginatedApps2.map((app, idx) => {
+                  const isEvenRow = idx % 2 === 1;
+                  const rowBgClass = isEvenRow ? 'bg-[#f9f9f9]' : 'bg-white';
+                  
+                  const getCellBg = (field: string) => {
+                    const isSorted = sortField2 === field;
+                    if (isEvenRow) {
+                      return isSorted ? 'bg-[#f1f1f1]' : 'bg-[#f9f9f9]';
+                    } else {
+                      return isSorted ? 'bg-[#f9f9f9]' : 'bg-white';
+                    }
+                  };
+
+                  return (
+                    <tr key={idx} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
+                      <td className={`p-2.5 text-gray-800 font-normal uppercase ${getCellBg('type')}`}>{app.type}</td>
+                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('dateCreated')}`}>{app.dateCreated}</td>
+                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('daysLeft')}`}>{app.daysLeft}</td>
+                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('dateSaved')}`}>{app.dateSaved}</td>
+                      <td className="p-2.5">
+                        <button className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer">
+                          Continue Application
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan={5} className="p-4 text-center text-gray-700 font-normal border border-gray-300">
+                  <td colSpan={5} className="p-4 text-center text-gray-700 font-normal">
                     No data available in table
                   </td>
                 </tr>

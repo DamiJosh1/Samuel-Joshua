@@ -44,7 +44,18 @@ export interface ApplicationInfo {
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
   requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
-  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean; dateRead?: string }[];
+  messages?: { 
+    id: string; 
+    subject: string; 
+    date: string; 
+    content: string; 
+    isRead: boolean; 
+    dateRead?: string;
+    transmissionDate?: string;
+    transmissionTime?: string;
+    transmissionTimezone?: string;
+    receiptNumber?: string;
+  }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
   workPermitStatus?: string;

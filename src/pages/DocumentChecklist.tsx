@@ -244,16 +244,6 @@ export default function DocumentChecklist() {
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-6 flex-grow font-sans text-[#333]">
       
-      {/* 1. Breadcrumbs */}
-      <div className="text-[#284162] text-[13px] mb-4 font-medium flex items-center gap-1">
-        <span className="underline cursor-pointer hover:text-blue-800" onClick={() => navigate('/')}>Home</span> 
-        <span>&gt;</span> 
-        <span className="underline cursor-pointer hover:text-blue-800" onClick={() => navigate('/dashboard')}>Your Account</span> 
-        <span>&gt;</span> 
-        <span className="underline cursor-pointer hover:text-blue-800" onClick={() => navigate(`/application/${selectedApp.id}`)}>Application Details</span> 
-        <span>&gt;</span> 
-        <span className="text-gray-600 font-normal">Document Checklist</span>
-      </div>
 
       {/* 2. Standard Action Wizard Button Panel from GC Portal */}
       <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4">

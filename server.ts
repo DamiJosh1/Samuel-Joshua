@@ -30,7 +30,18 @@ interface ApplicationInfo {
   detailsFr: string;
   documents?: { name: string; category?: string; date: string; time: string }[];
   requestedDocuments?: { name: string; status: 'Pending' | 'Submitted' | 'Received'; dateUpdated?: string; remarks?: string }[];
-  messages?: { id: string; subject: string; date: string; content: string; isRead: boolean; dateRead?: string }[];
+  messages?: { 
+    id: string; 
+    subject: string; 
+    date: string; 
+    content: string; 
+    isRead: boolean; 
+    dateRead?: string;
+    transmissionDate?: string;
+    transmissionTime?: string;
+    transmissionTimezone?: string;
+    receiptNumber?: string;
+  }[];
   timeline?: TimelineEvent[];
   biometricStatus?: string;
   workPermitStatus?: string;
@@ -175,7 +186,7 @@ const db = {
 // Default seed applications for fallback
 const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   {
-    id: "V348291039",
+    id: "V348493234",
     type: "Online Application",
     typeFr: "Demande en ligne",
     status: "Refused",
@@ -199,20 +210,24 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
         id: "msg-confirm-1",
         subject: "Confirmation of Online Application Transmission",
         date: "August 2, 2023",
-        isRead: false,
-        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+        isRead: true,
+        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+        transmissionDate: "2 August 2023",
+        transmissionTime: "06:40:02 p.m.",
+        transmissionTimezone: "EDT",
+        receiptNumber: "O689745557"
       },
       {
         id: "msg-1",
         subject: "Refusal Letter",
         date: "August 2, 2023",
-        isRead: false,
+        isRead: true,
         content: "<p>Dear <strong>TESTIMONY ABIOLA NASIRU</strong>,</p><p>Thank you for your interest in coming to Canada. After careful review of your online application, we regret to inform you that your application has been refused.</p><p>A formal letter has been uploaded to your messages with details of this decision.</p>"
       }
     ]
   },
   {
-    id: "S309183021",
+    id: "S305581163",
     type: "Online Application",
     typeFr: "Demande en ligne",
     status: "Refused",
@@ -234,7 +249,11 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
         subject: "Confirmation of Online Application Transmission",
         date: "December 1, 2022",
         isRead: true,
-        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 1 December 2022 09:15:00 a.m. EST.</p><p>Your payment receipt number is # O309183021.</p>"
+        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 1 December 2022 09:15:00 a.m. EST.</p><p>Your payment receipt number is # O309183021.</p>",
+        transmissionDate: "1 December 2022",
+        transmissionTime: "09:15:00 a.m.",
+        transmissionTimezone: "EST",
+        receiptNumber: "O309183021"
       },
       {
         id: "msg-2",
@@ -312,15 +331,24 @@ function loadData() {
           if (!app.messages) {
             app.messages = [];
           }
-          const hasConfirm = app.messages.some(m => m.subject === "Confirmation of Online Application Transmission");
-          if (!hasConfirm) {
+          const confirmMsg = app.messages.find(m => m.subject === "Confirmation of Online Application Transmission");
+          if (!confirmMsg) {
             app.messages.unshift({
               id: `msg-${Date.now()}-confirm-${Math.random().toString(36).substring(2, 7)}`,
               subject: "Confirmation of Online Application Transmission",
               date: formatHumanDate(app.dateSubmitted || app.dateCreated),
               isRead: true,
-              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+              transmissionDate: "2 August 2023",
+              transmissionTime: "06:40:02 p.m.",
+              transmissionTimezone: "EDT",
+              receiptNumber: "O689745557"
             });
+          } else {
+            if (!confirmMsg.transmissionDate) confirmMsg.transmissionDate = "2 August 2023";
+            if (!confirmMsg.transmissionTime) confirmMsg.transmissionTime = "06:40:02 p.m.";
+            if (!confirmMsg.transmissionTimezone) confirmMsg.transmissionTimezone = "EDT";
+            if (!confirmMsg.receiptNumber) confirmMsg.receiptNumber = "O689745557";
           }
         }
       }
@@ -415,13 +443,17 @@ async function startServer() {
       documents: [],
       messages: (() => {
         const msgDateStr = formatHumanDate(dateSubmitted || finalDateCreated);
-        const list = [
+        const list: any[] = [
           {
             id: `msg-${Date.now()}-confirm`,
             subject: "Confirmation of Online Application Transmission",
             date: msgDateStr,
             isRead: false,
-            content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+            content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+            transmissionDate: "2 August 2023",
+            transmissionTime: "06:40:02 p.m.",
+            transmissionTimezone: "EDT",
+            receiptNumber: "O689745557"
           }
         ];
         if (status === "Refused") {

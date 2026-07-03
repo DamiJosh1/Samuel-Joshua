@@ -43,6 +43,12 @@ export default function AdminDashboard() {
   const [editBiometricsNumber, setEditBiometricsNumber] = useState('');
   const [editBiometricsDate, setEditBiometricsDate] = useState('');
   const [editBiometricsExpiry, setEditBiometricsExpiry] = useState('');
+
+  // Confirmation message editing states
+  const [confirmDate, setConfirmDate] = useState('');
+  const [confirmTime, setConfirmTime] = useState('');
+  const [confirmTimezone, setConfirmTimezone] = useState('');
+  const [confirmReceiptNumber, setConfirmReceiptNumber] = useState('');
   
   const [editStatusSummary, setEditStatusSummary] = useState('');
   const [editLatestUpdate, setEditLatestUpdate] = useState('');
@@ -193,6 +199,13 @@ export default function AdminDashboard() {
       setEditBiometricsNumber(app.biometricsNumber || '');
       setEditBiometricsDate(app.biometricsDate || '');
       setEditBiometricsExpiry(app.biometricsExpiry || '');
+
+      // Populate confirmation message details
+      const confirmMsg = app.messages?.find(m => m.subject === "Confirmation of Online Application Transmission");
+      setConfirmDate(confirmMsg?.transmissionDate || '2 August 2023');
+      setConfirmTime(confirmMsg?.transmissionTime || '06:40:02 p.m.');
+      setConfirmTimezone(confirmMsg?.transmissionTimezone || 'EDT');
+      setConfirmReceiptNumber(confirmMsg?.receiptNumber || 'O689745557');
       
       setEditStatusSummary(app.statusSummary || app.details || '');
       setEditLatestUpdate(app.latestUpdate || '');
@@ -1126,10 +1139,89 @@ export default function AdminDashboard() {
                       placeholder="e.g. June 15, 2036"
                     />
                   </div>
+
+                  {/* Confirmation Transmission Info */}
+                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Date</label>
+                    <input 
+                      type="text" 
+                      value={confirmDate}
+                      onChange={e => setConfirmDate(e.target.value)}
+                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+                      placeholder="e.g. 2 August 2023"
+                    />
+                  </div>
+                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Time</label>
+                    <input 
+                      type="text" 
+                      value={confirmTime}
+                      onChange={e => setConfirmTime(e.target.value)}
+                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+                      placeholder="e.g. 06:40:02 p.m."
+                    />
+                  </div>
+                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Timezone</label>
+                    <input 
+                      type="text" 
+                      value={confirmTimezone}
+                      onChange={e => setConfirmTimezone(e.target.value)}
+                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+                      placeholder="e.g. EDT"
+                    />
+                  </div>
+                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded sm:col-span-2 md:col-span-3">
+                    <label className="block text-xs font-bold mb-1 text-blue-900">Payment Receipt Number</label>
+                    <input 
+                      type="text" 
+                      value={confirmReceiptNumber}
+                      onChange={e => setConfirmReceiptNumber(e.target.value)}
+                      className="w-full border border-blue-400 p-2 bg-white font-medium font-mono"
+                      placeholder="e.g. O689745557"
+                    />
+                  </div>
                 </div>
                 <div className="pt-2 text-right">
                   <button 
                     onClick={async () => {
+                      const item = allApplications.find(a => a.app.id === selectedAppId);
+                      let updatedMessages = [];
+                      if (item) {
+                        const currentMessages = item.app.messages || [];
+                        const hasConfirm = currentMessages.some(m => m.subject === "Confirmation of Online Application Transmission");
+                        
+                        if (hasConfirm) {
+                          updatedMessages = currentMessages.map(msg => {
+                            if (msg.subject === "Confirmation of Online Application Transmission") {
+                              return {
+                                ...msg,
+                                transmissionDate: confirmDate,
+                                transmissionTime: confirmTime,
+                                transmissionTimezone: confirmTimezone,
+                                receiptNumber: confirmReceiptNumber
+                              };
+                            }
+                            return msg;
+                          });
+                        } else {
+                          updatedMessages = [
+                            {
+                              id: `msg-${Date.now()}-confirm`,
+                              subject: "Confirmation of Online Application Transmission",
+                              date: confirmDate || "August 2, 2023",
+                              isRead: true,
+                              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+                              transmissionDate: confirmDate,
+                              transmissionTime: confirmTime,
+                              transmissionTimezone: confirmTimezone,
+                              receiptNumber: confirmReceiptNumber
+                            },
+                            ...currentMessages
+                          ];
+                        }
+                      }
+
                       await handleUpdateApp(selectedUserEmail, selectedAppId, {
                         fullName: editFullName,
                         uci: editUci,
@@ -1138,7 +1230,8 @@ export default function AdminDashboard() {
                         status: editStatus,
                         biometricsNumber: editBiometricsNumber,
                         biometricsDate: editBiometricsDate,
-                        biometricsExpiry: editBiometricsExpiry
+                        biometricsExpiry: editBiometricsExpiry,
+                        messages: updatedMessages
                       }, "Profile Information Updated");
                       alert("Applicant Information saved!");
                     }}
