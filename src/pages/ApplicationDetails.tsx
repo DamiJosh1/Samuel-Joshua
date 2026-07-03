@@ -13,6 +13,9 @@ export default function ApplicationDetails() {
 
   const [selectedMessage, setSelectedMessage] = React.useState<any>(null);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [sortField, setSortField] = React.useState<string>('date');
+  const [sortDir, setSortDir] = React.useState<'asc' | 'desc'>('desc');
+  const [pageSize, setPageSize] = React.useState(10);
 
   const formatSubmittedDate = (dateStr: string) => {
     if (!dateStr) return '';
@@ -172,6 +175,42 @@ export default function ApplicationDetails() {
     msg.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
     msg.date.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const parseDate = (dateStr: string) => {
+    if (!dateStr) return 0;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? 0 : d.getTime();
+  };
+
+  const sortedMessages = React.useMemo(() => {
+    return [...filteredMessages].sort((a, b) => {
+      let valA = '';
+      let valB = '';
+
+      if (sortField === 'subject') {
+        valA = a.subject || '';
+        valB = b.subject || '';
+        return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      } else if (sortField === 'date') {
+        const timeA = parseDate(a.date);
+        const timeB = parseDate(b.date);
+        return sortDir === 'asc' ? timeA - timeB : timeB - timeA;
+      } else if (sortField === 'dateRead') {
+        const readA = !a.isRead ? 'New Message' : (a.dateRead || a.date || '');
+        const readB = !b.isRead ? 'New Message' : (b.dateRead || b.date || '');
+        if (readA === 'New Message' && readB !== 'New Message') return sortDir === 'asc' ? -1 : 1;
+        if (readA !== 'New Message' && readB === 'New Message') return sortDir === 'asc' ? 1 : -1;
+        const timeA = parseDate(readA);
+        const timeB = parseDate(readB);
+        return sortDir === 'asc' ? timeA - timeB : timeB - timeA;
+      }
+      return 0;
+    });
+  }, [filteredMessages, sortField, sortDir]);
+
+  const paginatedMessages = React.useMemo(() => {
+    return sortedMessages.slice(0, pageSize);
+  }, [sortedMessages, pageSize]);
 
   const unreadCount = (selectedApp.messages || []).filter(msg => !msg.isRead).length;
   const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
@@ -349,70 +388,67 @@ export default function ApplicationDetails() {
       </div>
 
       {/* 4. Document Status Section */}
-      <div className="mb-10 text-[14px]">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-[22px] font-bold text-[#333]">Document Status</h2>
-          <span className="w-4 h-4 rounded-full bg-[#2572b5] text-white flex items-center justify-center text-[10px] font-bold cursor-pointer select-none" title="Help">?</span>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[13px] border border-gray-300 rounded-none">
-            <thead>
-              <tr className="bg-[#f5f5f5] border-b border-gray-300 text-gray-800">
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Name</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight w-28">Unique Client Identifier (UCI)</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Document</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Document number</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Status</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Expiry date</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Status Updated Date</th>
-                <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Travel document Number</th>
-                <th className="py-2 px-3 font-bold leading-tight">Country of Issue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {selectedApp.documentStatuses && selectedApp.documentStatuses.length > 0 ? (
-                selectedApp.documentStatuses.map((doc, idx) => (
-                  <tr key={doc.id || idx} className="border-b border-gray-300 hover:bg-gray-50">
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-bold text-[#333] uppercase">{doc.name}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs">{doc.uci || selectedApp.uci || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 text-gray-800">{doc.documentType || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs font-semibold">{doc.documentNumber || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-semibold text-gray-800">{doc.status || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300">{doc.expiryDate || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300">{doc.statusUpdatedDate || '—'}</td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs">{doc.travelDocumentNumber || '—'}</td>
-                    <td className="py-2.5 px-3 text-gray-800">{doc.countryOfIssue || '—'}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={9} className="py-4 px-3 text-gray-500 italic text-center">No document records found.</td>
+      {selectedApp.showDocumentStatus && (
+        <div className="mb-10 text-[14px]">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="text-[22px] font-bold text-[#333]">Document Status</h2>
+            <span className="w-4 h-4 rounded-full bg-[#2572b5] text-white flex items-center justify-center text-[10px] font-bold cursor-pointer select-none" title="Help">?</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-[13px] border border-gray-300 rounded-none">
+              <thead>
+                <tr className="bg-[#f5f5f5] border-b border-gray-300 text-gray-800">
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Name</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight w-28">Unique Client Identifier (UCI)</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Document</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Document number</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Status</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Expiry date</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Status Updated Date</th>
+                  <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Travel document Number</th>
+                  <th className="py-2 px-3 font-bold leading-tight">Country of Issue</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {selectedApp.documentStatuses && selectedApp.documentStatuses.length > 0 ? (
+                  selectedApp.documentStatuses.map((doc, idx) => (
+                    <tr key={doc.id || idx} className="border-b border-gray-300 hover:bg-gray-50">
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-bold text-[#333] uppercase">{doc.name}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs">{doc.uci || selectedApp.uci || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300 text-gray-800">{doc.documentType || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs font-semibold">{doc.documentNumber || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-semibold text-gray-800">{doc.status || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300">{doc.expiryDate || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300">{doc.statusUpdatedDate || '—'}</td>
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-mono text-xs">{doc.travelDocumentNumber || '—'}</td>
+                      <td className="py-2.5 px-3 text-gray-800">{doc.countryOfIssue || '—'}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="py-4 px-3 text-gray-500 italic text-center">No document records found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* 5. Messages about your application */}
       <div className="mb-10 text-[14px]" id="messages-table-section">
-        <h2 className="text-[22px] font-bold mb-1 text-[#333]">Messages about your application</h2>
+        <h2 className="text-[32px] font-normal mb-2 text-[#333]">Messages about your application</h2>
         
         {/* Help Banner */}
-        <div className="bg-[#f5f5f5] border-l-4 border-[#269abc] p-3 mb-4 flex items-start gap-3 rounded-none">
-          <Info className="w-5 h-5 text-[#269abc] flex-shrink-0 mt-0.5" />
-          <p className="text-gray-800 leading-normal font-normal">
+        <div className="flex items-start gap-2.5 mb-6 mt-1">
+          <div className="w-5 h-5 rounded-full bg-[#007da3] text-white flex items-center justify-center text-[12px] font-bold flex-shrink-0 select-none font-sans" title="Information">i</div>
+          <p className="text-gray-900 leading-normal font-sans text-[14px] font-normal">
             Links and document titles are shown in the language you chose for your portal account when they were generated.
           </p>
         </div>
 
-        {/* Dynamic New Message Subtext */}
-        <p className="text-[14px] text-[#333] mb-4 italic font-normal">
-          ({unreadCount} New message{unreadCount !== 1 ? 's' : ''})
-        </p>
-
         {/* Filter Controls */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-[14px] text-gray-900 font-sans">
           <div className="flex items-center gap-2">
             <span className="font-bold">Search:</span>
             <input 
@@ -420,69 +456,112 @@ export default function ApplicationDetails() {
               type="text" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-400 px-2 py-0.5 bg-white text-[13.5px] focus:outline-none focus:border-[#2572b5] rounded-none"
+              className="border border-gray-900 px-2 py-0.5 w-[150px] sm:w-[220px] bg-white text-[14px] focus:outline-none"
             />
           </div>
-          <div className="text-gray-700 text-[13.5px]">
-            Showing {filteredMessages.length > 0 ? 1 : 0} to {filteredMessages.length} of {filteredMessages.length} entries 
-            <span className="mx-2">|</span> 
-            Show{" "}
-            <select className="border border-gray-300 rounded-none px-1 py-0.5 bg-white font-normal" defaultValue="10">
+          <div className="flex items-center gap-1.5 font-normal text-gray-900">
+            <span>Showing 1 to {paginatedMessages.length} of {paginatedMessages.length} entries</span>
+            <span className="text-gray-300 font-light mx-2">|</span>
+            <span>Show</span>
+            <select 
+              value={pageSize} 
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="border border-gray-400 rounded-none px-1 py-0.5 bg-white font-normal"
+            >
               <option value="10">10</option>
               <option value="25">25</option>
               <option value="50">50</option>
-            </select>{" "}
-            entries
+            </select>
+            <span>entries</span>
           </div>
         </div>
 
         {/* Messages table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-[13.5px] border border-gray-300 rounded-none">
+          <table className="w-full text-left border-collapse text-[14px] border-t border-b border-gray-400 rounded-none">
             <thead>
-              <tr className="bg-[#f5f5f5] border-b border-gray-300 text-gray-800">
-                <th className="py-2.5 px-3 border-r border-gray-300 font-bold">
-                  <span className="flex items-center justify-between">
-                    Subject <span className="text-gray-400 select-none">⇅</span>
+              <tr className="border-b border-gray-400 text-gray-800">
+                <th 
+                  onClick={() => {
+                    if (sortField === 'subject') {
+                      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortField('subject');
+                      setSortDir('desc');
+                    }
+                  }}
+                  className={`py-2 px-3 font-bold cursor-pointer select-none text-[14px] ${sortField === 'subject' ? 'bg-[#ebebeb] text-gray-900' : 'bg-white text-gray-800'}`}
+                >
+                  <span className="flex items-center justify-start gap-1">
+                    Subject <span className="text-gray-400 font-light text-[11px]">{sortField === 'subject' ? (sortDir === 'desc' ? '↓' : '↑') : '↓↑'}</span>
                   </span>
                 </th>
-                <th className="py-2.5 px-3 border-r border-gray-300 font-bold bg-[#ebebeb]">
-                  <span className="flex items-center justify-between">
-                    Date sent <span className="text-gray-600 select-none">↓</span>
+                <th 
+                  onClick={() => {
+                    if (sortField === 'date') {
+                      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortField('date');
+                      setSortDir('desc');
+                    }
+                  }}
+                  className={`py-2 px-3 font-bold cursor-pointer select-none text-[14px] ${sortField === 'date' ? 'bg-[#ebebeb] text-gray-900' : 'bg-white text-gray-800'}`}
+                >
+                  <span className="flex items-center justify-start gap-1">
+                    Date sent <span className="text-gray-700 font-bold text-[11px]">{sortField === 'date' ? (sortDir === 'desc' ? '↓' : '↑') : '↓↑'}</span>
                   </span>
                 </th>
-                <th className="py-2.5 px-3 font-bold">
-                  <span className="flex items-center justify-between">
-                    Date read <span className="text-gray-400 select-none">⇅</span>
+                <th 
+                  onClick={() => {
+                    if (sortField === 'dateRead') {
+                      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+                    } else {
+                      setSortField('dateRead');
+                      setSortDir('desc');
+                    }
+                  }}
+                  className={`py-2 px-3 font-bold cursor-pointer select-none text-[14px] ${sortField === 'dateRead' ? 'bg-[#ebebeb] text-gray-900' : 'bg-white text-gray-800'}`}
+                >
+                  <span className="flex items-center justify-start gap-1">
+                    Date read <span className="text-gray-400 font-light text-[11px]">{sortField === 'dateRead' ? (sortDir === 'desc' ? '↓' : '↑') : '↓↑'}</span>
                   </span>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filteredMessages.length > 0 ? (
-                filteredMessages.map((msg, idx) => (
-                  <tr key={msg.id || idx} className="border-b border-gray-300 hover:bg-gray-50">
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-normal">
-                      <span 
-                        className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" 
-                        onClick={() => handleSelectMessage(msg)}
-                      >
-                        {msg.subject}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 border-r border-gray-300 font-normal">{msg.date}</td>
-                    <td className="py-2.5 px-3 font-normal text-[#333]">
-                      {!msg.isRead ? (
-                        <span className="font-semibold text-gray-900">New Message</span>
-                      ) : (
-                        msg.dateRead || msg.date
-                      )}
-                    </td>
-                  </tr>
-                ))
+              {paginatedMessages.length > 0 ? (
+                paginatedMessages.map((msg, idx) => {
+                  const isEven = idx % 2 === 1;
+                  const getBg = (field: string) => {
+                    if (sortField === field) {
+                      return isEven ? 'bg-[#ebebeb]' : 'bg-[#f1f1f1]';
+                    }
+                    return isEven ? 'bg-[#f9f9f9]' : 'bg-white';
+                  };
+                  return (
+                    <tr key={msg.id || idx} className="border-b border-gray-200 hover:bg-gray-50/50">
+                      <td className={`py-2.5 px-3 font-normal ${getBg('subject')}`}>
+                        <span 
+                          className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" 
+                          onClick={() => handleSelectMessage(msg)}
+                        >
+                          {msg.subject}
+                        </span>
+                      </td>
+                      <td className={`py-2.5 px-3 font-normal ${getBg('date')}`}>{msg.date}</td>
+                      <td className={`py-2.5 px-3 font-normal text-[#333] ${getBg('dateRead')}`}>
+                        {!msg.isRead ? (
+                          <span className="font-semibold text-gray-900">New Message</span>
+                        ) : (
+                          msg.dateRead || msg.date
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
-                  <td colSpan={3} className="py-4 px-3 text-gray-500 italic text-center">No messages matching search criteria.</td>
+                  <td colSpan={3} className="py-4 px-3 text-gray-500 italic text-center bg-white">No messages matching search criteria.</td>
                 </tr>
               )}
             </tbody>
@@ -490,17 +569,22 @@ export default function ApplicationDetails() {
         </div>
 
         {/* Center pagination box */}
-        <div className="flex justify-center my-4">
-          <button className="bg-[#2572b4] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+        <div className="flex justify-center my-6">
+          <button className="bg-[#2572b4] hover:bg-[#1a4e7b] text-white font-normal w-9 h-9 flex items-center justify-center rounded-[4px] text-[15px]">
             1
           </button>
         </div>
 
         {/* Small report problem block at bottom left */}
         <div className="mt-8">
-          <button className="bg-[#f5f5f5] hover:bg-[#e8e8e8] text-gray-700 px-4 py-1.5 border border-gray-300 font-normal text-[13.5px] rounded-[3px] select-none cursor-pointer">
+          <button className="bg-[#eaebed] hover:bg-[#dcdee1] text-gray-800 px-4 py-2 border border-[#ccc] font-normal text-[14px] rounded-[4px] select-none cursor-pointer">
             Report a problem or mistake on this page
           </button>
+        </div>
+
+        {/* Date Modified Footer */}
+        <div className="mt-12 text-[14px] text-gray-700 font-normal">
+          Date modified: 2026-05-05
         </div>
 
       </div>

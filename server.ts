@@ -89,6 +89,7 @@ interface ApplicationInfo {
     finalDecisionDesc?: string;
     finalDecisionDate?: string;
   };
+  showDocumentStatus?: boolean;
   documentStatuses?: {
     id: string;
     name: string;

@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   
   const [editStatusSummary, setEditStatusSummary] = useState('');
   const [editLatestUpdate, setEditLatestUpdate] = useState('');
+  const [editShowDocumentStatus, setEditShowDocumentStatus] = useState(false);
 
   // 7 Stages Edit States
   const [stageEligibilityStatus, setStageEligibilityStatus] = useState('');
@@ -209,6 +210,7 @@ export default function AdminDashboard() {
       
       setEditStatusSummary(app.statusSummary || app.details || '');
       setEditLatestUpdate(app.latestUpdate || '');
+      setEditShowDocumentStatus(!!app.showDocumentStatus);
 
       setStageEligibilityStatus(app.stages?.eligibilityStatus || '');
       setStageEligibilityDesc(app.stages?.eligibilityDesc || '');
@@ -1140,6 +1142,19 @@ export default function AdminDashboard() {
                     />
                   </div>
 
+                  <div className="flex items-center gap-2 pt-5 select-none col-span-1 md:col-span-2">
+                    <input 
+                      type="checkbox" 
+                      id="editShowDocumentStatus"
+                      checked={editShowDocumentStatus}
+                      onChange={e => setEditShowDocumentStatus(e.target.checked)}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                    />
+                    <label htmlFor="editShowDocumentStatus" className="text-xs font-bold text-red-700 cursor-pointer">
+                      Show "Document Status" table on applicant profile (Check only when requested)
+                    </label>
+                  </div>
+
                   {/* Confirmation Transmission Info */}
                   <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
                     <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Date</label>
@@ -1231,6 +1246,7 @@ export default function AdminDashboard() {
                         biometricsNumber: editBiometricsNumber,
                         biometricsDate: editBiometricsDate,
                         biometricsExpiry: editBiometricsExpiry,
+                        showDocumentStatus: editShowDocumentStatus,
                         messages: updatedMessages
                       }, "Profile Information Updated");
                       alert("Applicant Information saved!");
