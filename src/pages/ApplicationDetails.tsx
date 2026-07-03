@@ -541,7 +541,7 @@ export default function ApplicationDetails() {
             
             {/* Modal Body */}
             <div className="p-6 sm:p-8 overflow-y-auto max-h-[85vh] text-[#333333] text-[15.5px] leading-relaxed">
-              {selectedMessage.id === 'msg-1' || selectedMessage.subject === 'Confirmation of Online Application Transmission' ? (
+              {selectedMessage.subject === 'Confirmation of Online Application Transmission' ? (
                 <div className="space-y-5 font-normal text-[#333333]">
                   <p>Hello,</p>
                   

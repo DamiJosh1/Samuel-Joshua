@@ -196,6 +196,13 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
     ],
     messages: [
       {
+        id: "msg-confirm-1",
+        subject: "Confirmation of Online Application Transmission",
+        date: "August 2, 2023",
+        isRead: false,
+        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+      },
+      {
         id: "msg-1",
         subject: "Refusal Letter",
         date: "August 2, 2023",
@@ -223,6 +230,13 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
     ],
     messages: [
       {
+        id: "msg-confirm-2",
+        subject: "Confirmation of Online Application Transmission",
+        date: "December 1, 2022",
+        isRead: true,
+        content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 1 December 2022 09:15:00 a.m. EST.</p><p>Your payment receipt number is # O309183021.</p>"
+      },
+      {
         id: "msg-2",
         subject: "Refusal Letter",
         date: "December 1, 2022",
@@ -234,6 +248,29 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
 ];
 
 const DATA_FILE = path.join(process.cwd(), "db_data.json");
+
+function formatHumanDate(dateStr: string): string {
+  if (!dateStr) return "August 2, 2023";
+  try {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const dateObj = new Date(year, month, day);
+      if (!isNaN(dateObj.getTime())) {
+        return dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    }
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+  } catch (e) {
+    // fallback
+  }
+  return dateStr;
+}
 
 function createDefaultApplicationsForUser(email: string): ApplicationInfo[] {
   return DEFAULT_APPLICATIONS;
@@ -266,6 +303,25 @@ function loadData() {
             timeCreated: firstApp?.timeCreated || "09:00 AM",
             uci: firstApp?.uci || ""
           });
+        }
+      }
+
+      // Ensure all loaded applications have the Confirmation of Online Application Transmission message
+      for (const [email, apps] of db.applications.entries()) {
+        for (const app of apps) {
+          if (!app.messages) {
+            app.messages = [];
+          }
+          const hasConfirm = app.messages.some(m => m.subject === "Confirmation of Online Application Transmission");
+          if (!hasConfirm) {
+            app.messages.unshift({
+              id: `msg-${Date.now()}-confirm-${Math.random().toString(36).substring(2, 7)}`,
+              subject: "Confirmation of Online Application Transmission",
+              date: formatHumanDate(app.dateSubmitted || app.dateCreated),
+              isRead: true,
+              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+            });
+          }
         }
       }
 
@@ -357,7 +413,28 @@ async function startServer() {
       biometricsExpiry: "",
       requestedDocuments: [],
       documents: [],
-      messages: [],
+      messages: (() => {
+        const msgDateStr = formatHumanDate(dateSubmitted || finalDateCreated);
+        const list = [
+          {
+            id: `msg-${Date.now()}-confirm`,
+            subject: "Confirmation of Online Application Transmission",
+            date: msgDateStr,
+            isRead: false,
+            content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>"
+          }
+        ];
+        if (status === "Refused") {
+          list.push({
+            id: `msg-${Date.now()}-refusal`,
+            subject: "Refusal Letter",
+            date: msgDateStr,
+            isRead: false,
+            content: `<p>Dear <strong>${name}</strong>,</p><p>Thank you for your interest in coming to Canada. After careful review of your online application, we regret to inform you that your application has been refused.</p><p>A formal letter has been uploaded to your messages with details of this decision.</p>`
+          });
+        }
+        return list;
+      })(),
       timeline: [{
         id: `evt-${Date.now()}`,
         date: finalDateCreated,
