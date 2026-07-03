@@ -440,6 +440,7 @@ async function startServer() {
       biometricsNumber: "",
       biometricsDate: "",
       biometricsExpiry: "",
+      showDocumentStatus: false,
       requestedDocuments: [],
       documents: [],
       messages: (() => {

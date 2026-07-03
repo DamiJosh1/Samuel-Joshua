@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   // New Profile Form
   const [newProfileName, setNewProfileName] = useState('');
   const [newProfileEmail, setNewProfileEmail] = useState('');
-  const [newProfileAppType, setNewProfileAppType] = useState('Work Permit');
+  const [newProfileAppType, setNewProfileAppType] = useState('Online Application');
   const [newProfileAppNumber, setNewProfileAppNumber] = useState('');
   const [newProfileUci, setNewProfileUci] = useState('');
   const [newProfileDateCreated, setNewProfileDateCreated] = useState('');
@@ -40,6 +40,7 @@ export default function AdminDashboard() {
   const [editDateReceived, setEditDateReceived] = useState('');
   const [editDateSubmitted, setEditDateSubmitted] = useState('');
   const [editStatus, setEditStatus] = useState('');
+  const [editAppType, setEditAppType] = useState('Work Permit');
   const [editBiometricsNumber, setEditBiometricsNumber] = useState('');
   const [editBiometricsDate, setEditBiometricsDate] = useState('');
   const [editBiometricsExpiry, setEditBiometricsExpiry] = useState('');
@@ -197,6 +198,7 @@ export default function AdminDashboard() {
       setEditDateReceived(app.dateReceived || app.dateCreated || '');
       setEditDateSubmitted(app.dateSubmitted || '');
       setEditStatus(app.status || '');
+      setEditAppType(app.type || 'Work Permit');
       setEditBiometricsNumber(app.biometricsNumber || '');
       setEditBiometricsDate(app.biometricsDate || '');
       setEditBiometricsExpiry(app.biometricsExpiry || '');
@@ -821,6 +823,7 @@ export default function AdminDashboard() {
                 onChange={e => setNewProfileAppType(e.target.value)}
                 className="w-full border border-gray-400 p-2 bg-white font-medium"
               >
+                <option value="Online Application">Online Application</option>
                 <option value="Work Permit">Work Permit</option>
                 <option value="Visitor Visa">Visitor Visa</option>
                 <option value="Study Permit">Study Permit</option>
@@ -1077,6 +1080,23 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div>
+                    <label className="block text-xs font-bold mb-1">Application Type</label>
+                    <select 
+                      value={editAppType}
+                      onChange={e => setEditAppType(e.target.value)}
+                      className="w-full border border-gray-400 p-2 bg-white font-medium"
+                    >
+                      <option value="Online Application">Online Application</option>
+                      <option value="Work Permit">Work Permit</option>
+                      <option value="Visitor Visa">Visitor Visa</option>
+                      <option value="Study Permit">Study Permit</option>
+                      <option value="Permanent Residence">Permanent Residence</option>
+                      <option value="Citizenship">Citizenship</option>
+                      <option value="Passport">Passport</option>
+                      <option value="Biometrics">Biometrics</option>
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold mb-1">Date Received / Created</label>
                     <input 
                       type="text" 
@@ -1240,6 +1260,8 @@ export default function AdminDashboard() {
                       await handleUpdateApp(selectedUserEmail, selectedAppId, {
                         fullName: editFullName,
                         uci: editUci,
+                        type: editAppType,
+                        typeFr: editAppType,
                         dateReceived: editDateReceived,
                         dateSubmitted: editDateSubmitted,
                         status: editStatus,
