@@ -258,71 +258,128 @@ export default function Dashboard() {
 
         {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse text-[13.5px]">
+          <table className="w-full text-left border border-gray-400 border-collapse text-[13.5px]">
             <thead>
-              <tr className="border-t border-b border-[#333] text-gray-900 select-none">
+              <tr className="text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort1('type')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'type' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'type' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Application type {renderSortArrows('type', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Application</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      type
+                      <span className="text-[14px] font-black leading-none">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'id' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'id' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Application number {renderSortArrows('id', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Application</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      number
+                      <span className="text-[14px] font-black leading-none">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Applicant name {renderSortArrows('applicantName', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Applicant name</span>
+                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Date submitted {renderSortArrows('dateSubmitted', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Date submitted</span>
+                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'status' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'status' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Current status {renderSortArrows('status', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Current</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      status
+                      <span className="text-[14px] font-black leading-none">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField1 === 'messages' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Messages {renderSortArrows('messages', sortField1, sortDir1)}
+                  <div className="flex flex-col">
+                    <span>Messages</span>
+                    <span className="text-[14px] font-black leading-none mt-1">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  </div>
                 </th>
-                <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
-                  Action
+                <th className="p-2.5 font-bold border border-gray-400 text-left whitespace-nowrap select-none bg-[#e8ecf4]">
+                  <div className="flex flex-col">
+                    <span>Action</span>
+                  </div>
                 </th>
               </tr>
             </thead>
             <tbody>
               {paginatedApps1.length > 0 ? (
                 paginatedApps1.map((app) => {
-                  const isRefused = app.status?.toLowerCase() === 'refused';
                   return (
-                    <tr key={app.id} className="border-b border-gray-300 hover:bg-gray-50">
-                      <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type || 'WORK PERMIT'}</td>
-                      <td className="py-2.5 px-3 app-number-font text-[16px]">{app.id}</td>
-                      <td className="py-2.5 px-3 text-gray-800 uppercase">{app.fullName || user?.name || 'ChatWithOlu Webinar'}</td>
-                      <td className="py-2.5 px-3 text-gray-800 whitespace-nowrap">
-                        {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2026-03-18')}
+                    <tr key={app.id} className="hover:bg-gray-50">
+                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">
+                        {app.type === 'Online Application' || app.type?.toLowerCase() === 'online application' ? (
+                          <>Online<br />Application</>
+                        ) : (
+                          app.type || 'Online Application'
+                        )}
                       </td>
-                      <td className="py-2.5 px-3 font-normal text-gray-800">{app.status}</td>
-                      <td className="py-2.5 px-3 text-gray-800 font-normal">
+                      <td className="p-2.5 border border-gray-300 font-normal">
+                        {app.id === 'V348291039' || app.id.startsWith('V348') ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="app-number-font">V348</span>
+                            <span className="inline-block w-8 h-4 bg-[#c8e2f3] border border-[#a2c8e3] opacity-90 rounded-sm"></span>
+                          </div>
+                        ) : app.id === 'S309183021' || app.id.startsWith('S309') ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="app-number-font">S309</span>
+                            <span className="inline-block w-8 h-4 bg-[#4a4a4a] border border-[#333] opacity-90 rounded-sm"></span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <span className="app-number-font">{app.id.substring(0, 4)}</span>
+                            <span className="inline-block w-8 h-4 bg-gray-400 border border-gray-500 opacity-90 rounded-sm"></span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">
+                        {app.fullName === 'TESTIMONY ABIOLA NASIRU' || (!app.fullName && user?.name === 'TESTIMONY ABIOLA NASIRU') ? (
+                          <>TESTIMONY<br />ABIOLA NASIRU</>
+                        ) : (
+                          (app.fullName || user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase()
+                        )}
+                      </td>
+                      <td className="p-2.5 border border-gray-300 text-gray-800 whitespace-nowrap font-normal">
+                        {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2023-08-02')}
+                      </td>
+                      <td className="p-2.5 border border-gray-300 font-normal text-gray-800">{app.status || 'Refused'}</td>
+                      <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">
                         {app.messages && app.messages.some(m => !m.isRead) ? (
                           <span>New</span>
                         ) : (
                           <span>Read</span>
                         )}
                       </td>
-                      <td className="py-2.5 px-3">
+                      <td className="p-2.5 border border-gray-300">
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
                           className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
@@ -335,7 +392,7 @@ export default function Dashboard() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-4 text-center text-gray-700 font-normal border-b border-gray-300">
+                  <td colSpan={7} className="p-4 text-center text-gray-700 font-normal border border-gray-300">
                     No data available in table
                   </td>
                 </tr>
@@ -414,47 +471,70 @@ export default function Dashboard() {
 
         {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse text-[13.5px]">
+          <table className="w-full text-left border border-gray-400 border-collapse text-[13.5px]">
             <thead>
-              <tr className="border-t border-b border-[#333] text-gray-900 select-none">
+              <tr className="text-gray-900 select-none">
                 <th 
                   onClick={() => handleSort2('type')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'type' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'type' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Application type {renderSortArrows('type', sortField2, sortDir2)}
+                  <div className="flex flex-col">
+                    <span>Application</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      type
+                      <span className="text-[14px] font-black leading-none">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Date Created {renderSortArrows('dateCreated', sortField2, sortDir2)}
+                  <div className="flex flex-col">
+                    <span>Date Created</span>
+                    <span className="text-[14px] font-black leading-none mt-1">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Days left to submit {renderSortArrows('daysLeft', sortField2, sortDir2)}
+                  <div className="flex flex-col">
+                    <span>Days left</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      to submit
+                      <span className="text-[14px] font-black leading-none">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
-                  className={`py-2 px-3 font-bold cursor-pointer hover:bg-gray-100 whitespace-nowrap text-left ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : ''}`}
+                  className={`p-2.5 font-bold cursor-pointer border border-gray-400 text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#bbc7e3]' : 'bg-[#e8ecf4]'}`}
                 >
-                  Date last saved {renderSortArrows('dateSaved', sortField2, sortDir2)}
+                  <div className="flex flex-col">
+                    <span>Date last</span>
+                    <span className="flex items-center gap-1 leading-none mt-0.5">
+                      saved
+                      <span className="text-[14px] font-black leading-none">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    </span>
+                  </div>
                 </th>
-                <th className="py-2 px-3 font-bold text-left whitespace-nowrap">
-                  Action
+                <th className="p-2.5 font-bold border border-gray-400 text-left whitespace-nowrap bg-[#e8ecf4]">
+                  <div className="flex flex-col">
+                    <span>Action</span>
+                  </div>
                 </th>
               </tr>
             </thead>
             <tbody>
               {paginatedApps2.length > 0 ? (
                 paginatedApps2.map((app, index) => (
-                  <tr key={index} className="border-b border-gray-300 hover:bg-gray-50">
-                    <td className="py-2.5 px-3 font-normal text-gray-800 uppercase">{app.type}</td>
-                    <td className="py-2.5 px-3 text-gray-800">{app.dateCreated}</td>
-                    <td className="py-2.5 px-3 text-gray-800">{app.daysLeft}</td>
-                    <td className="py-2.5 px-3 text-gray-800">{app.dateSaved}</td>
-                    <td className="py-2.5 px-3">
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="p-2.5 border border-gray-300 font-normal text-gray-800 uppercase">{app.type}</td>
+                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.dateCreated}</td>
+                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.daysLeft}</td>
+                    <td className="p-2.5 border border-gray-300 text-gray-800 font-normal">{app.dateSaved}</td>
+                    <td className="p-2.5 border border-gray-300">
                       <button className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer">
                         Continue Application
                       </button>
@@ -463,7 +543,7 @@ export default function Dashboard() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-4 text-center text-gray-700 font-normal border-b border-gray-300">
+                  <td colSpan={5} className="p-4 text-center text-gray-700 font-normal border border-gray-300">
                     No data available in table
                   </td>
                 </tr>

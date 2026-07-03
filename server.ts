@@ -175,42 +175,59 @@ const db = {
 // Default seed applications for fallback
 const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
   {
-    id: "W4392630150",
-    type: "WORK VISA",
-    typeFr: "VISA DE TRAVAIL",
-    status: "Submitted",
-    statusFr: "Soumise",
-    lastUpdated: "2026-03-18",
-    dateCreated: "2026-03-18",
-    timeCreated: "09:00 AM",
-    details: "Your application is in progress. We will send you a message once the final decision has been made.",
-    detailsFr: "Votre demande est en cours de traitement. Nous vous enverrons un message une fois la décision finale prise.",
+    id: "V348291039",
+    type: "Online Application",
+    typeFr: "Demande en ligne",
+    status: "Refused",
+    statusFr: "Refusée",
+    lastUpdated: "2023-08-02",
+    dateCreated: "2023-08-02",
+    dateSubmitted: "2023-08-02",
+    fullName: "TESTIMONY ABIOLA NASIRU",
+    details: "Your application was refused. Please check your messages below for detailed explanations.",
+    detailsFr: "Votre demande a été refusée. Veuillez vérifier vos messages ci-dessous.",
     requestedDocuments: [
-      { name: "Passport", status: "Pending", dateUpdated: "2026-03-18", remarks: "Please upload a clear copy of your passport bio-data page." },
-      { name: "Biometrics", status: "Pending", dateUpdated: "2026-03-20", remarks: "Biometrics Instruction Letter issued. Please scheduled appointment." },
-      { name: "Medical report", status: "Pending", dateUpdated: "2026-03-22", remarks: "Medical examination requested. Please complete at authorized physician." }
+      { name: "Passport", status: "Received", dateUpdated: "2023-08-02", remarks: "Completed" }
     ],
     timeline: [
-      { id: "evt-1", date: "2026-03-18 09:00 AM", title: "Profile Created", action: "Profile Created", status: "Completed" },
-      { id: "evt-2", date: "2026-03-18 09:15 AM", title: "Application Submitted", action: "Application Submitted", status: "Completed" },
-      { id: "evt-3", date: "2026-03-18 09:30 AM", title: "Confirmation of Transmission Sent", action: "System Action", status: "Completed" },
-      { id: "evt-4", date: "2026-03-20 10:00 AM", title: "Biometrics Instruction Letter Issued", action: "Admin Action", status: "Completed" },
-      { id: "evt-5", date: "2026-03-22 11:30 AM", title: "Medical Examination Requested", action: "Admin Action", status: "Completed" }
+      { id: "evt-1", date: "2023-08-02 10:00 AM", title: "Profile Created", action: "Profile Created", status: "Completed" },
+      { id: "evt-2", date: "2023-08-02 10:15 AM", title: "Application Submitted", action: "Application Submitted", status: "Completed" },
+      { id: "evt-3", date: "2023-08-02 11:30 AM", title: "Refusal Letter Issued", action: "Admin Action", status: "Completed" }
     ],
     messages: [
       {
         id: "msg-1",
-        subject: "Confirmation of Online Application Transmission",
-        date: "March 18, 2026",
+        subject: "Refusal Letter",
+        date: "August 2, 2023",
         isRead: false,
-        content: "<p>Dear <strong>YASIR IQBAL</strong>,</p><p>This confirms that your application has been received by Immigration, Refugees and Citizenship Canada (IRCC).</p><p>Please note that this message does not mean your application is complete or that you are eligible for the program. We will review your application to make sure it is complete.</p><p>You can check the status of your application in your account.</p><p>Thank you,</p><p>Immigration, Refugees and Citizenship Canada</p>"
-      },
+        content: "<p>Dear <strong>TESTIMONY ABIOLA NASIRU</strong>,</p><p>Thank you for your interest in coming to Canada. After careful review of your online application, we regret to inform you that your application has been refused.</p><p>A formal letter has been uploaded to your messages with details of this decision.</p>"
+      }
+    ]
+  },
+  {
+    id: "S309183021",
+    type: "Online Application",
+    typeFr: "Demande en ligne",
+    status: "Refused",
+    statusFr: "Refusée",
+    lastUpdated: "2022-12-01",
+    dateCreated: "2022-12-01",
+    dateSubmitted: "2022-12-01",
+    fullName: "TESTIMONY ABIOLA NASIRU",
+    details: "Your application was refused. Please check your messages below for detailed explanations.",
+    detailsFr: "Votre demande a été refusée. Veuillez vérifier vos messages ci-dessous.",
+    requestedDocuments: [],
+    timeline: [
+      { id: "evt-4", date: "2022-12-01 09:00 AM", title: "Profile Created", action: "Profile Created", status: "Completed" },
+      { id: "evt-5", date: "2022-12-01 09:15 AM", title: "Application Submitted", action: "Application Submitted", status: "Completed" }
+    ],
+    messages: [
       {
         id: "msg-2",
-        subject: "Biometrics Collection Letter",
-        date: "March 20, 2026",
-        isRead: false,
-        content: "<p>Dear <strong>YASIR IQBAL</strong>,</p><p>This letter is to inform you that you are required to provide your biometrics (fingerprints and photograph).</p><p>Please bring this letter with you to a biometric collection service point. You have 30 days from the date of this letter to provide your biometrics.</p><p>Failure to provide your biometrics within this timeframe may result in your application being refused.</p><p>Thank you,</p><p>Immigration, Refugees and Citizenship Canada</p>"
+        subject: "Refusal Letter",
+        date: "December 1, 2022",
+        isRead: true,
+        content: "<p>Dear <strong>TESTIMONY ABIOLA NASIRU</strong>,</p><p>Thank you for your interest in coming to Canada. After careful review of your online application, we regret to inform you that your application has been refused.</p>"
       }
     ]
   }
@@ -219,11 +236,7 @@ const DEFAULT_APPLICATIONS: ApplicationInfo[] = [
 const DATA_FILE = path.join(process.cwd(), "db_data.json");
 
 function createDefaultApplicationsForUser(email: string): ApplicationInfo[] {
-  const randomId = "W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join("");
-  return DEFAULT_APPLICATIONS.map(app => ({
-    ...app,
-    id: randomId
-  }));
+  return DEFAULT_APPLICATIONS;
 }
 
 function saveData() {
@@ -256,14 +269,10 @@ function loadData() {
         }
       }
 
-      // Ensure default user is always seeded if not present
+      // Ensure default user is always seeded if not present or has old name
       const defaultEmail = "applicant@domain.ca";
-      if (!db.users.has(defaultEmail)) {
-        db.users.set(defaultEmail, { email: defaultEmail, name: "YASIR IQBAL", dateCreated: "2026-03-18", timeCreated: "09:00 AM" });
-      }
-      if (!db.applications.has(defaultEmail)) {
-        db.applications.set(defaultEmail, createDefaultApplicationsForUser(defaultEmail));
-      }
+      db.users.set(defaultEmail, { email: defaultEmail, name: "TESTIMONY ABIOLA NASIRU", dateCreated: "2023-08-02", timeCreated: "10:00 AM" });
+      db.applications.set(defaultEmail, DEFAULT_APPLICATIONS);
 
       saveData();
       return;
@@ -273,8 +282,8 @@ function loadData() {
   }
   
   // Seed initial database if no file exists
-  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "YASIR IQBAL", dateCreated: "2026-03-18", timeCreated: "09:00 AM" });
-  db.applications.set("applicant@domain.ca", createDefaultApplicationsForUser("applicant@domain.ca"));
+  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "TESTIMONY ABIOLA NASIRU", dateCreated: "2023-08-02", timeCreated: "10:00 AM" });
+  db.applications.set("applicant@domain.ca", DEFAULT_APPLICATIONS);
   saveData();
 }
 
