@@ -12,6 +12,10 @@ export default function AdminDashboard() {
   const [viewMode, setViewMode] = useState<'profiles' | 'applications'>('profiles');
   const [selectedProfileEmail, setSelectedProfileEmail] = useState<string | null>(null);
 
+  // Layout states for split-screen / side-by-side editing on desktop and tabbed case views
+  const [caseTab, setCaseTab] = useState<'profile' | 'stages' | 'docs' | 'messages'>('profile');
+  const [showSidebar, setShowSidebar] = useState(true);
+
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
   const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('ielts certificate');
@@ -182,6 +186,7 @@ export default function AdminDashboard() {
   // Effect to populate states upon choosing an application
   useEffect(() => {
     if (!selectedAppId) return;
+    setCaseTab('profile'); // Reset tab view when switching case files
     const item = allApplications.find(a => a.app.id === selectedAppId);
     if (item) {
       const app = item.app;
@@ -367,6 +372,31 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteApplication = async (appId: string) => {
+    if (!window.confirm(`Are you sure you want to delete application ${appId}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/applications/${appId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        alert("Application deleted.");
+        if (selectedAppId === appId) {
+          setSelectedAppId(null);
+          setSelectedUserEmail(null);
+        }
+        fetchApps();
+      } else {
+        alert("Failed to delete application.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error deleting application.");
+    }
+  };
+
   const handleRequestDocument = async (email: string, appId: string, docName: string) => {
     const targetAppItem = allApplications.find(a => a.app.id === appId);
     if (!targetAppItem) return;
@@ -398,11 +428,35 @@ export default function AdminDashboard() {
         
         // Also send them a message
         const now = new Date();
+        let subject = `Action Required: Please submit your ${docName}`;
+        let content = `<p>Dear Applicant,<br/><br/>We are currently reviewing your application.<br/><br/>In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong><br/><br/>You can upload this document or send it as instructed.<br/><br/>Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`;
+
+        const lowerDoc = docName.toLowerCase();
+        if (lowerDoc.includes('pof') || lowerDoc.includes('proof of funds')) {
+          subject = `Action Required: Additional Proof of Funds (POF) Required`;
+          content = `<p>Dear Applicant,</p>
+<p>Your application is currently under review.</p>
+<p>To continue processing your application, additional proof of funds (POF) is required. Please provide a recent statement from a Canadian financial institution for a bank account held in your name. The account must be designated to receive salary payments from your prospective employer in Canada. The statement must clearly display your full name, the name of the financial institution, the account details, and recent account activity.</p>
+<p>Please submit the requested proof of funds by uploading it through your online account or by using the submission method specified in your request letter within the timeframe provided.</p>
+<p>Failure to provide the requested documentation within the specified period may result in delays in the processing of your application or a decision being made based on the information available on file.</p>
+<p>Sincerely,</p>
+<p>Immigration, Refugees and Citizenship Canada (IRCC)</p>`;
+        } else if (lowerDoc.includes('ielts')) {
+          subject = `Action Required: IELTS Test Report Form Required`;
+          content = `<p>Dear Applicant,</p>
+<p>Your application is currently under review.</p>
+<p>To continue processing your application, we require proof of your English language proficiency. Please provide a copy of your valid International English Language Testing System (IELTS) Test Report Form (TRF).</p>
+<p>Please upload the requested document or send it as requested within the timeframe specified.</p>
+<p>Failure to provide the requested information or documentation within the required period may result in delays in the processing of your application or a decision being made based on the information currently available.</p>
+<p>Sincerely,</p>
+<p>, Immigration Refugees and Citizenship Canada (IRCC)</p>`;
+        }
+
         const newMessage = {
           id: `msg-${Date.now()}`,
-          subject: `Action Required: Please submit your ${docName}`,
+          subject,
           date: now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-          content: `<p>Dear Applicant,<br/><br/>We are currently reviewing your application.<br/><br/>In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong><br/><br/>You can upload this document or send it as instructed.<br/><br/>Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`,
+          content,
           isRead: false
         };
         const currentMessages = targetApp.messages || [];
@@ -896,8 +950,10 @@ export default function AdminDashboard() {
       {loading ? (
         <p>Loading applications...</p>
       ) : (
-        <div className="space-y-6">
-          <div className="flex gap-4 border-b border-gray-300">
+        <div className={`grid grid-cols-1 ${selectedAppId && showSidebar ? 'lg:grid-cols-12 gap-8' : ''} items-start`}>
+          {(!selectedAppId || showSidebar) && (
+            <div className={`space-y-6 ${selectedAppId ? 'lg:col-span-4 bg-white p-4 border border-gray-300 shadow-sm rounded sticky top-4 max-h-[90vh] overflow-y-auto' : 'w-full'}`}>
+              <div className="flex gap-4 border-b border-gray-300">
             <button 
               onClick={() => { setViewMode('profiles'); setSelectedAppId(null); }} 
               className={`pb-2 px-2 font-bold ${viewMode === 'profiles' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
@@ -914,31 +970,61 @@ export default function AdminDashboard() {
 
           {viewMode === 'profiles' && !selectedProfileEmail && (
             <div>
-              <h2 className="text-xl font-bold mb-4">Applicant Profiles</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {allUsers.map(userItem => (
-                  <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
-                    <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
-                      <div className="font-bold text-lg break-all">{userItem.name}</div>
-                      <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
-                      <div className="text-sm font-bold text-[#26374a] mt-2">
-                        Applications: {allApplications.filter(a => a.email === userItem.email).length}
+              <h2 className="text-xl font-bold mb-4">
+                {selectedAppId ? "Select Profile" : "Applicant Profiles"}
+              </h2>
+              {selectedAppId ? (
+                <div className="space-y-2">
+                  {allUsers.map(userItem => {
+                    const isSelectedProfile = allApplications.find(a => a.app.id === selectedAppId)?.email === userItem.email;
+                    return (
+                      <div 
+                        key={userItem.email}
+                        onClick={() => setSelectedProfileEmail(userItem.email)}
+                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+                          isSelectedProfile 
+                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+                            : 'bg-white border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <div className="font-bold text-gray-800 break-all">{userItem.name}</div>
+                        <div className="text-xs text-gray-500 break-all">{userItem.email}</div>
+                        <div className="text-xs font-bold text-[#26374a] mt-1.5">
+                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {allUsers.length === 0 && (
+                    <p className="text-gray-500 italic">No profiles created yet.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {allUsers.map(userItem => (
+                    <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
+                      <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
+                        <div className="font-bold text-lg break-all">{userItem.name}</div>
+                        <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
+                        <div className="text-sm font-bold text-[#26374a] mt-2">
+                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-gray-200 text-right">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
+                          className="text-red-600 hover:text-red-800 text-sm font-bold"
+                        >
+                          Delete Profile
+                        </button>
                       </div>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-gray-200 text-right">
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
-                        className="text-red-600 hover:text-red-800 text-sm font-bold"
-                      >
-                        Delete Profile
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {allUsers.length === 0 && (
-                   <p className="text-gray-500 italic">No profiles created yet.</p>
-                )}
-              </div>
+                  ))}
+                  {allUsers.length === 0 && (
+                     <p className="text-gray-500 italic">No profiles created yet.</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -959,12 +1045,20 @@ export default function AdminDashboard() {
                       <div className="font-bold text-lg">{item.app.type}</div>
                       <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
                     </div>
-                    <button 
-                      onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
-                      className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
-                    >
-                      Manage File
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                        className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+                      >
+                        Manage File
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteApplication(item.app.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -973,70 +1067,185 @@ export default function AdminDashboard() {
 
           {viewMode === 'applications' && (
             <div>
-              <h2 className="text-xl font-bold mb-4">All Applications</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
-                  <thead>
-                    <tr className="bg-gray-200 border-b border-gray-400">
-                      <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
-                      <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
-                      <th className="p-3 border-r border-gray-300 font-bold">Type</th>
-                      <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
-                      <th className="p-3 font-bold">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {allApplications.map((item, idx) => (
-                      <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
-                        <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
-                        <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
-                        <td className="p-3 border-r border-gray-300">{item.app.type}</td>
-                        <td className="p-3 border-r border-gray-300">
-                          <select 
-                            value={item.app.status}
-                            onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
-                            className="border border-gray-400 p-1 w-full max-w-[200px]"
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="SUBMITTED">SUBMITTED</option>
-                            {IMMIGRATION_JOURNEY_STEPS.map(step => (
-                              <option key={step} value={step}>{step}</option>
-                            ))}
-                            <option value="Approved">Approved</option>
-                            <option value="Refused">Refused</option>
-                          </select>
-                        </td>
-                        <td className="p-3">
-                          <button 
-                            onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
-                            className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
-                          >
-                            Manage File
-                          </button>
-                        </td>
+              <h2 className="text-xl font-bold mb-4">
+                {selectedAppId ? "Select Application" : "All Applications"}
+              </h2>
+              {selectedAppId ? (
+                <div className="space-y-2">
+                  {allApplications.map((item) => {
+                    const isSelected = item.app.id === selectedAppId;
+                    return (
+                      <div 
+                        key={item.app.id}
+                        onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+                          isSelected 
+                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+                            : 'bg-white border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="font-bold text-gray-800 app-number-font break-all">{item.app.id}</span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                            item.app.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                            item.app.status === 'Refused' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {item.app.status}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-600 truncate mt-1 break-all">{item.email}</div>
+                        <div className="text-xs font-semibold text-[#26374a] mt-1">{item.app.type}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
+                    <thead>
+                      <tr className="bg-gray-200 border-b border-gray-400">
+                        <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
+                        <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
+                        <th className="p-3 border-r border-gray-300 font-bold">Type</th>
+                        <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
+                        <th className="p-3 font-bold">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {allApplications.map((item, idx) => (
+                        <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
+                          <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
+                          <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
+                          <td className="p-3 border-r border-gray-300">{item.app.type}</td>
+                          <td className="p-3 border-r border-gray-300">
+                            <select 
+                              value={item.app.status}
+                              onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
+                              className="border border-gray-400 p-1 w-full max-w-[200px]"
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="SUBMITTED">SUBMITTED</option>
+                              {IMMIGRATION_JOURNEY_STEPS.map(step => (
+                                <option key={step} value={step}>{step}</option>
+                              ))}
+                              <option value="Approved">Approved</option>
+                              <option value="Refused">Refused</option>
+                            </select>
+                          </td>
+                          <td className="p-3">
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                                className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
+                              >
+                                Manage File
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteApplication(item.app.id)}
+                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 font-bold whitespace-nowrap"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
             </div>
           )}
 
           {selectedAppId && selectedUserEmail && (
-            <div className="border border-gray-400 p-6 space-y-8 bg-gray-50 mt-8">
-              <div className="flex justify-between items-center border-b border-gray-300 pb-2">
-                <h2 className="text-2xl font-bold text-[#26374a]">
-                  Case Management: ID {selectedAppId}
-                </h2>
-                <button 
-                  onClick={() => { setSelectedAppId(null); setSelectedUserEmail(null); }}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-1.5 text-sm"
+            <div className={`${showSidebar ? 'lg:col-span-8' : 'w-full'} border border-gray-400 p-6 space-y-6 bg-gray-50`}>
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-300 pb-4">
+                <div>
+                  <div className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">Active File Control</div>
+                  <h2 className="text-2xl font-bold text-[#26374a] break-all flex items-center gap-2">
+                    Case Management: ID <span className="app-number-font">{selectedAppId}</span>
+                  </h2>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button 
+                    type="button"
+                    onClick={() => setShowSidebar(prev => !prev)}
+                    className="bg-white border border-gray-300 text-gray-700 font-bold px-3 py-1.5 text-xs shadow-sm hover:bg-gray-50 flex items-center gap-1.5 transition-all"
+                    title={showSidebar ? "Hide sidebar for full screen editing" : "Show sidebar list"}
+                  >
+                    {showSidebar ? "👁 Hide Sidebar" : "👁 Show Sidebar"}
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => { setSelectedAppId(null); setSelectedUserEmail(null); }}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-1.5 text-xs transition-colors"
+                  >
+                    Close File
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => handleDeleteApplication(selectedAppId)}
+                    className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 text-xs transition-colors"
+                  >
+                    Delete File
+                  </button>
+                </div>
+              </div>
+
+              {/* Sub-tab switcher inside Case Management */}
+              <div className="flex flex-wrap gap-1 border-b border-gray-300 pb-px">
+                <button
+                  type="button"
+                  onClick={() => setCaseTab('profile')}
+                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+                    caseTab === 'profile'
+                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+                  }`}
                 >
-                  Close File
+                  Applicant Info & Status
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCaseTab('stages')}
+                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+                    caseTab === 'stages'
+                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+                  }`}
+                >
+                  7 Processing Stages
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCaseTab('docs')}
+                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+                    caseTab === 'docs'
+                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+                  }`}
+                >
+                  Document Checklist & Rows
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCaseTab('messages')}
+                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+                    caseTab === 'messages'
+                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+                  }`}
+                >
+                  Send Messages & Email
                 </button>
               </div>
 
-              {/* SECTION A: Applicant Profile & Information */}
+              {caseTab === 'profile' && (
+                <>
+                  {/* SECTION A: Applicant Profile & Information */}
               <div className="bg-white p-5 border border-gray-300 space-y-4">
                 <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
                   1. Applicant Information & Metadata
@@ -1296,14 +1505,13 @@ export default function AdminDashboard() {
                         onClick={() => {
                           const now = new Date();
                           const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                          const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                          const dateTimeStr = `${dateStr} at ${timeStr}: `;
+                          const dateTimeStr = `${dateStr}: `;
                           setEditLatestUpdate(prev => prev ? `${dateTimeStr}${prev}` : `${dateTimeStr}`);
                         }}
                         className="text-xs text-[#05355c] hover:underline font-bold"
-                        title="Click to prepend the current date and time to your latest update text."
+                        title="Click to prepend the current date to your latest update text."
                       >
-                        + Insert Date and Time
+                        + Insert Date
                       </button>
                     </div>
                     <textarea 
@@ -1331,9 +1539,12 @@ export default function AdminDashboard() {
                   </button>
                 </div>
               </div>
+                </>
+              )}
 
               {/* SECTION C: 7 Processing Stages */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+              {caseTab === 'stages' && (
+                <div className="bg-white p-5 border border-gray-300 space-y-4">
                 <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
                   3. Immigration Processing Stages (7 Stages)
                 </h3>
@@ -1498,9 +1709,12 @@ export default function AdminDashboard() {
                   </button>
                 </div>
               </div>
+              )}
 
               {/* SECTION D: Document Table Row Management */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+              {caseTab === 'docs' && (
+                <>
+                  <div className="bg-white p-5 border border-gray-300 space-y-4">
                 <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
                   4. Document Status Table Rows
                 </h3>
@@ -1851,9 +2065,12 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+                </>
+              )}
 
               {/* SECTION F: System Messaging & Communications */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+              {caseTab === 'messages' && (
+                <div className="bg-white p-5 border border-gray-300 space-y-4">
                 <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
                   6. Compose & Send Messages
                 </h3>
@@ -1886,6 +2103,7 @@ export default function AdminDashboard() {
                   </button>
                 </form>
               </div>
+              )}
 
             </div>
           )}

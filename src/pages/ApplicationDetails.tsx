@@ -306,7 +306,11 @@ export default function ApplicationDetails() {
             <div>
               <span className="font-bold text-gray-900 block mb-0.5">Latest update:</span>
               {(() => {
-                const text = selectedApp.latestUpdate || 'Your application is in progress.';
+                let text = selectedApp.latestUpdate || 'Your application is in progress.';
+                // Remove time component from the displayed latest update string
+                text = text.replace(/\s+at\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.)?/i, '');
+                text = text.replace(/\s+\d{1,2}:\d{2}(?::\d{2})?\s*(?:AM|PM|am|pm|a\.m\.|p\.m\.)?/i, '');
+
                 let idx = text.indexOf(': ');
                 if (idx === -1) {
                   for (let i = 0; i < text.length; i++) {

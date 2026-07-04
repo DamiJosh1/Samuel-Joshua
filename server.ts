@@ -667,6 +667,26 @@ async function startServer() {
     res.json(allApps);
   });
 
+  // API: Admin DELETE application by ID
+  app.delete("/api/admin/applications/:id", (req, res) => {
+    const id = req.params.id;
+    let found = false;
+    db.applications.forEach((apps, email) => {
+      const index = apps.findIndex(app => app.id === id);
+      if (index !== -1) {
+        apps.splice(index, 1);
+        db.applications.set(email, apps);
+        found = true;
+      }
+    });
+    if (found) {
+      saveData();
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: "Application not found" });
+    }
+  });
+
   // 7. API: Send email notification
   app.post("/api/send-email", async (req, res) => {
     const { to, subject, text, html } = req.body;
