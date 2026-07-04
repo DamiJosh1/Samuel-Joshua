@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { CheckCircle2, Clock, Hourglass, Circle, Info, FileText, Activity, Files, Users, Fingerprint, UserCheck, Scale, HelpCircle, X } from 'lucide-react';
+import { CheckCircle2, Clock, Hourglass, Circle, Info, FileText, Activity, Files, Users, Fingerprint, UserCheck, Scale, HelpCircle, X, AlertTriangle } from 'lucide-react';
 
 export default function ApplicationDetails() {
   const { id } = useParams<{ id: string }>();
@@ -254,6 +254,25 @@ export default function ApplicationDetails() {
         </div>
       )}
 
+      {/* Requested Documents Action Required Alert */}
+      {selectedApp.requestedDocuments && selectedApp.requestedDocuments.some(d => d.status === 'Pending') && (
+        <div className="border-l-4 border-[#af3c43] pl-4 py-3 my-5 text-[14px] text-[#333] font-normal bg-red-50/20">
+          <div className="font-bold text-[#af3c43] flex items-center gap-1.5 mb-1 text-[15px]">
+            <AlertTriangle className="w-4 h-4" />
+            Action Required: Additional Documents Requested
+          </div>
+          <p className="text-gray-700 leading-normal mb-2">
+            The reviewing officer has requested additional documents to process your application. Please check your document checklist to see the requests and upload the required files.
+          </p>
+          <span 
+            onClick={() => navigate(`/application/${selectedApp.id}/checklist`)}
+            className="text-[#2572b4] font-bold underline cursor-pointer hover:text-[#05355c]"
+          >
+            Go to Document Checklist &rarr;
+          </span>
+        </div>
+      )}
+
       {/* 2. Side-by-Side Status & Information panels */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-[14px]">
         {/* Application status Box */}
@@ -388,7 +407,7 @@ export default function ApplicationDetails() {
       </div>
 
       {/* 4. Document Status Section */}
-      {selectedApp.showDocumentStatus && (
+      {(selectedApp.showDocumentStatus || (selectedApp.documentStatuses && selectedApp.documentStatuses.length > 0)) && (
         <div className="mb-10 text-[14px]">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="text-[22px] font-bold text-[#333]">Document Status</h2>

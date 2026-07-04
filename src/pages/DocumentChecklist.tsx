@@ -319,6 +319,186 @@ export default function DocumentChecklist() {
         </p>
       </div>
 
+      {/* Table for Documents requested by the officer */}
+      {selectedApp.requestedDocuments && selectedApp.requestedDocuments.length > 0 && (
+        <div className="mb-8">
+          <div className="bg-[#af3c43] text-white font-bold text-[18px] px-4 py-2 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-white" />
+              Documents Requested by the Officer
+            </span>
+            <span className="bg-white text-[#af3c43] text-xs font-bold px-2.5 py-0.5 rounded-full select-none uppercase tracking-wider">Action Required</span>
+          </div>
+          <div className="bg-[#f5f5f5] font-semibold text-[15px] px-4 py-2 border-l border-r border-gray-300 text-gray-800">
+            Additional requested documents
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300 min-w-[700px]">
+              <thead>
+                <tr className="bg-[#e8e8e8] border-b border-gray-300 text-[13.5px] text-gray-800 text-left font-bold">
+                  <th className="py-2.5 px-3 border-r border-gray-300 w-36">Status / Details</th>
+                  <th className="py-2.5 px-3 border-r border-gray-300">Document name</th>
+                  <th className="py-2.5 px-3 border-r border-gray-300 text-center w-24">Instructions</th>
+                  <th className="py-2.5 px-3 text-center w-40">Options</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedApp.requestedDocuments.map((reqDoc, idx) => {
+                  const status = getDocumentStatus(reqDoc.name);
+                  const displayStatus = reqDoc.status || 'Pending';
+                  
+                  return (
+                    <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50 text-[13px]">
+                      {/* Details Column */}
+                      <td className="py-2.5 px-3 border-r border-gray-300 font-normal">
+                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold inline-block text-center min-w-[90px] ${
+                          displayStatus === 'Received' ? 'bg-green-100 text-[#3c763d] border border-green-300' :
+                          displayStatus === 'Submitted' ? 'bg-blue-100 text-[#31708f] border border-blue-300' :
+                          'bg-yellow-100 text-[#8a6d3b] border border-yellow-300'
+                        }`}>
+                          {displayStatus === 'Received' ? 'Received' : (displayStatus === 'Submitted' ? 'Submitted' : 'Pending')}
+                        </span>
+                      </td>
+
+                      {/* Document name Column */}
+                      <td className="py-2.5 px-3 border-r border-gray-300">
+                        <div className="font-bold text-gray-900 text-[14px]">{reqDoc.name}</div>
+                        {reqDoc.remarks && (
+                          <div className="text-[12px] text-[#8a6d3b] mt-1 bg-yellow-50/50 p-2 border border-yellow-100 rounded leading-relaxed">
+                            <strong>Officer Remarks:</strong> {reqDoc.remarks}
+                          </div>
+                        )}
+                        {status.uploaded && (
+                          <div className="text-[11.5px] text-[#31708f] mt-1.5 font-mono break-all bg-sky-50/50 p-1.5 border border-sky-100 rounded">
+                            Attached file: <strong>{status.fileName}</strong> ({status.date} at {status.time})
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Instructions Column */}
+                      <td className="py-2.5 px-3 border-r border-gray-300 text-center w-20 select-none relative">
+                        <button
+                          onClick={() => setActiveHelp(activeHelp === `req-${idx}` ? null : `req-${idx}`)}
+                          className="text-[#2572b5] hover:text-[#1c5485] focus:outline-none transition-colors"
+                          title="Click for instructions"
+                        >
+                          <HelpCircle className="w-5 h-5 mx-auto" />
+                        </button>
+                        {activeHelp === `req-${idx}` && (
+                          <div className="absolute right-0 z-20 mt-2 p-3 bg-white border border-gray-300 shadow-lg text-left text-xs w-64 rounded text-gray-800 leading-relaxed">
+                            <h4 className="font-bold border-b border-gray-200 pb-1 mb-1 text-gray-900">{reqDoc.name} Instructions:</h4>
+                            <p className="mb-2">This is an additional document explicitly requested by the immigration officer reviewing your application.</p>
+                            <p>Please upload a clear scan/copy. PDF, JPG, PNG, or DOC format are supported (max 4MB).</p>
+                            <button
+                              onClick={() => setActiveHelp(null)}
+                              className="mt-2 text-[#2572b5] underline font-bold float-right"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Options Column */}
+                      <td className="py-2.5 px-3 w-40 text-center">
+                        {displayStatus === 'Received' ? (
+                          <span className="text-gray-500 font-bold text-xs flex items-center justify-center gap-1">
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            Approved & Received
+                          </span>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setUploadingItemKey(`req-${idx}`);
+                                const input = fileInputRefs.current[`req-${idx}`];
+                                if (input) {
+                                  input.click();
+                                }
+                              }}
+                              className="bg-[#2b3e50] hover:bg-[#1a2530] text-white text-[12.5px] px-3 py-1.5 font-semibold transition-colors shadow-sm focus:outline-none flex items-center justify-center gap-1.5 mx-auto rounded-none w-full"
+                            >
+                              <Upload className="w-3.5 h-3.5" />
+                              {status.uploaded ? 'Re-upload' : 'Upload file'}
+                            </button>
+                            <input
+                              type="file"
+                              ref={el => fileInputRefs.current[`req-${idx}`] = el}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+
+                                const now = new Date();
+                                const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                                const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                                // Build the new document entry
+                                const newDoc = {
+                                  name: file.name,
+                                  category: reqDoc.name,
+                                  date: dateStr,
+                                  time: timeStr
+                                };
+
+                                // Append to existing documents or replace if already exists
+                                const currentDocs = selectedApp.documents || [];
+                                const filteredDocs = currentDocs.filter(d => d.category !== reqDoc.name);
+                                const updatedDocs = [newDoc, ...filteredDocs];
+
+                                // Add timeline event
+                                const newTimelineEvent = {
+                                  id: `evt-checklist-${Date.now()}`,
+                                  date: `${dateStr} ${timeStr}`,
+                                  time: timeStr,
+                                  title: `Uploaded requested document: ${reqDoc.name}`,
+                                  action: `Checklist Upload`,
+                                  status: `Completed`,
+                                  details: `File: ${file.name}`
+                                };
+                                const updatedTimeline = [newTimelineEvent, ...(selectedApp.timeline || [])];
+
+                                // Update requested document status to Submitted
+                                const updatedRequested = selectedApp.requestedDocuments.map((r, rIdx) => {
+                                  if (rIdx === idx) {
+                                    return {
+                                      ...r,
+                                      status: 'Submitted' as const,
+                                      dateUpdated: dateStr,
+                                      remarks: `Submitted on ${dateStr} via checklist.`
+                                    };
+                                  }
+                                  return r;
+                                });
+
+                                try {
+                                  await updateApplication(selectedApp.id, {
+                                    documents: updatedDocs,
+                                    timeline: updatedTimeline,
+                                    requestedDocuments: updatedRequested
+                                  });
+                                  alert(`Successfully uploaded "${file.name}" for requested document "${reqDoc.name}".`);
+                                } catch (err) {
+                                  console.error(err);
+                                  alert('Failed to upload document. Please try again.');
+                                } finally {
+                                  setUploadingItemKey(null);
+                                }
+                              }}
+                              className="hidden"
+                              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                            />
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Table 1: Application Form(s) */}
       <div className="mb-8">
         <div className="bg-[#2572b5] text-white font-bold text-[18px] px-4 py-2 flex items-center justify-between">
