@@ -328,7 +328,7 @@ export default function DocumentChecklist() {
           Application Form(s)
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+          <table className="w-full border-collapse border border-gray-300 min-w-[700px]">
             <thead>
               <tr className="bg-[#e8e8e8] border-b border-gray-300 text-[13.5px] text-gray-800 text-left">
                 <th className="py-2.5 px-3 border-r border-gray-300 font-bold w-36">Details</th>
@@ -353,7 +353,7 @@ export default function DocumentChecklist() {
           Supporting documents
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+          <table className="w-full border-collapse border border-gray-300 min-w-[700px]">
             <thead>
               <tr className="bg-[#e8e8e8] border-b border-gray-300 text-[13.5px] text-gray-800 text-left">
                 <th className="py-2.5 px-3 border-r border-gray-300 font-bold w-36">Details</th>
@@ -378,7 +378,7 @@ export default function DocumentChecklist() {
           Optional documents
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+          <table className="w-full border-collapse border border-gray-300 min-w-[700px]">
             <thead>
               <tr className="bg-[#e8e8e8] border-b border-gray-300 text-[13.5px] text-gray-800 text-left">
                 <th className="py-2.5 px-3 border-r border-gray-300 font-bold w-36">Details</th>
@@ -403,7 +403,7 @@ export default function DocumentChecklist() {
           Fees
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300 text-left text-[13.5px]">
+          <table className="w-full border-collapse border border-gray-300 text-left text-[13.5px] min-w-[700px]">
             <thead>
               <tr className="bg-[#e8e8e8] border-b border-gray-300 text-gray-800 font-bold">
                 <th className="py-2.5 px-3 border-r border-gray-300">Application</th>

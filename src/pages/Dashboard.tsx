@@ -253,7 +253,7 @@ export default function Dashboard() {
 
         {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px]">
+          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[950px]">
             <thead>
               <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
                 <th 
@@ -463,7 +463,7 @@ export default function Dashboard() {
 
         {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px]">
+          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[800px]">
             <thead>
               <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
                 <th 

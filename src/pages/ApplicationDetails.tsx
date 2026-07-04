@@ -395,7 +395,7 @@ export default function ApplicationDetails() {
             <span className="w-4 h-4 rounded-full bg-[#2572b5] text-white flex items-center justify-center text-[10px] font-bold cursor-pointer select-none" title="Help">?</span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-[13px] border border-gray-300 rounded-none">
+            <table className="w-full text-left border-collapse text-[13px] border border-gray-300 rounded-none min-w-[1200px]">
               <thead>
                 <tr className="bg-[#f5f5f5] border-b border-gray-300 text-gray-800">
                   <th className="py-2 px-3 border-r border-gray-300 font-bold leading-tight">Name</th>

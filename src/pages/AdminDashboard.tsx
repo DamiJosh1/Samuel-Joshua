@@ -983,7 +983,7 @@ export default function AdminDashboard() {
             <div>
               <h2 className="text-xl font-bold mb-4">All Applications</h2>
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse border border-gray-300 min-w-[600px]">
+                <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
                   <thead>
                     <tr className="bg-gray-200 border-b border-gray-400">
                       <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
@@ -1518,7 +1518,7 @@ export default function AdminDashboard() {
 
                 {/* Existing Rows */}
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse border border-gray-300">
+                  <table className="w-full text-left text-xs border-collapse border border-gray-300 min-w-[1100px]">
                     <thead>
                       <tr className="bg-gray-100 border-b border-gray-300 font-bold">
                         <th className="p-2 border-r border-gray-200">Name / Category</th>
@@ -1671,7 +1671,7 @@ export default function AdminDashboard() {
                     }
                     return (
                       <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2">
+                        <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2 min-w-[950px]">
                           <thead>
                             <tr className="bg-gray-100 border-b border-gray-300 font-bold">
                               <th className="p-2 border-r border-gray-200">Document Name</th>
