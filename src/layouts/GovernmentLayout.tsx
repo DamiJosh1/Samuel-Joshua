@@ -35,6 +35,23 @@ export default function GovernmentLayout() {
 
   // Generate Breadcrumbs Array based on current location path
   const getBreadcrumbs = () => {
+    // Override for application details and checklist pages
+    if (location.pathname.startsWith('/application/')) {
+      const parts = location.pathname.split('/').filter(Boolean);
+      const appId = parts[1];
+      const list = [{ label: t.home, url: '/' }];
+      
+      const appLabel = currentLang === 'en' ? 'Your Application' : 'Votre demande';
+      
+      if (parts[2] === 'checklist') {
+        list.push({ label: appLabel, url: `/application/${appId}` });
+        list.push({ label: currentLang === 'en' ? 'Document Checklist' : 'Liste de contrôle des documents', url: location.pathname });
+      } else {
+        list.push({ label: appLabel, url: location.pathname });
+      }
+      return list;
+    }
+
     const paths = location.pathname.split('/').filter(Boolean);
     const list = [{ label: t.home, url: '/' }];
 

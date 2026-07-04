@@ -175,6 +175,24 @@ export default function Dashboard() {
     );
   };
 
+  const formatNameWithBreak = (fullName?: string) => {
+    const name = (fullName || user?.name || 'TESTIMONY ABIOLA NASIRU').trim();
+    const parts = name.split(/\s+/);
+    if (parts.length >= 3) {
+      const splitIndex = parts.length === 3 ? 1 : Math.ceil(parts.length / 2);
+      const firstPart = parts.slice(0, splitIndex).join(' ');
+      const secondPart = parts.slice(splitIndex).join(' ');
+      return (
+        <>
+          {firstPart.toUpperCase()}
+          <br />
+          {secondPart.toUpperCase()}
+        </>
+      );
+    }
+    return name.toUpperCase();
+  };
+
   const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
 
   return (
@@ -354,11 +372,7 @@ export default function Dashboard() {
                         {app.id}
                       </td>
                       <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('applicantName')}`}>
-                        {app.fullName === 'TESTIMONY ABIOLA NASIRU' || (!app.fullName && user?.name === 'TESTIMONY ABIOLA NASIRU') ? (
-                          <>TESTIMONY<br />ABIOLA NASIRU</>
-                        ) : (
-                          (app.fullName || user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase()
-                        )}
+                        {formatNameWithBreak(app.fullName)}
                       </td>
                       <td className={`p-2.5 text-gray-800 whitespace-nowrap font-normal ${getCellBg('dateSubmitted')}`}>
                         {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2023-08-02')}
