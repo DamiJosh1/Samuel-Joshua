@@ -41,7 +41,7 @@ export default function GovernmentLayout() {
       const appId = parts[1];
       const list = [{ label: t.home, url: '/' }];
       
-      const appLabel = currentLang === 'en' ? 'Your Application' : 'Votre demande';
+      const appLabel = currentLang === 'en' ? 'Your account' : 'Votre compte';
       
       if (parts[2] === 'checklist') {
         list.push({ label: appLabel, url: `/application/${appId}` });

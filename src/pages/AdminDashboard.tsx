@@ -14,8 +14,8 @@ export default function AdminDashboard() {
 
   const [docName, setDocName] = useState('');
   const [docCategory, setDocCategory] = useState('Custom Document');
-  const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('Work permit application form');
-  const [customRequestedDocName, setCustomRequestedDocName] = useState('');
+  const [selectedPredefinedDoc, setSelectedPredefinedDoc] = useState('ielts certificate');
+  const [customRequestedDocName, setCustomRequestedDocName] = useState('ielts certificate');
   const [emailSubject, setEmailSubject] = useState('please submit your original passport.');
   const [emailText, setEmailText] = useState('');
   const [emailSuccess, setEmailSuccess] = useState(false);
@@ -104,16 +104,8 @@ export default function AdminDashboard() {
 
   // Standard document checklist state (which admin can remove items from)
   const [standardDocs, setStandardDocs] = useState<string[]>([
-    "Work permit application form",
-    "Job Contract letter",
-    "Proof of qualification",
     "ielts certificate",
-    "LMIA Letter",
-    "Proof of Funds",
-    "Police clearance certificate",
-    "Medical report",
-    "Biometrics",
-    "Passport"
+    "Proof of Funds"
   ]);
 
   // Editing requested document state

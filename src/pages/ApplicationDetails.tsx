@@ -244,6 +244,25 @@ export default function ApplicationDetails() {
           >
             View submitted application or upload documents
           </span>
+          {selectedApp.requestedDocuments && selectedApp.requestedDocuments.length > 0 && (
+            <span className="ml-1 text-gray-600 font-semibold">
+              {' '}(Upload Status:{' '}
+              {(() => {
+                const pending = selectedApp.requestedDocuments.filter(d => d.status === 'Pending').length;
+                const submitted = selectedApp.requestedDocuments.filter(d => d.status === 'Submitted').length;
+                const received = selectedApp.requestedDocuments.filter(d => d.status === 'Received').length;
+                
+                if (pending > 0) {
+                  return <span className="text-amber-700 font-bold">{pending} Pending Request(s)</span>;
+                }
+                if (submitted > 0) {
+                  return <span className="text-[#2572b4] font-bold">{submitted} Submitted - Under Review</span>;
+                }
+                return <span className="text-green-700 font-bold">All Received & Approved</span>;
+              })()}
+              )
+            </span>
+          )}
         </p>
       </div>
 
@@ -375,8 +394,31 @@ export default function ApplicationDetails() {
           )}
           {renderStep(
             "Review of additional documents",
-            selectedApp.stages?.additionalDocsStatus || "We do not need additional documents.",
-            selectedApp.stages?.additionalDocsDate,
+            selectedApp.stages?.additionalDocsStatus || (() => {
+              const reqs = selectedApp.requestedDocuments || [];
+              if (reqs.length === 0) {
+                return "We do not need additional documents.";
+              }
+              const pending = reqs.filter(d => d.status === 'Pending').length;
+              const submitted = reqs.filter(d => d.status === 'Submitted').length;
+              const received = reqs.filter(d => d.status === 'Received').length;
+
+              if (pending > 0) {
+                return `We have requested additional documents. Action Required: Please upload the required documents.`;
+              }
+              if (submitted > 0) {
+                return `We are reviewing the additional documents you submitted.`;
+              }
+              if (received > 0) {
+                return `We have received and approved your additional documents.`;
+              }
+              return "We do not need additional documents.";
+            })(),
+            selectedApp.stages?.additionalDocsDate || (() => {
+              const reqs = selectedApp.requestedDocuments || [];
+              const dates = reqs.map(d => d.dateUpdated).filter(Boolean);
+              return dates.length > 0 ? dates[dates.length - 1] : undefined;
+            })(),
             <Files className="w-7 h-7 text-gray-600" />
           )}
           {renderStep(
