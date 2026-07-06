@@ -6,6 +6,12 @@ export default function Dashboard() {
   const { user, applications, logout } = useApp();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/auth/login');
+    }
+  }, [user, navigate]);
+
   // Search, Pagination, and Sort state for Table 1 (Submitted Applications)
   const [searchTerm1, setSearchTerm1] = useState('');
   const [pageSize1, setPageSize1] = useState(5);

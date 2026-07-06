@@ -354,11 +354,6 @@ function loadData() {
         }
       }
 
-      // Ensure default user is always seeded if not present or has old name
-      const defaultEmail = "applicant@domain.ca";
-      db.users.set(defaultEmail, { email: defaultEmail, name: "TESTIMONY ABIOLA NASIRU", dateCreated: "2023-08-02", timeCreated: "10:00 AM" });
-      db.applications.set(defaultEmail, DEFAULT_APPLICATIONS);
-
       saveData();
       return;
     } catch (e) {

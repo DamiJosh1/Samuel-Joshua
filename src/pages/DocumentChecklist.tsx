@@ -15,6 +15,12 @@ export default function DocumentChecklist() {
   const navigate = useNavigate();
   const { user, applications, updateApplication } = useApp();
 
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/auth/login');
+    }
+  }, [user, navigate]);
+
   const selectedApp = useMemo(() => {
     const safeApps = Array.isArray(applications) ? applications : [];
     return safeApps.find(a => a.id === id);

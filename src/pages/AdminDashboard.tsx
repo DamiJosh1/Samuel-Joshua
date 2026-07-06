@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp, ApplicationInfo, TimelineEvent, IMMIGRATION_JOURNEY_STEPS } from '../context/AppContext';
 
 export default function AdminDashboard() {
   const { currentLang, user } = useApp();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user || user.email.toLowerCase() !== 'admin@canada.ca') {
+      navigate('/auth/login');
+    }
+  }, [user, navigate]);
   const [allApplications, setAllApplications] = useState<{email: string, app: ApplicationInfo}[]>([]);
   const [allUsers, setAllUsers] = useState<{email: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -449,7 +457,7 @@ export default function AdminDashboard() {
 <p>Please upload the requested document or send it as requested within the timeframe specified.</p>
 <p>Failure to provide the requested information or documentation within the required period may result in delays in the processing of your application or a decision being made based on the information currently available.</p>
 <p>Sincerely,</p>
-<p>, Immigration Refugees and Citizenship Canada (IRCC)</p>`;
+<p>Immigration, Refugees and Citizenship Canada (IRCC)</p>`;
         }
 
         const newMessage = {

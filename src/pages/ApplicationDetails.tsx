@@ -8,6 +8,12 @@ export default function ApplicationDetails() {
   const navigate = useNavigate();
   const { user, applications, logout } = useApp();
 
+  React.useEffect(() => {
+    if (!user) {
+      navigate('/auth/login');
+    }
+  }, [user, navigate]);
+
   const safeApplications = Array.isArray(applications) ? applications : [];
   const selectedApp = safeApplications.find(a => a.id === id);
 
