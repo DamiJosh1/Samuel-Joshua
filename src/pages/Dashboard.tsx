@@ -3,7 +3,7 @@ import { useApp, ApplicationInfo } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const { user, applications, logout } = useApp();
+  const { user, applications, logout, deleteApplication } = useApp();
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -11,6 +11,13 @@ export default function Dashboard() {
       navigate('/auth/login');
     }
   }, [user, navigate]);
+
+  const handleDeleteClick = async (appId: string) => {
+    if (window.confirm(`Are you sure you want to delete application ${appId}? This action cannot be undone.`)) {
+      await deleteApplication(appId);
+      alert("Application deleted successfully.");
+    }
+  };
 
   // Search, Pagination, and Sort state for Table 1 (Submitted Applications)
   const [searchTerm1, setSearchTerm1] = useState('');
@@ -26,12 +33,17 @@ export default function Dashboard() {
   const [sortField2, setSortField2] = useState<'type' | 'dateCreated' | 'daysLeft' | 'dateSaved'>('dateCreated');
   const [sortDir2, setSortDir2] = useState<'asc' | 'desc'>('desc');
 
-  // Static or state-driven empty list for unsubmitted/draft applications
-  const unsubmittedApps = useMemo<any[]>(() => [], []);
-
   const safeApplications = useMemo(() => {
     return Array.isArray(applications) ? applications : [];
   }, [applications]);
+
+  const unsubmittedApps = useMemo(() => {
+    return safeApplications.filter(app => app.status === 'Draft' || app.status?.toLowerCase() === 'draft');
+  }, [safeApplications]);
+
+  const submittedApps = useMemo(() => {
+    return safeApplications.filter(app => app.status !== 'Draft' && app.status?.toLowerCase() !== 'draft');
+  }, [safeApplications]);
 
   // Handle Sort Toggle for Table 1
   const handleSort1 = (field: keyof ApplicationInfo | 'applicantName' | 'dateSubmitted') => {
@@ -57,7 +69,7 @@ export default function Dashboard() {
 
   // Filtered & Sorted Applications for Table 1
   const processedApps1 = useMemo(() => {
-    let result = [...safeApplications];
+    let result = [...submittedApps];
 
     // 1. Filter
     if (searchTerm1.trim()) {
@@ -98,7 +110,7 @@ export default function Dashboard() {
     });
 
     return result;
-  }, [safeApplications, searchTerm1, sortField1, sortDir1, user?.name]);
+  }, [submittedApps, searchTerm1, sortField1, sortDir1, user?.name]);
 
   // Paginated Applications for Table 1
   const paginatedApps1 = useMemo(() => {
@@ -120,8 +132,23 @@ export default function Dashboard() {
       });
     }
 
+    // Sort
+    result.sort((a, b) => {
+      let valA = a[sortField2] || '';
+      let valB = b[sortField2] || '';
+
+      if (typeof valA === 'string') {
+        valA = valA.toLowerCase();
+        valB = valB.toLowerCase();
+      }
+
+      if (valA < valB) return sortDir2 === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDir2 === 'asc' ? 1 : -1;
+      return 0;
+    });
+
     return result;
-  }, [unsubmittedApps, searchTerm2]);
+  }, [unsubmittedApps, searchTerm2, sortField2, sortDir2]);
 
   const paginatedApps2 = useMemo(() => {
     const startIndex = (currentPage2 - 1) * pageSize2;
@@ -392,12 +419,21 @@ export default function Dashboard() {
                         )}
                       </td>
                       <td className="p-2.5">
-                        <button
-                          onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
-                        >
-                          Check full application status
-                        </button>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                          <button
+                            onClick={() => navigate(`/application/${app.id}`)}
+                            className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
+                          >
+                            Check full application status
+                          </button>
+                          <span className="text-gray-300 hidden sm:inline">|</span>
+                          <button
+                            onClick={() => handleDeleteClick(app.id)}
+                            className="text-red-600 underline font-normal hover:text-red-800 text-left cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -560,9 +596,21 @@ export default function Dashboard() {
                       <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('daysLeft')}`}>{app.daysLeft}</td>
                       <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('dateSaved')}`}>{app.dateSaved}</td>
                       <td className="p-2.5">
-                        <button className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer">
-                          Continue Application
-                        </button>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                          <button 
+                            onClick={() => navigate(`/application/${app.id}`)}
+                            className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
+                          >
+                            Continue Application
+                          </button>
+                          <span className="text-gray-300 hidden sm:inline">|</span>
+                          <button
+                            onClick={() => handleDeleteClick(app.id)}
+                            className="text-red-600 underline font-normal hover:text-red-800 text-left cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

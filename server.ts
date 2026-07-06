@@ -651,6 +651,28 @@ async function startServer() {
     res.json(currentList[index]);
   });
 
+  app.delete("/api/applications/:id", (req, res) => {
+    const email = String(req.query.email || "guest").trim().toLowerCase();
+    const id = req.params.id;
+
+    if (!db.applications.has(email)) {
+      return res.status(404).json({ error: "No applications found for this user" });
+    }
+
+    const currentList = db.applications.get(email) || [];
+    const index = currentList.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      return res.status(404).json({ error: "Application file not found" });
+    }
+
+    currentList.splice(index, 1);
+    db.applications.set(email, currentList);
+    saveData();
+
+    res.json({ success: true, applications: currentList });
+  });
+
   // 6. API: Admin GET all applications across all users
   app.get("/api/admin/applications", (req, res) => {
     const allApps: { email: string; app: ApplicationInfo }[] = [];

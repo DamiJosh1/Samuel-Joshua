@@ -127,6 +127,7 @@ interface AppContextType {
   applications: ApplicationInfo[];
   addApplication: (app: ApplicationInfo) => void;
   updateApplication: (id: string, updates: Partial<ApplicationInfo>) => void;
+  deleteApplication: (id: string) => Promise<void>;
   hasEntered: boolean;
   setHasEntered: (entered: boolean) => void;
 }
@@ -277,6 +278,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const deleteApplication = async (id: string) => {
+    const email = user?.email || "guest";
+    // Optimistic UI update
+    setApplications((prev) => prev.filter((app) => app.id !== id));
+
+    try {
+      const response = await fetch(`/api/applications/${id}?email=${encodeURIComponent(email)}`, {
+        method: "DELETE"
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.applications && Array.isArray(data.applications)) {
+          setApplications(data.applications);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete application on backend:", err);
+    }
+  };
+
   return (
     <AppContext.Provider value={{
       currentLang,
@@ -287,6 +308,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       applications,
       addApplication,
       updateApplication,
+      deleteApplication,
       hasEntered,
       setHasEntered
     }}>
