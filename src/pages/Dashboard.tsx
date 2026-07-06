@@ -228,13 +228,13 @@ export default function Dashboard() {
       <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
         <div className="flex flex-wrap items-center text-[13.5px] text-gray-700 justify-end w-full">
           <span className="mr-6">Signed in as <span className="font-normal">{userName}</span></span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
           <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
           <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
           <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
+          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
 
@@ -411,7 +411,7 @@ export default function Dashboard() {
                       <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
+                          className="text-[#294c7c] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Check full application status
                         </button>
@@ -432,7 +432,7 @@ export default function Dashboard() {
 
         {/* Center pagination box exactly matching screenshot */}
         <div className="flex justify-center my-4">
-          <button className="bg-[#2572b4] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+          <button className="bg-[#294c7c] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
             1
           </button>
         </div>
@@ -441,7 +441,7 @@ export default function Dashboard() {
         <p className="text-[14px] text-gray-700 mt-4 leading-relaxed font-normal">
           Did you apply on paper or don't see your online application in your account?{' '}
           <span 
-            className="underline text-[#2572b4] font-normal cursor-pointer hover:text-[#05355c]"
+            className="underline text-[#294c7c] font-normal cursor-pointer hover:text-[#05355c]"
             onClick={() => navigate('/immigration-citizenship')}
           >
             Add (link) your application to your account
@@ -575,7 +575,7 @@ export default function Dashboard() {
                       <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button 
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
+                          className="text-[#294c7c] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Continue Application
                         </button>
@@ -608,7 +608,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship')}
-              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Apply to come to Canada
             </span>
@@ -621,7 +621,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/benefits')}
-              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Refugees: Apply for temporary health care benefits
             </span>
@@ -634,7 +634,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship/citizenship')}
-              className="text-[#2572b4] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Citizenship: Apply for a search or proof of citizenship
             </span>
