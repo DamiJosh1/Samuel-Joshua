@@ -226,15 +226,14 @@ export default function Dashboard() {
       
       {/* Top User Menu */}
       <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
-        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700 justify-end w-full">
-          <span>Signed in as <span className="font-normal">{userName}</span></span>
-          <span className="text-gray-300 px-1">|</span>
+        <div className="flex flex-wrap items-center text-[13.5px] text-gray-700 justify-end w-full">
+          <span className="mr-6">Signed in as <span className="font-normal">{userName}</span></span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
-          <span className="text-gray-300 px-1">|</span>
+          <span className="text-gray-300 px-2">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
-          <span className="text-gray-300 px-1">|</span>
-          <span className="text-gray-700 hover:text-black cursor-pointer font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
-          <span className="text-gray-300 px-1">|</span>
+          <span className="text-gray-300 px-2">|</span>
+          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-300 px-2">|</span>
           <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
@@ -257,7 +256,7 @@ export default function Dashboard() {
         </p>
 
         {/* Search and entries display row - Styled exactly like DataTables in screenshot */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center text-[14px] text-gray-800 mb-4 gap-x-6 gap-y-2">
           <div className="flex items-center gap-2">
             <span className="font-bold">Search:</span>
             <input
@@ -268,15 +267,15 @@ export default function Dashboard() {
                 setSearchTerm1(e.target.value);
                 setCurrentPage1(1);
               }}
-              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
+              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-[200px] focus:outline-none rounded-none font-normal"
             />
           </div>
           <div className="flex items-center gap-1 text-[13.5px]">
-            <span>
+            <span className="text-gray-800 font-normal">
               Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <span className="font-bold">Show</span>
+            <span className="font-bold text-gray-800">Show</span>
             <select
               id="pagesize-table-1"
               value={pageSize1}
@@ -284,14 +283,14 @@ export default function Dashboard() {
                 setPageSize1(Number(e.target.value));
                 setCurrentPage1(1);
               }}
-              className="border border-gray-300 bg-white px-1 py-0.5 font-normal rounded-none"
+              className="border border-gray-300 bg-white px-1.5 py-0.5 font-normal rounded-none text-[13.5px] cursor-pointer"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span>entries</span>
+            <span className="text-gray-800 font-normal">entries</span>
           </div>
         </div>
 
@@ -299,74 +298,72 @@ export default function Dashboard() {
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[950px]">
             <thead>
-              <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
+              <tr className="border-t border-b border-gray-400 text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort1('type')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'type' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'type' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Application</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      type
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Application</div>
+                  <div className="flex items-center gap-1">
+                    <span>type</span>
+                    <span className="text-gray-500 font-normal">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'id' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'id' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Application</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      number
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Application</div>
+                  <div className="flex items-center gap-1">
+                    <span>number</span>
+                    <span className="text-gray-500 font-normal">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Applicant name</span>
-                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  <div>Applicant name</div>
+                  <div>
+                    <span className="text-gray-500 font-normal">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Date submitted</span>
-                    <span className="text-[14px] font-bold text-gray-900 leading-none mt-1">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
+                  <div>Date submitted</div>
+                  <div>
+                    <span className="text-gray-900 font-bold">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'status' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'status' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Current</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      status
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Current</div>
+                  <div className="flex items-center gap-1">
+                    <span>status</span>
+                    <span className="text-gray-500 font-normal">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Messages</span>
-                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  <div>Messages</div>
+                  <div>
+                    <span className="text-gray-500 font-normal">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold text-left whitespace-nowrap select-none bg-transparent">
-                  <div className="flex flex-col">
-                    <span>Action</span>
-                  </div>
+                <th className="p-2.5 font-bold text-left select-none bg-white" style={{ verticalAlign: 'top' }}>
+                  <div>Action</div>
                 </th>
               </tr>
             </thead>
@@ -381,40 +378,40 @@ export default function Dashboard() {
                     if (isEvenRow) {
                       return isSorted ? 'bg-[#f1f1f1]' : 'bg-[#f9f9f9]';
                     } else {
-                      return isSorted ? 'bg-[#f9f9f9]' : 'bg-white';
+                      return isSorted ? 'bg-[#f5f5f5]' : 'bg-white';
                     }
                   };
 
                   return (
                     <tr key={app.id} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
-                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('type')}`}>
+                      <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>
                         {app.type === 'Online Application' || app.type?.toLowerCase() === 'online application' ? (
                           <>Online<br />Application</>
                         ) : (
                           app.type || 'Online Application'
                         )}
                       </td>
-                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('id')}`}>
+                      <td className={`p-2.5 font-normal text-[#333] align-top ${getCellBg('id')}`} style={{ verticalAlign: 'top' }}>
                         {app.id}
                       </td>
-                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('applicantName')}`}>
+                      <td className={`p-2.5 font-normal text-[#333] align-top ${getCellBg('applicantName')}`} style={{ verticalAlign: 'top' }}>
                         {formatNameWithBreak(app.fullName)}
                       </td>
-                      <td className={`p-2.5 text-gray-800 whitespace-nowrap font-normal ${getCellBg('dateSubmitted')}`}>
+                      <td className={`p-2.5 text-[#333] whitespace-nowrap font-normal align-top ${getCellBg('dateSubmitted')}`} style={{ verticalAlign: 'top' }}>
                         {formatSubmittedDate(app.dateSubmitted || app.dateCreated || '2023-08-02')}
                       </td>
-                      <td className={`p-2.5 font-normal text-gray-800 ${getCellBg('status')}`}>{app.status || 'Refused'}</td>
-                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('messages')}`}>
+                      <td className={`p-2.5 font-normal text-[#333] align-top ${getCellBg('status')}`} style={{ verticalAlign: 'top' }}>{app.status || 'Refused'}</td>
+                      <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('messages')}`} style={{ verticalAlign: 'top' }}>
                         {app.messages && app.messages.some(m => !m.isRead) ? (
                           <span>New</span>
                         ) : (
                           <span>Read</span>
                         )}
                       </td>
-                      <td className="p-2.5">
+                      <td className="p-2.5 pb-[2px] font-normal align-bottom" style={{ verticalAlign: 'bottom' }}>
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
+                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Check full application status
                         </button>
@@ -463,7 +460,7 @@ export default function Dashboard() {
         </p>
 
         {/* Search and entries display row - Match screenshot */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-[14px] text-gray-800 mb-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center text-[14px] text-gray-800 mb-4 gap-x-6 gap-y-2">
           <div className="flex items-center gap-2">
             <span className="font-bold">Search:</span>
             <input
@@ -474,15 +471,15 @@ export default function Dashboard() {
                 setSearchTerm2(e.target.value);
                 setCurrentPage2(1);
               }}
-              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-48 focus:outline-none rounded-none"
+              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-[200px] focus:outline-none rounded-none font-normal"
             />
           </div>
           <div className="flex items-center gap-1 text-[13.5px]">
-            <span>
+            <span className="text-gray-800 font-normal">
               Showing {processedApps2.length === 0 ? '0 to 0' : `${(currentPage2 - 1) * pageSize2 + 1} to ${Math.min(currentPage2 * pageSize2, processedApps2.length)}`} of {processedApps2.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <span className="font-bold">Show</span>
+            <span className="font-bold text-gray-800">Show</span>
             <select
               id="pagesize-table-2"
               value={pageSize2}
@@ -490,14 +487,14 @@ export default function Dashboard() {
                 setPageSize2(Number(e.target.value));
                 setCurrentPage2(1);
               }}
-              className="border border-gray-300 bg-white px-1 py-0.5 font-normal rounded-none"
+              className="border border-gray-300 bg-white px-1.5 py-0.5 font-normal rounded-none text-[13.5px] cursor-pointer"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span>entries</span>
+            <span className="text-gray-800 font-normal">entries</span>
           </div>
         </div>
 
@@ -505,56 +502,52 @@ export default function Dashboard() {
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[800px]">
             <thead>
-              <tr className="border-t border-b border-gray-400 text-gray-900 select-none">
+              <tr className="border-t border-b border-gray-400 text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort2('type')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'type' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'type' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Application</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      type
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Application</div>
+                  <div className="flex items-center gap-1">
+                    <span>type</span>
+                    <span className="text-gray-500 font-normal">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Date Created</span>
-                    <span className="text-[14px] font-bold text-gray-500 leading-none mt-1">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                  <div>Date Created</div>
+                  <div>
+                    <span className="text-gray-500 font-normal">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Days left</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      to submit
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Days left</div>
+                  <div className="flex items-center gap-1">
+                    <span>to submit</span>
+                    <span className="text-gray-500 font-normal">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : 'bg-transparent hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  style={{ verticalAlign: 'top' }}
                 >
-                  <div className="flex flex-col">
-                    <span>Date last</span>
-                    <span className="flex items-center gap-1 leading-none mt-0.5">
-                      saved
-                      <span className="text-[14px] font-bold text-gray-500 leading-none">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
-                    </span>
+                  <div>Date last</div>
+                  <div className="flex items-center gap-1">
+                    <span>saved</span>
+                    <span className="text-gray-500 font-normal">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold text-left whitespace-nowrap select-none bg-transparent">
-                  <div className="flex flex-col">
-                    <span>Action</span>
-                  </div>
+                <th className="p-2.5 font-bold text-left select-none bg-white" style={{ verticalAlign: 'top' }}>
+                  <div>Action</div>
                 </th>
               </tr>
             </thead>
@@ -569,20 +562,20 @@ export default function Dashboard() {
                     if (isEvenRow) {
                       return isSorted ? 'bg-[#f1f1f1]' : 'bg-[#f9f9f9]';
                     } else {
-                      return isSorted ? 'bg-[#f9f9f9]' : 'bg-white';
+                      return isSorted ? 'bg-[#f5f5f5]' : 'bg-white';
                     }
                   };
 
                   return (
                     <tr key={idx} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
-                      <td className={`p-2.5 text-gray-800 font-normal uppercase ${getCellBg('type')}`}>{app.type}</td>
-                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('dateCreated')}`}>{app.dateCreated}</td>
-                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('daysLeft')}`}>{app.daysLeft}</td>
-                      <td className={`p-2.5 text-gray-800 font-normal ${getCellBg('dateSaved')}`}>{app.dateSaved}</td>
-                      <td className="p-2.5">
+                      <td className={`p-2.5 text-[#333] font-normal align-top uppercase ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>{app.type}</td>
+                      <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('dateCreated')}`} style={{ verticalAlign: 'top' }}>{app.dateCreated}</td>
+                      <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('daysLeft')}`} style={{ verticalAlign: 'top' }}>{app.daysLeft}</td>
+                      <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('dateSaved')}`} style={{ verticalAlign: 'top' }}>{app.dateSaved}</td>
+                      <td className="p-2.5 pb-[2px] font-normal align-bottom" style={{ verticalAlign: 'bottom' }}>
                         <button 
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer"
+                          className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Continue Application
                         </button>

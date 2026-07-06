@@ -437,27 +437,31 @@ export default function AdminDashboard() {
         // Also send them a message
         const now = new Date();
         let subject = `Action Required: Please submit your ${docName}`;
-        let content = `<p>Dear Applicant,<br/><br/>We are currently reviewing your application.<br/><br/>In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong><br/><br/>You can upload this document or send it as instructed.<br/><br/>Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`;
+        let content = `<p style="margin-bottom: 16px;">Dear Applicant,</p>
+<p style="margin-bottom: 16px;">We are currently reviewing your application.</p>
+<p style="margin-bottom: 16px;">In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong></p>
+<p style="margin-bottom: 16px;">You can upload this document or send it as instructed.</p>
+<p style="margin-bottom: 0;">Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`;
 
         const lowerDoc = docName.toLowerCase();
         if (lowerDoc.includes('pof') || lowerDoc.includes('proof of funds')) {
           subject = `Action Required: Additional Proof of Funds (POF) Required`;
-          content = `<p>Dear Applicant,</p>
-<p>Your application is currently under review.</p>
-<p>To continue processing your application, additional proof of funds (POF) is required. Please provide a recent statement from a Canadian financial institution for a bank account held in your name. The account must be designated to receive salary payments from your prospective employer in Canada. The statement must clearly display your full name, the name of the financial institution, the account details, and recent account activity.</p>
-<p>Please submit the requested proof of funds by uploading it through your online account or by using the submission method specified in your request letter within the timeframe provided.</p>
-<p>Failure to provide the requested documentation within the specified period may result in delays in the processing of your application or a decision being made based on the information available on file.</p>
-<p>Sincerely,</p>
-<p>Immigration, Refugees and Citizenship Canada (IRCC)</p>`;
+          content = `<p style="margin-bottom: 16px;">Dear Applicant,</p>
+<p style="margin-bottom: 16px;">Your application is currently under review.</p>
+<p style="margin-bottom: 16px;">To continue processing your application, additional proof of funds (POF) is required. Please provide a recent statement from a Canadian financial institution for a bank account held in your name. The account must be designated to receive salary payments from your prospective employer in Canada. The statement must clearly display your full name, the name of the financial institution, the account details, and recent account activity.</p>
+<p style="margin-bottom: 16px;">Please submit the requested proof of funds by uploading it through your online account or by using the submission method specified in your request letter within the timeframe provided.</p>
+<p style="margin-bottom: 16px;">Failure to provide the requested documentation within the specified period may result in delays in the processing of your application or a decision being made based on the information available on file.</p>
+<p style="margin-bottom: 16px;">Sincerely,</p>
+<p style="margin-bottom: 0;">Immigration, Refugees and Citizenship Canada (IRCC)</p>`;
         } else if (lowerDoc.includes('ielts')) {
           subject = `Action Required: IELTS Test Report Form Required`;
-          content = `<p>Dear Applicant,</p>
-<p>Your application is currently under review.</p>
-<p>To continue processing your application, we require proof of your English language proficiency. Please provide a copy of your valid International English Language Testing System (IELTS) Test Report Form (TRF).</p>
-<p>Please upload the requested document or send it as requested within the timeframe specified.</p>
-<p>Failure to provide the requested information or documentation within the required period may result in delays in the processing of your application or a decision being made based on the information currently available.</p>
-<p>Sincerely,</p>
-<p>Immigration, Refugees and Citizenship Canada (IRCC).</p>`;
+          content = `<p style="margin-bottom: 16px;">Dear Applicant,</p>
+<p style="margin-bottom: 16px;">Your application is currently under review.</p>
+<p style="margin-bottom: 16px;">To continue processing your application, we require proof of your English language proficiency. Please provide a copy of your valid International English Language Testing System (IELTS) Test Report Form (TRF).</p>
+<p style="margin-bottom: 16px;">Please upload the requested document or send it as requested within the timeframe specified.</p>
+<p style="margin-bottom: 16px;">Failure to provide the requested information or documentation within the required period may result in delays in the processing of your application or a decision being made based on the information currently available.</p>
+<p style="margin-bottom: 16px;">Sincerely,</p>
+<p style="margin-bottom: 0;">Immigration, Refugees and Citizenship Canada (IRCC).</p>`;
         }
 
         const newMessage = {

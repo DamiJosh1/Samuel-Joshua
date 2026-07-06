@@ -112,9 +112,8 @@ export default function GovernmentLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-[#333] font-sans antialiased" style={{ fontFamily: '"Noto Sans", sans-serif' }}>
-      
       {/* 2-TIERED WET GOVERNMENT HEADER */}
-      <header className="bg-white text-[#333] pt-4 pb-2">
+      <header className="bg-white text-[#333] pt-4">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex justify-between items-start pb-4">
             
@@ -144,15 +143,17 @@ export default function GovernmentLayout() {
             </button>
             
           </div>
-          
-          {/* Main horizontal rule separating signature from menu */}
-          <div className="h-[4px] bg-[#26374a] w-full mt-1"></div>
-          
-          {/* MENU Bar & Secondary Search Row */}
-          <div className="flex justify-between items-center py-2.5">
-            {/* Authentic MENU Dropdown Button */}
+        </div>
+        
+        {/* Main horizontal rule separating signature from menu - now full width */}
+        <div className="h-[4px] bg-[#26374a] w-full"></div>
+        
+        {/* MENU Bar & Secondary Search Row */}
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="flex justify-between items-center">
+            {/* Authentic MENU Dropdown Button - rounded only on the bottom, touching the blue line */}
             <button 
-              className="bg-[#26374a] hover:bg-[#1a2938] text-white px-4 py-2 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-[3px] cursor-pointer"
+              className="bg-[#26374a] hover:bg-[#1a2938] text-white px-5 py-2.5 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-t-none rounded-b-[4px] cursor-pointer"
               id="header-gckey-menu-btn"
             >
               <span>MENU</span>
@@ -160,7 +161,7 @@ export default function GovernmentLayout() {
             </button>
 
             {/* Inline search or blank depending on page state, matches image 7 */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center py-2">
               <form onSubmit={handleSearchSubmit} className="flex items-center border border-gray-400 bg-white" id="search-box-form">
                 <input
                   type="text"
@@ -180,7 +181,6 @@ export default function GovernmentLayout() {
               </form>
             </div>
           </div>
-
         </div>
       </header>
 
