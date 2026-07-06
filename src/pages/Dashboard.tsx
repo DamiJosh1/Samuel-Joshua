@@ -225,38 +225,37 @@ export default function Dashboard() {
     <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
       {/* Top User Menu */}
-      <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
-        <div className="flex flex-wrap items-center text-[13.5px] text-gray-700 justify-end w-full">
-          <span className="mr-6">Signed in as <span className="font-normal">{userName}</span></span>
-          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
-          <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
-          <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
-          <span className="text-gray-300 px-2">|</span>
-          <span className="text-[#294c7c] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
+      <div className="flex justify-end items-center text-[13.5px] mt-2 mb-10">
+        <div className="flex flex-wrap items-center text-[14px] text-gray-800 justify-end w-full">
+          <span className="mr-8">Signed in as <span className="font-normal">{userName}</span></span>
+          <span className="text-[#2b4380] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-gray-400 px-2">|</span>
+          <span className="text-[#2b4380] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-gray-400 px-2">|</span>
+          <span className="text-[#2b4380] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-gray-400 px-2">|</span>
+          <span className="text-[#2b4380] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
 
-      {/* Account Owner Page Title with the Canada.ca Red Accent Line */}
-      <div className="mb-6">
-        <h1 className="text-[32px] font-normal text-[#333] tracking-tight leading-tight">
+      {/* Account Owner Page Title */}
+      <div className="mb-8">
+        <h1 className="text-[36px] font-bold text-[#333] tracking-tight leading-none">
           {userName}'s account
         </h1>
-        <hr className="border-gray-300 mt-3" />
       </div>
 
       {/* Section 1: View the applications you submitted */}
       <section className="mb-12">
-        <h2 className="text-[22px] font-bold text-[#333] mb-1">
+        <h2 className="text-[26px] font-bold text-[#333] mb-1">
           View the applications you submitted
         </h2>
-        <p className="text-[14px] text-gray-700 mb-4 leading-normal">
+        <p className="text-[15px] text-gray-700 mb-6 leading-relaxed">
           Review, check the status or read messages about your submitted application.
         </p>
 
         {/* Search and entries display row - Styled exactly like DataTables in screenshot */}
-        <div className="flex flex-col md:flex-row items-start md:items-center text-[14px] text-gray-800 mb-4 gap-x-6 gap-y-2">
+        <div className="flex flex-row items-center text-[15px] text-[#333] mb-5 gap-x-6">
           <div className="flex items-center gap-2">
             <span className="font-bold">Search:</span>
             <input
@@ -267,15 +266,15 @@ export default function Dashboard() {
                 setSearchTerm1(e.target.value);
                 setCurrentPage1(1);
               }}
-              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-[200px] focus:outline-none rounded-none font-normal"
+              className="border border-gray-400 px-2 py-1 bg-white text-[14.5px] w-[210px] h-[36px] focus:outline-none rounded-none font-normal"
             />
           </div>
-          <div className="flex items-center gap-1 text-[13.5px]">
-            <span className="text-gray-800 font-normal">
+          <div className="flex items-center gap-1 text-[14.5px] text-gray-800">
+            <span>
               Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <span className="font-bold text-gray-800">Show</span>
+            <span className="font-bold text-[#333]">Show</span>
             <select
               id="pagesize-table-1"
               value={pageSize1}
@@ -283,86 +282,110 @@ export default function Dashboard() {
                 setPageSize1(Number(e.target.value));
                 setCurrentPage1(1);
               }}
-              className="border border-gray-300 bg-white px-1.5 py-0.5 font-normal rounded-none text-[13.5px] cursor-pointer"
+              className="border border-gray-400 bg-white px-2 py-1 h-[36px] font-normal rounded-none text-[14.5px] cursor-pointer"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span className="text-gray-800 font-normal">entries</span>
+            <span>entries</span>
           </div>
         </div>
 
         {/* Table 1 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[950px]">
+          <table className="w-full text-left border-collapse border-b-[1.5px] border-[#222] text-[14px] min-w-[950px]">
             <thead>
-              <tr className="border-t border-b border-gray-400 text-[#333] select-none text-[14px]">
+              <tr className="border-t-[1.5px] border-b-[1.5px] border-[#222] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort1('type')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'type' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'type' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Application</div>
                   <div className="flex items-center gap-1">
                     <span>type</span>
-                    <span className="text-gray-500 font-normal">{sortField1 === 'type' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField1 === 'type' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('id')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'id' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'id' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Application</div>
                   <div className="flex items-center gap-1">
                     <span>number</span>
-                    <span className="text-gray-500 font-normal">{sortField1 === 'id' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField1 === 'id' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('applicantName')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'applicantName' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Applicant name</div>
                   <div>
-                    <span className="text-gray-500 font-normal">{sortField1 === 'applicantName' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField1 === 'applicantName' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('dateSubmitted')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'dateSubmitted' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Date submitted</div>
                   <div>
-                    <span className="text-gray-900 font-bold">{sortField1 === 'dateSubmitted' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓'}</span>
+                    {sortField1 === 'dateSubmitted' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('status')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'status' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'status' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Current</div>
                   <div className="flex items-center gap-1">
                     <span>status</span>
-                    <span className="text-gray-500 font-normal">{sortField1 === 'status' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField1 === 'status' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort1('messages')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'messages' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Messages</div>
                   <div>
-                    <span className="text-gray-500 font-normal">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField1 === 'messages' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
-                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-white align-bottom" style={{ verticalAlign: 'bottom' }}>
+                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-[#f5f5f5] align-bottom text-[#333]" style={{ verticalAlign: 'bottom' }}>
                   <div>Action</div>
                 </th>
               </tr>
@@ -383,7 +406,7 @@ export default function Dashboard() {
                   };
 
                   return (
-                    <tr key={app.id} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
+                    <tr key={app.id} className={`${rowBgClass} hover:bg-gray-100/50`}>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>
                         {app.type === 'Online Application' || app.type?.toLowerCase() === 'online application' ? (
                           <>Online<br />Application</>
@@ -411,7 +434,7 @@ export default function Dashboard() {
                       <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#294c7c] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
+                          className="text-[#2b4380] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Check full application status
                         </button>
@@ -432,7 +455,7 @@ export default function Dashboard() {
 
         {/* Center pagination box exactly matching screenshot */}
         <div className="flex justify-center my-4">
-          <button className="bg-[#294c7c] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+          <button className="bg-[#2b4380] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
             1
           </button>
         </div>
@@ -441,7 +464,7 @@ export default function Dashboard() {
         <p className="text-[14px] text-gray-700 mt-4 leading-relaxed font-normal">
           Did you apply on paper or don't see your online application in your account?{' '}
           <span 
-            className="underline text-[#294c7c] font-normal cursor-pointer hover:text-[#05355c]"
+            className="underline text-[#2b4380] font-normal cursor-pointer hover:text-[#05355c]"
             onClick={() => navigate('/immigration-citizenship')}
           >
             Add (link) your application to your account
@@ -452,15 +475,15 @@ export default function Dashboard() {
 
       {/* Section 2: Continue an application you haven't submitted */}
       <section className="mb-12">
-        <h2 className="text-[22px] font-bold text-[#333] mb-1">
+        <h2 className="text-[26px] font-bold text-[#333] mb-1">
           Continue an application you haven't submitted
         </h2>
-        <p className="text-[14px] text-gray-700 mb-4 leading-normal">
+        <p className="text-[15px] text-gray-700 mb-6 leading-relaxed">
           Continue working on an application or profile you haven't submitted or delete it from your account.
         </p>
 
         {/* Search and entries display row - Match screenshot */}
-        <div className="flex flex-col md:flex-row items-start md:items-center text-[14px] text-gray-800 mb-4 gap-x-6 gap-y-2">
+        <div className="flex flex-row items-center text-[15px] text-[#333] mb-5 gap-x-6">
           <div className="flex items-center gap-2">
             <span className="font-bold">Search:</span>
             <input
@@ -471,15 +494,15 @@ export default function Dashboard() {
                 setSearchTerm2(e.target.value);
                 setCurrentPage2(1);
               }}
-              className="border border-gray-400 px-2 py-0.5 bg-white text-[14px] w-[200px] focus:outline-none rounded-none font-normal"
+              className="border border-gray-400 px-2 py-1 bg-white text-[14.5px] w-[210px] h-[36px] focus:outline-none rounded-none font-normal"
             />
           </div>
-          <div className="flex items-center gap-1 text-[13.5px]">
-            <span className="text-gray-800 font-normal">
+          <div className="flex items-center gap-1 text-[14.5px] text-gray-800">
+            <span>
               Showing {processedApps2.length === 0 ? '0 to 0' : `${(currentPage2 - 1) * pageSize2 + 1} to ${Math.min(currentPage2 * pageSize2, processedApps2.length)}`} of {processedApps2.length} entries
             </span>
             <span className="mx-2 text-gray-300">|</span>
-            <span className="font-bold text-gray-800">Show</span>
+            <span className="font-bold text-[#333]">Show</span>
             <select
               id="pagesize-table-2"
               value={pageSize2}
@@ -487,66 +510,82 @@ export default function Dashboard() {
                 setPageSize2(Number(e.target.value));
                 setCurrentPage2(1);
               }}
-              className="border border-gray-300 bg-white px-1.5 py-0.5 font-normal rounded-none text-[13.5px] cursor-pointer"
+              className="border border-gray-400 bg-white px-2 py-1 h-[36px] font-normal rounded-none text-[14.5px] cursor-pointer"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span className="text-gray-800 font-normal">entries</span>
+            <span>entries</span>
           </div>
         </div>
 
         {/* Table 2 - Clean Minimal Style, No Vertical Borders */}
         <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse border-b border-gray-400 text-[14px] min-w-[800px]">
+          <table className="w-full text-left border-collapse border-b-[1.5px] border-[#222] text-[14px] min-w-[800px]">
             <thead>
-              <tr className="border-t border-b border-gray-400 text-[#333] select-none text-[14px]">
+              <tr className="border-t-[1.5px] border-b-[1.5px] border-[#222] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort2('type')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'type' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'type' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Application</div>
                   <div className="flex items-center gap-1">
                     <span>type</span>
-                    <span className="text-gray-500 font-normal">{sortField2 === 'type' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField2 === 'type' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateCreated')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'dateCreated' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Date Created</div>
                   <div>
-                    <span className="text-gray-500 font-normal">{sortField2 === 'dateCreated' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField2 === 'dateCreated' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('daysLeft')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'daysLeft' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Days left</div>
                   <div className="flex items-center gap-1">
                     <span>to submit</span>
-                    <span className="text-gray-500 font-normal">{sortField2 === 'daysLeft' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField2 === 'daysLeft' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
                 <th 
                   onClick={() => handleSort2('dateSaved')}
-                  className={`p-2.5 font-bold cursor-pointer text-left select-none ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : 'bg-white hover:bg-gray-50'}`}
+                  className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'dateSaved' ? 'bg-[#ebebeb]' : 'bg-[#f5f5f5] hover:bg-[#eaeaea]'}`}
                   style={{ verticalAlign: 'top' }}
                 >
                   <div>Date last</div>
                   <div className="flex items-center gap-1">
                     <span>saved</span>
-                    <span className="text-gray-500 font-normal">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
+                    {sortField2 === 'dateSaved' ? (
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                    ) : (
+                      <span className="text-[#999] ml-1 font-normal">⇅</span>
+                    )}
                   </div>
                 </th>
-                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-white align-bottom" style={{ verticalAlign: 'bottom' }}>
+                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-[#f5f5f5] align-bottom text-[#333]" style={{ verticalAlign: 'bottom' }}>
                   <div>Action</div>
                 </th>
               </tr>
@@ -567,7 +606,7 @@ export default function Dashboard() {
                   };
 
                   return (
-                    <tr key={idx} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-100`}>
+                    <tr key={idx} className={`${rowBgClass} hover:bg-gray-100/50`}>
                       <td className={`p-2.5 text-[#333] font-normal align-top uppercase ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>{app.type}</td>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('dateCreated')}`} style={{ verticalAlign: 'top' }}>{app.dateCreated}</td>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('daysLeft')}`} style={{ verticalAlign: 'top' }}>{app.daysLeft}</td>
@@ -575,7 +614,7 @@ export default function Dashboard() {
                       <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button 
                           onClick={() => navigate(`/application/${app.id}`)}
-                          className="text-[#294c7c] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
+                          className="text-[#2b4380] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
                         >
                           Continue Application
                         </button>
@@ -597,7 +636,7 @@ export default function Dashboard() {
 
       {/* Section 3: Start an application */}
       <section className="mb-8">
-        <h2 className="text-[22px] font-bold text-[#333] mb-6 border-b border-gray-200 pb-2">
+        <h2 className="text-[26px] font-bold text-[#333] mb-6 border-b border-gray-200 pb-2">
           Start an application
         </h2>
 
@@ -608,7 +647,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship')}
-              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2b4380] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Apply to come to Canada
             </span>
@@ -621,7 +660,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/benefits')}
-              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2b4380] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Refugees: Apply for temporary health care benefits
             </span>
@@ -634,7 +673,7 @@ export default function Dashboard() {
           <div className="space-y-2">
             <span 
               onClick={() => navigate('/immigration-citizenship/citizenship')}
-              className="text-[#294c7c] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
+              className="text-[#2b4380] hover:text-[#05355c] underline font-normal text-[16px] block cursor-pointer leading-snug"
             >
               Citizenship: Apply for a search or proof of citizenship
             </span>

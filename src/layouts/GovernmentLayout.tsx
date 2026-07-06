@@ -134,7 +134,7 @@ export default function GovernmentLayout() {
             {/* Language Toggle Link */}
             <button
               onClick={handleLangToggle}
-              className="text-sm font-normal text-[#2572b4] hover:text-[#05355c] hover:underline focus:outline-none cursor-pointer"
+              className="text-sm font-normal text-[#2b4380] hover:text-[#05355c] hover:underline focus:outline-none cursor-pointer"
               title={t.langToggleLabel}
               aria-label={t.langToggleLabel}
               id="lang-toggle-button"
@@ -197,7 +197,7 @@ export default function GovernmentLayout() {
                   </span>
                 ) : (
                   <>
-                    <Link to={crumb.url} className="text-[#2572b4] hover:text-[#05355c] hover:underline">
+                    <Link to={crumb.url} className="text-[#2b4380] hover:text-[#05355c] hover:underline">
                       {crumb.label === 'Home' ? 'Home' : crumb.label}
                     </Link>
                     <span className="text-gray-400 px-1 font-normal">&gt;</span>
