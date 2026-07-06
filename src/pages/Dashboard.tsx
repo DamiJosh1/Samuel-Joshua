@@ -362,7 +362,7 @@ export default function Dashboard() {
                     <span className="text-gray-500 font-normal">{sortField1 === 'messages' ? (sortDir1 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold text-left select-none bg-white" style={{ verticalAlign: 'top' }}>
+                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-white align-bottom" style={{ verticalAlign: 'bottom' }}>
                   <div>Action</div>
                 </th>
               </tr>
@@ -408,7 +408,7 @@ export default function Dashboard() {
                           <span>Read</span>
                         )}
                       </td>
-                      <td className="p-2.5 pb-[2px] font-normal align-bottom" style={{ verticalAlign: 'bottom' }}>
+                      <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button
                           onClick={() => navigate(`/application/${app.id}`)}
                           className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
@@ -546,7 +546,7 @@ export default function Dashboard() {
                     <span className="text-gray-500 font-normal">{sortField2 === 'dateSaved' ? (sortDir2 === 'asc' ? '↑' : '↓') : '↓↑'}</span>
                   </div>
                 </th>
-                <th className="p-2.5 font-bold text-left select-none bg-white" style={{ verticalAlign: 'top' }}>
+                <th className="p-2.5 pb-[5px] font-bold text-left select-none bg-white align-bottom" style={{ verticalAlign: 'bottom' }}>
                   <div>Action</div>
                 </th>
               </tr>
@@ -572,7 +572,7 @@ export default function Dashboard() {
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('dateCreated')}`} style={{ verticalAlign: 'top' }}>{app.dateCreated}</td>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('daysLeft')}`} style={{ verticalAlign: 'top' }}>{app.daysLeft}</td>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('dateSaved')}`} style={{ verticalAlign: 'top' }}>{app.dateSaved}</td>
-                      <td className="p-2.5 pb-[2px] font-normal align-bottom" style={{ verticalAlign: 'bottom' }}>
+                      <td className="p-2.5 font-normal align-top" style={{ verticalAlign: 'top' }}>
                         <button 
                           onClick={() => navigate(`/application/${app.id}`)}
                           className="text-[#2572b4] underline font-normal hover:text-[#05355c] text-left cursor-pointer inline"
