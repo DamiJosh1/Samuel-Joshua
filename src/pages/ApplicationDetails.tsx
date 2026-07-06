@@ -511,7 +511,7 @@ export default function ApplicationDetails() {
         <h2 className="text-[32px] font-normal mb-2 text-[#333]">Messages about your application</h2>
         
         {/* Help Banner */}
-        <div className="flex items-start gap-2.5 mb-6 mt-1">
+        <div className="border-l-[4px] border-[#007da3] pl-4 py-1.5 flex items-start gap-2.5 mb-6 mt-1" id="messages-help-banner">
           <div className="w-5 h-5 rounded-full bg-[#007da3] text-white flex items-center justify-center text-[12px] font-bold flex-shrink-0 select-none font-sans" title="Information">i</div>
           <p className="text-gray-900 leading-normal font-sans text-[14px] font-normal">
             Links and document titles are shown in the language you chose for your portal account when they were generated.
@@ -730,7 +730,7 @@ export default function ApplicationDetails() {
                 </div>
               ) : (
                 <div 
-                  className="prose max-w-none text-[#333333]" 
+                  className="prose max-w-none text-[#333333] custom-message-content" 
                   dangerouslySetInnerHTML={{ __html: selectedMessage.content }} 
                 />
               )}

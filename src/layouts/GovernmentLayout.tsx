@@ -146,13 +146,13 @@ export default function GovernmentLayout() {
           </div>
           
           {/* Main horizontal rule separating signature from menu */}
-          <div className="h-[1px] bg-gray-300 w-full"></div>
+          <div className="h-[4px] bg-[#26374a] w-full mt-1"></div>
           
           {/* MENU Bar & Secondary Search Row */}
           <div className="flex justify-between items-center py-2.5">
             {/* Authentic MENU Dropdown Button */}
             <button 
-              className="bg-[#333333] hover:bg-[#222222] text-white px-4 py-2 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-[3px] cursor-pointer"
+              className="bg-[#26374a] hover:bg-[#1a2938] text-white px-4 py-2 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-[3px] cursor-pointer"
               id="header-gckey-menu-btn"
             >
               <span>MENU</span>
