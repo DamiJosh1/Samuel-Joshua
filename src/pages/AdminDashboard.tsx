@@ -457,7 +457,7 @@ export default function AdminDashboard() {
 <p>Please upload the requested document or send it as requested within the timeframe specified.</p>
 <p>Failure to provide the requested information or documentation within the required period may result in delays in the processing of your application or a decision being made based on the information currently available.</p>
 <p>Sincerely,</p>
-<p>Immigration, Refugees and Citizenship Canada (IRCC)</p>`;
+<p>Immigration, Refugees and Citizenship Canada (IRCC).</p>`;
         }
 
         const newMessage = {
@@ -1371,18 +1371,7 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div className="flex items-center gap-2 pt-5 select-none col-span-1 md:col-span-2">
-                    <input 
-                      type="checkbox" 
-                      id="editShowDocumentStatus"
-                      checked={editShowDocumentStatus}
-                      onChange={e => setEditShowDocumentStatus(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                    />
-                    <label htmlFor="editShowDocumentStatus" className="text-xs font-bold text-red-700 cursor-pointer">
-                      Show "Document Status" table on applicant profile (Check only when requested)
-                    </label>
-                  </div>
+
 
                   {/* Confirmation Transmission Info */}
                   <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
