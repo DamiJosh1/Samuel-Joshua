@@ -114,8 +114,8 @@ export default function GovernmentLayout() {
     <div className="min-h-screen flex flex-col bg-white text-[#333] font-sans antialiased" style={{ fontFamily: '"Noto Sans", sans-serif' }}>
       {/* 2-TIERED WET GOVERNMENT HEADER */}
       <header className="bg-white text-[#333] pt-4">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="flex justify-between items-start pb-4">
+        <div className="mx-auto max-w-6xl px-4 w-full">
+          <div className="flex justify-between items-start pb-3">
             
             {/* Logo Signature Section */}
             <Link to="/" className="flex items-center" id="gov-can-logo">
@@ -125,7 +125,7 @@ export default function GovernmentLayout() {
                   : "https://www.canada.ca/etc/designs/canada/wet-boew/assets/sig-blk-fr.svg"
                 }
                 alt={currentLang === 'en' ? "Government of Canada" : "Gouvernement du Canada"} 
-                className="h-8 md:h-[34px] w-auto object-contain"
+                className="h-[30px] w-auto object-contain mt-1"
                 id="gov-canada-sig-logo-header"
                 referrerPolicy="no-referrer"
               />
@@ -134,7 +134,7 @@ export default function GovernmentLayout() {
             {/* Language Toggle Link */}
             <button
               onClick={handleLangToggle}
-              className="text-sm font-normal text-[#2b4380] hover:text-[#05355c] hover:underline focus:outline-none cursor-pointer"
+              className="text-[14px] font-normal text-[#2b4380] hover:text-[#05355c] underline focus:outline-none cursor-pointer mt-2"
               title={t.langToggleLabel}
               aria-label={t.langToggleLabel}
               id="lang-toggle-button"
@@ -145,62 +145,41 @@ export default function GovernmentLayout() {
           </div>
         </div>
         
-        {/* Main horizontal rule separating signature from menu - now full width */}
-        <div className="h-[4px] bg-[#26374a] w-full"></div>
+        {/* Main horizontal rule separating signature from menu */}
+        <div className="h-[2px] bg-[#111] w-full"></div>
         
-        {/* MENU Bar & Secondary Search Row */}
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="flex justify-between items-center">
-            {/* Authentic MENU Dropdown Button - rounded only on the bottom, touching the blue line */}
+        {/* MENU Bar */}
+        <div className="mx-auto max-w-6xl px-4 w-full">
+          <div className="flex justify-start items-center">
+            {/* Authentic MENU Dropdown Button */}
             <button 
-              className="bg-[#26374a] hover:bg-[#1a2938] text-white px-5 py-2.5 font-semibold text-[15px] flex items-center gap-1.5 transition-colors focus:outline-none select-none rounded-t-none rounded-b-[4px] cursor-pointer"
+              className="bg-[#26374a] hover:bg-[#1a2938] text-white px-4 py-2 font-normal text-[15px] flex items-center gap-2 transition-colors focus:outline-none select-none rounded-none cursor-pointer"
               id="header-gckey-menu-btn"
             >
               <span>MENU</span>
-              <span className="text-[10px] opacity-90">▼</span>
+              <span className="text-[12px] opacity-100 font-bold">˅</span>
             </button>
-
-            {/* Inline search or blank depending on page state, matches image 7 */}
-            <div className="hidden md:flex items-center py-2">
-              <form onSubmit={handleSearchSubmit} className="flex items-center border border-gray-400 bg-white" id="search-box-form">
-                <input
-                  type="text"
-                  value={searchVal}
-                  onChange={(e) => setSearchVal(e.target.value)}
-                  placeholder="Search Canada.ca"
-                  className="px-3 py-1 text-[13.5px] outline-none w-52 text-gray-800"
-                  aria-label="Search Canada.ca"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#333] text-white px-2.5 py-1.5 flex items-center justify-center hover:bg-black transition-colors"
-                  aria-label="Search"
-                >
-                  <Search className="w-4 h-4" />
-                </button>
-              </form>
-            </div>
           </div>
         </div>
       </header>
 
       {/* DYNAMIC BREADCRUMBS BAR */}
-      <div className="bg-white py-1 text-xs text-[#333]" id="breadcrumbs-container">
-        <div className="mx-auto max-w-6xl px-4 flex flex-wrap items-center gap-1 font-sans">
+      <div className="bg-white py-3 text-xs text-[#333]" id="breadcrumbs-container">
+        <div className="mx-auto max-w-6xl px-4 flex flex-wrap items-center gap-2 font-sans text-[13.5px]">
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
             return (
-              <div key={crumb.url} className="flex items-center gap-1">
+              <div key={crumb.url} className="flex items-center gap-2">
                 {isLast ? (
                   <span className="text-gray-600 truncate font-normal max-w-xs">
                     {crumb.label === 'My Console' || crumb.label === 'Your account' || crumb.label === 'Dashboard' ? 'Your account' : crumb.label}
                   </span>
                 ) : (
                   <>
-                    <Link to={crumb.url} className="text-[#2b4380] hover:text-[#05355c] hover:underline">
+                    <Link to={crumb.url} className="text-[#663399] hover:text-[#2b4380] underline">
                       {crumb.label === 'Home' ? 'Home' : crumb.label}
                     </Link>
-                    <span className="text-gray-400 px-1 font-normal">&gt;</span>
+                    <span className="text-gray-500 font-normal text-[12px]">&gt;</span>
                   </>
                 )}
               </div>
