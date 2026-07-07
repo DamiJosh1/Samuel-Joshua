@@ -228,13 +228,13 @@ export default function Dashboard() {
       <div className="flex justify-end items-center text-[13.5px] mt-2 mb-10">
         <div className="flex flex-wrap items-center text-[14px] text-[#333] justify-end w-full">
           <span className="mr-8">Signed in as {userName}</span>
-          <span className="text-[#663399] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-[#551A8B] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
           <span className="text-[#333] px-1.5">|</span>
-          <span className="text-[#663399] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-[#551A8B] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
           <span className="text-[#333] px-1.5">|</span>
-          <span className="text-[#663399] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-[#005a00] underline cursor-pointer hover:text-[#004000] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
           <span className="text-[#333] px-1.5">|</span>
-          <span className="text-[#663399] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
+          <span className="text-[#005a00] underline cursor-pointer hover:text-[#004000] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
 
@@ -297,7 +297,7 @@ export default function Dashboard() {
         <div className="overflow-x-auto w-full border-b-[1px] border-[#666]">
           <table className="w-full text-left border-collapse text-[14px] min-w-[950px]">
             <thead>
-              <tr className="border-t-[1px] border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
+              <tr className="border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort1('type')}
                   className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'type' ? 'bg-[#e6e6e6]' : 'bg-white hover:bg-[#eaeaea]'}`}
@@ -525,7 +525,7 @@ export default function Dashboard() {
         <div className="overflow-x-auto w-full border-b-[1px] border-[#666]">
           <table className="w-full text-left border-collapse text-[14px] min-w-[800px]">
             <thead>
-              <tr className="border-t-[1px] border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
+              <tr className="border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort2('type')}
                   className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'type' ? 'bg-[#e6e6e6]' : 'bg-white hover:bg-[#eaeaea]'}`}
