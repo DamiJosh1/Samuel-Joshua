@@ -1,43 +1,35 @@
 import React, { useState, useMemo } from 'react';
 import { useApp, ApplicationInfo } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-
 export default function Dashboard() {
   const { user, applications, logout } = useApp();
   const navigate = useNavigate();
-
   React.useEffect(() => {
     if (!user) {
       navigate('/auth/login');
     }
   }, [user, navigate]);
-
   // Search, Pagination, and Sort state for Table 1 (Submitted Applications)
   const [searchTerm1, setSearchTerm1] = useState('');
   const [pageSize1, setPageSize1] = useState(5);
   const [currentPage1, setCurrentPage1] = useState(1);
   const [sortField1, setSortField1] = useState<keyof ApplicationInfo | 'applicantName' | 'dateSubmitted'>('dateSubmitted');
   const [sortDir1, setSortDir1] = useState<'asc' | 'desc'>('desc');
-
   // Search, Pagination, and Sort state for Table 2 (Unsubmitted Applications)
   const [searchTerm2, setSearchTerm2] = useState('');
   const [pageSize2, setPageSize2] = useState(5);
   const [currentPage2, setCurrentPage2] = useState(1);
   const [sortField2, setSortField2] = useState<'type' | 'dateCreated' | 'daysLeft' | 'dateSaved'>('dateCreated');
   const [sortDir2, setSortDir2] = useState<'asc' | 'desc'>('desc');
-
   const safeApplications = useMemo(() => {
     return Array.isArray(applications) ? applications : [];
   }, [applications]);
-
   const unsubmittedApps = useMemo(() => {
     return safeApplications.filter(app => app.status === 'Draft' || app.status?.toLowerCase() === 'draft');
   }, [safeApplications]);
-
   const submittedApps = useMemo(() => {
     return safeApplications.filter(app => app.status !== 'Draft' && app.status?.toLowerCase() !== 'draft');
   }, [safeApplications]);
-
   // Handle Sort Toggle for Table 1
   const handleSort1 = (field: keyof ApplicationInfo | 'applicantName' | 'dateSubmitted') => {
     if (sortField1 === field) {
@@ -48,7 +40,6 @@ export default function Dashboard() {
     }
     setCurrentPage1(1);
   };
-
   // Handle Sort Toggle for Table 2
   const handleSort2 = (field: 'type' | 'dateCreated' | 'daysLeft' | 'dateSaved') => {
     if (sortField2 === field) {
@@ -59,11 +50,9 @@ export default function Dashboard() {
     }
     setCurrentPage2(1);
   };
-
   // Filtered & Sorted Applications for Table 1
   const processedApps1 = useMemo(() => {
     let result = [...submittedApps];
-
     // 1. Filter
     if (searchTerm1.trim()) {
       const term = searchTerm1.toLowerCase().trim();
@@ -75,12 +64,10 @@ export default function Dashboard() {
         return typeStr.includes(term) || idStr.includes(term) || nameStr.includes(term) || statusStr.includes(term);
       });
     }
-
     // 2. Sort
     result.sort((a, b) => {
       let valA: any = '';
       let valB: any = '';
-
       if (sortField1 === 'applicantName') {
         valA = a.fullName || user?.name || 'ChatWithOlu Webinar';
         valB = b.fullName || user?.name || 'ChatWithOlu Webinar';
@@ -91,32 +78,25 @@ export default function Dashboard() {
         valA = a[sortField1] || '';
         valB = b[sortField1] || '';
       }
-
       if (typeof valA === 'string') {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
       }
-
       if (valA < valB) return sortDir1 === 'asc' ? -1 : 1;
       if (valA > valB) return sortDir1 === 'asc' ? 1 : -1;
       return 0;
     });
-
     return result;
   }, [submittedApps, searchTerm1, sortField1, sortDir1, user?.name]);
-
   // Paginated Applications for Table 1
   const paginatedApps1 = useMemo(() => {
     const startIndex = (currentPage1 - 1) * pageSize1;
     return processedApps1.slice(startIndex, startIndex + pageSize1);
   }, [processedApps1, currentPage1, pageSize1]);
-
   const totalPages1 = Math.ceil(processedApps1.length / pageSize1) || 1;
-
   // Filtered & Sorted Applications for Table 2 (Unsubmitted)
   const processedApps2 = useMemo(() => {
     let result = [...unsubmittedApps];
-
     if (searchTerm2.trim()) {
       const term = searchTerm2.toLowerCase().trim();
       result = result.filter(app => {
@@ -124,32 +104,25 @@ export default function Dashboard() {
         return typeStr.includes(term);
       });
     }
-
     // Sort
     result.sort((a, b) => {
       let valA = a[sortField2] || '';
       let valB = b[sortField2] || '';
-
       if (typeof valA === 'string') {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
       }
-
       if (valA < valB) return sortDir2 === 'asc' ? -1 : 1;
       if (valA > valB) return sortDir2 === 'asc' ? 1 : -1;
       return 0;
     });
-
     return result;
   }, [unsubmittedApps, searchTerm2, sortField2, sortDir2]);
-
   const paginatedApps2 = useMemo(() => {
     const startIndex = (currentPage2 - 1) * pageSize2;
     return processedApps2.slice(startIndex, startIndex + pageSize2);
   }, [processedApps2, currentPage2, pageSize2]);
-
   const totalPages2 = Math.ceil(processedApps2.length / pageSize2) || 1;
-
   const formatSubmittedDate = (dateStr: string) => {
     if (!dateStr) return '';
     // If it already has letters (like 'August 2, 2023'), return it as is
@@ -176,7 +149,6 @@ export default function Dashboard() {
     }
     return dateStr;
   };
-
   const renderSortArrows = (field: string, currentField: string, direction: 'asc' | 'desc') => {
     const isSorted = field === currentField;
     if (isSorted) {
@@ -200,7 +172,6 @@ export default function Dashboard() {
       </span>
     );
   };
-
   const formatNameWithBreak = (fullName?: string) => {
     const name = (fullName || user?.name || 'TESTIMONY ABIOLA NASIRU').trim();
     const parts = name.split(/\s+/);
@@ -218,12 +189,9 @@ export default function Dashboard() {
     }
     return name.toUpperCase();
   };
-
   const userName = (user?.name || 'TESTIMONY ABIOLA NASIRU').toUpperCase();
-
   return (
     <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
-      
       {/* Top User Menu */}
       <div className="flex justify-end items-center text-[13.5px] mt-2 mb-10">
         <div className="flex flex-wrap items-center text-[14px] text-[#333] justify-end w-full">
@@ -237,14 +205,12 @@ export default function Dashboard() {
           <span className="text-[#005a00] underline cursor-pointer hover:text-[#004000] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
-
       {/* Account Owner Page Title */}
       <div className="mb-8">
         <h1 className="text-[34px] font-medium text-[#333] tracking-tight leading-none pb-2 border-b-[1px] border-[#af3c43]">
           {userName}'s account
         </h1>
       </div>
-
       {/* Section 1: View the applications you submitted */}
       <section className="mb-12">
         <h2 className="text-[24px] font-bold text-[#333] mb-1">
@@ -253,7 +219,6 @@ export default function Dashboard() {
         <p className="text-[15px] text-[#333] mb-6 leading-relaxed">
           Review, check the status or read messages about your submitted application.
         </p>
-
         {/* Search and entries display row - Styled exactly like DataTables in screenshot */}
         <div className="flex flex-row justify-start items-center text-[15px] text-[#333] mb-3 gap-x-6">
           <div className="flex items-center gap-2">
@@ -292,12 +257,11 @@ export default function Dashboard() {
             <span>entries</span>
           </div>
         </div>
-
         {/* Table 1 - Clean Minimal Style */}
-        <div className="overflow-x-auto w-full border-b-[1px] border-[#666]">
+        <div className="overflow-x-auto w-full border-b-[1px] border-[#ccc]">
           <table className="w-full text-left border-collapse text-[14px] min-w-[950px]">
             <thead>
-              <tr className="border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
+              <tr className="border-b-[1px] border-[#ccc] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort1('type')}
                   className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField1 === 'type' ? 'bg-[#e6e6e6]' : 'bg-white hover:bg-[#eaeaea]'}`}
@@ -308,9 +272,7 @@ export default function Dashboard() {
                     <span>type</span>
                     {sortField1 === 'type' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -323,9 +285,7 @@ export default function Dashboard() {
                     <span>number</span>
                     {sortField1 === 'id' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -337,9 +297,7 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'applicantName' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -351,9 +309,7 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'dateSubmitted' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -366,9 +322,7 @@ export default function Dashboard() {
                     <span>status</span>
                     {sortField1 === 'status' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -380,9 +334,7 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'messages' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th className="p-2.5 font-bold text-left select-none bg-white text-[#333]" style={{ verticalAlign: 'bottom' }}>
@@ -395,7 +347,6 @@ export default function Dashboard() {
                 paginatedApps1.map((app, idx) => {
                   const isEvenRow = idx % 2 === 1;
                   const rowBgClass = isEvenRow ? 'bg-[#f9f9f9]' : 'bg-white';
-                  
                   const getCellBg = (field: string) => {
                     const isSorted = sortField1 === field;
                     if (isEvenRow) {
@@ -404,7 +355,6 @@ export default function Dashboard() {
                       return isSorted ? 'bg-[#f5f5f5]' : 'bg-transparent';
                     }
                   };
-
                   return (
                     <tr key={app.id} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-200`}>
                       <td className={`p-2.5 text-[#333] font-normal align-top ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>
@@ -452,14 +402,12 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
-
         {/* Center pagination box exactly matching screenshot */}
         <div className="flex justify-center my-4">
-          <button className="bg-[#284162] hover:bg-[#1a4e7b] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
+          <button className="bg-[#2572b4] hover:bg-[#1d5b90] text-white font-bold w-9 h-9 flex items-center justify-center rounded-[4px] text-[14px]">
             1
           </button>
         </div>
-
         {/* Paper Application Link Box */}
         <p className="text-[14px] text-[#333] mt-4 leading-relaxed font-normal">
           Did you apply on paper or don't see your online application in your account?{' '}
@@ -472,7 +420,6 @@ export default function Dashboard() {
           to access it and check your status online.
         </p>
       </section>
-
       {/* Section 2: Continue an application you haven't submitted */}
       <section className="mb-12">
         <h2 className="text-[24px] font-bold text-[#333] mb-1">
@@ -481,7 +428,6 @@ export default function Dashboard() {
         <p className="text-[15px] text-[#333] mb-6 leading-relaxed">
           Continue working on an application or profile you haven't submitted or delete it from your account.
         </p>
-
         {/* Search and entries display row - Match screenshot */}
         <div className="flex flex-row justify-start items-center text-[15px] text-[#333] mb-3 gap-x-6">
           <div className="flex items-center gap-2">
@@ -520,12 +466,11 @@ export default function Dashboard() {
             <span>entries</span>
           </div>
         </div>
-
         {/* Table 2 - Clean Minimal Style */}
-        <div className="overflow-x-auto w-full border-b-[1px] border-[#666]">
+        <div className="overflow-x-auto w-full border-b-[1px] border-[#ccc]">
           <table className="w-full text-left border-collapse text-[14px] min-w-[800px]">
             <thead>
-              <tr className="border-b-[1px] border-[#666] text-[#333] select-none text-[14px]">
+              <tr className="border-b-[1px] border-[#ccc] text-[#333] select-none text-[14px]">
                 <th 
                   onClick={() => handleSort2('type')}
                   className={`p-2.5 font-bold cursor-pointer text-left select-none transition-colors ${sortField2 === 'type' ? 'bg-[#e6e6e6]' : 'bg-white hover:bg-[#eaeaea]'}`}
@@ -536,9 +481,7 @@ export default function Dashboard() {
                     <span>type</span>
                     {sortField2 === 'type' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -550,9 +493,7 @@ export default function Dashboard() {
                   <div>
                     {sortField2 === 'dateCreated' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -565,9 +506,7 @@ export default function Dashboard() {
                     <span>to submit</span>
                     {sortField2 === 'daysLeft' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th 
@@ -580,9 +519,7 @@ export default function Dashboard() {
                     <span>saved</span>
                     {sortField2 === 'dateSaved' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-                    ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
-                    )}
+) : null}
                   </div>
                 </th>
                 <th className="p-2.5 font-bold text-left select-none bg-white text-[#333]" style={{ verticalAlign: 'bottom' }}>
@@ -595,7 +532,6 @@ export default function Dashboard() {
                 paginatedApps2.map((app, idx) => {
                   const isEvenRow = idx % 2 === 1;
                   const rowBgClass = isEvenRow ? 'bg-[#f9f9f9]' : 'bg-white';
-                  
                   const getCellBg = (field: string) => {
                     const isSorted = sortField2 === field;
                     if (isEvenRow) {
@@ -604,7 +540,6 @@ export default function Dashboard() {
                       return isSorted ? 'bg-[#f5f5f5]' : 'bg-transparent';
                     }
                   };
-
                   return (
                     <tr key={idx} className={`${rowBgClass} hover:bg-gray-100/50 border-b border-gray-200`}>
                       <td className={`p-2.5 text-[#333] font-normal align-top uppercase ${getCellBg('type')}`} style={{ verticalAlign: 'top' }}>{app.type}</td>
@@ -633,16 +568,13 @@ export default function Dashboard() {
           </table>
         </div>
       </section>
-
       {/* Section 3: Start an application */}
       <section className="mb-8">
         <h2 className="text-[24px] font-bold text-[#333] mb-6 border-b border-gray-200 pb-2">
           Start an application
         </h2>
-
         {/* 3-Column Grid for options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-[14px]">
-          
           {/* Column 1 */}
           <div className="space-y-2">
             <span 
@@ -655,7 +587,6 @@ export default function Dashboard() {
               Includes applications for visitor visas, work and study permits, Express Entry and International Experience Canada. You will need your personal reference code if you have one.
             </p>
           </div>
-
           {/* Column 2 */}
           <div className="space-y-2">
             <span 
@@ -668,7 +599,6 @@ export default function Dashboard() {
               Use this application if you are a protected person or refugee claimant who wants to apply for the Interim Federal Health Program.
             </p>
           </div>
-
           {/* Column 3 */}
           <div className="space-y-2">
             <span 
@@ -681,10 +611,8 @@ export default function Dashboard() {
               Use this application to apply for proof of citizenship (citizenship certificate) or to search citizenship records.
             </p>
           </div>
-
         </div>
       </section>
-
     </main>
   );
 }
