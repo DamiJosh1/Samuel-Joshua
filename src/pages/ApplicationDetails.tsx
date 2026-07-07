@@ -225,17 +225,16 @@ export default function ApplicationDetails() {
     <main className="mx-auto max-w-6xl w-full px-4 py-4 flex-grow font-sans text-[#333]">
       
       {/* Top User Menu */}
-      <div className="flex justify-end items-center text-[13px] mb-6 border-b border-gray-200 pb-3">
-        <div className="flex flex-wrap gap-x-2 gap-y-1 items-center text-[13.5px] text-gray-700 justify-end w-full">
-          <span>Signed in as <span className="font-normal">{userName}</span></span>
-          <span className="text-gray-300 px-1">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
-          <span className="text-gray-300 px-1">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
-          <span className="text-gray-300 px-1">|</span>
-          <span className="text-gray-700 hover:text-black cursor-pointer font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
-          <span className="text-gray-300 px-1">|</span>
-          <span className="text-[#2572b4] underline cursor-pointer hover:text-[#05355c] font-normal" onClick={logout}>Logout</span>
+      <div className="flex justify-end items-center text-[13.5px] mt-2 mb-10">
+        <div className="flex flex-wrap items-center text-[14px] text-[#333] justify-end w-full">
+          <span className="mr-8">Signed in as {userName}</span>
+          <span className="text-[#8A2BE2] underline cursor-pointer hover:text-[#551A8B] font-normal" onClick={() => navigate('/dashboard')}>Account home</span>
+          <span className="text-[#333] px-1.5">|</span>
+          <span className="text-[#8A2BE2] underline cursor-pointer hover:text-[#551A8B] font-normal" onClick={() => navigate('/dashboard')}>Account profile</span>
+          <span className="text-[#333] px-1.5">|</span>
+          <span className="text-[#005a00] underline cursor-pointer hover:text-[#004000] font-normal" onClick={() => navigate('/immigration-citizenship')}>Help</span>
+          <span className="text-[#333] px-1.5">|</span>
+          <span className="text-[#005a00] underline cursor-pointer hover:text-[#004000] font-normal" onClick={logout}>Logout</span>
         </div>
       </div>
 

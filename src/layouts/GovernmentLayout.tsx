@@ -176,7 +176,7 @@ export default function GovernmentLayout() {
                   </span>
                 ) : (
                   <>
-                    <Link to={crumb.url} className="text-[#551A8B] hover:text-[#2b4380] underline">
+                    <Link to={crumb.url} className="text-[#8A2BE2] hover:text-[#551A8B] underline">
                       {crumb.label === 'Home' ? 'Home' : crumb.label}
                     </Link>
                     <span className="text-gray-500 font-normal text-[12px]">&gt;</span>
