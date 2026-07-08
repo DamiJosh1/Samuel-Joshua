@@ -236,7 +236,7 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-1 text-[14.5px] text-[#333]">
             <span>
-              Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length}[...]
+              Showing {processedApps1.length === 0 ? '0 to 0' : `${(currentPage1 - 1) * pageSize1 + 1} to ${Math.min(currentPage1 * pageSize1, processedApps1.length)}`} of {processedApps1.length}entries
             </span>
             <span className="mx-1.5 text-[#333]">|</span>
             <span className="font-bold">Show</span>
