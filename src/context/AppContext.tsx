@@ -173,7 +173,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchApps = () => {
       const email = user?.email || "guest";
-      fetch(`/api/applications?email=${encodeURIComponent(email)}`)
+      fetch(`/api/applications?email=${encodeURIComponent(email)}&t=${Date.now()}`)
         .then((res) => {
           if (!res.ok) throw new Error("Could not fetch applications from backend");
           return res.json();

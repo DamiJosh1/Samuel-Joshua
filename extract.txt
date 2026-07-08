@@ -1,0 +1,123 @@
+  return (
+    <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 space-y-8 font-sans text-[#333]">
+      <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Immigration Case Management</h1>
+
+      <div className="max-w-xl bg-gray-100 p-6 border border-gray-300">
+        <h2 className="text-xl font-bold mb-4 text-[#26374a] border-b border-gray-300 pb-2">Create Applicant Profile</h2>
+        <form onSubmit={handleCreateProfile} className="space-y-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Applicant Full Name</label>
+              <input 
+                type="text" 
+                value={newProfileName}
+                onChange={e => setNewProfileName(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. John Doe"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Email Address</label>
+              <input 
+                type="email" 
+                value={newProfileEmail}
+                onChange={e => setNewProfileEmail(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="name@domain.ca"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Application Type</label>
+              <select 
+                value={newProfileAppType}
+                onChange={e => setNewProfileAppType(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white font-medium"
+              >
+                <option value="Online Application">Online Application</option>
+                <option value="Work Permit">Work Permit</option>
+                <option value="Visitor Visa">Visitor Visa</option>
+                <option value="Study Permit">Study Permit</option>
+                <option value="Permanent Residence">Permanent Residence</option>
+                <option value="Citizenship">Citizenship</option>
+                <option value="Passport">Passport</option>
+                <option value="Biometrics">Biometrics</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Application Number</label>
+              <input 
+                type="text" 
+                value={newProfileAppNumber}
+                onChange={e => setNewProfileAppNumber(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. W123456789 (leave empty for auto)"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">UCI (optional)</label>
+              <input 
+                type="text" 
+                value={newProfileUci}
+                onChange={e => setNewProfileUci(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+                placeholder="e.g. 11-2222-3333"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Current Status</label>
+              <select
+                value={newProfileStatus}
+                onChange={e => setNewProfileStatus(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white font-medium"
+              >
+                <option value="Submitted">Submitted</option>
+                <option value="Processing">Processing</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Approved">Approved</option>
+                <option value="Refused">Refused</option>
+                <option value="Documents Requested">Documents Requested</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold mb-1">Date Created / Received</label>
+              <input 
+                type="date" 
+                value={newProfileDateCreated}
+                onChange={e => setNewProfileDateCreated(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold mb-1">Date Submitted</label>
+              <input 
+                type="date" 
+                value={newProfileDateSubmitted}
+                onChange={e => setNewProfileDateSubmitted(e.target.value)}
+                className="w-full border border-gray-400 p-2 bg-white"
+              />
+            </div>
+          </div>
+
+          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full transition-colors">
+            Create Profile & Application Record
+          </button>
+          <p className="text-xs text-gray-600 mt-2">After creating, provide the email to the user. All initial status stages will be prepared automatically.</p>
+        </form>
+      </div>
+
+      {loading ? (
+        <p>Loading applications...</p>
+      ) : (
+        <div className={`grid grid-cols-1 ${selectedAppId && showSidebar ? 'lg:grid-cols-12 gap-8' : ''} items-start`}>
+

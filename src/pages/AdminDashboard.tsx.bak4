@@ -837,6 +837,7 @@ export default function AdminDashboard() {
     return (
       <main className="mx-auto max-w-6xl w-full px-4 py-8">
         <h1 className="text-xl font-bold">Unauthorized</h1>
+        </div>
     </main>
     );
   }
@@ -1178,11 +1179,6 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-            </div>
-          )}
-            </div>
-          )}
-          </div>
           {selectedAppId && selectedUserEmail && (
             <div className={`${showSidebar ? 'lg:col-span-8' : 'w-full'} border border-gray-400 p-6 space-y-6 bg-gray-50`}>
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-300 pb-4">
@@ -2121,6 +2117,7 @@ export default function AdminDashboard() {
           )}
         </div>
       )}
+      </div>
     </main>
   );
 }

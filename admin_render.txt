@@ -1,0 +1,1279 @@
+837:    return (
+838-      <main className="mx-auto max-w-6xl w-full px-4 py-8">
+839-        <h1 className="text-xl font-bold">Unauthorized</h1>
+840-      </main>
+841-    );
+842-  }
+843-
+844:  return (
+845-    <main className="mx-auto max-w-6xl w-full px-4 py-8 md:py-12 space-y-8 font-sans text-[#333]">
+846-      <h1 className="text-3xl font-bold border-b border-gray-300 pb-2">Immigration Case Management</h1>
+847-
+848-      <div className="max-w-xl bg-gray-100 p-6 border border-gray-300">
+849-        <h2 className="text-xl font-bold mb-4 text-[#26374a] border-b border-gray-300 pb-2">Create Applicant Profile</h2>
+850-        <form onSubmit={handleCreateProfile} className="space-y-4 text-sm">
+851-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+852-            <div>
+853-              <label className="block text-xs font-bold mb-1">Applicant Full Name</label>
+854-              <input 
+855-                type="text" 
+856-                value={newProfileName}
+857-                onChange={e => setNewProfileName(e.target.value)}
+858-                className="w-full border border-gray-400 p-2 bg-white"
+859-                placeholder="e.g. John Doe"
+860-                required
+861-              />
+862-            </div>
+863-            <div>
+864-              <label className="block text-xs font-bold mb-1">Email Address</label>
+865-              <input 
+866-                type="email" 
+867-                value={newProfileEmail}
+868-                onChange={e => setNewProfileEmail(e.target.value)}
+869-                className="w-full border border-gray-400 p-2 bg-white"
+870-                placeholder="name@domain.ca"
+871-                required
+872-              />
+873-            </div>
+874-          </div>
+875-
+876-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+877-            <div>
+878-              <label className="block text-xs font-bold mb-1">Application Type</label>
+879-              <select 
+880-                value={newProfileAppType}
+881-                onChange={e => setNewProfileAppType(e.target.value)}
+882-                className="w-full border border-gray-400 p-2 bg-white font-medium"
+883-              >
+884-                <option value="Online Application">Online Application</option>
+885-                <option value="Work Permit">Work Permit</option>
+886-                <option value="Visitor Visa">Visitor Visa</option>
+887-                <option value="Study Permit">Study Permit</option>
+888-                <option value="Permanent Residence">Permanent Residence</option>
+889-                <option value="Citizenship">Citizenship</option>
+890-                <option value="Passport">Passport</option>
+891-                <option value="Biometrics">Biometrics</option>
+892-              </select>
+893-            </div>
+894-            <div>
+895-              <label className="block text-xs font-bold mb-1">Application Number</label>
+896-              <input 
+897-                type="text" 
+898-                value={newProfileAppNumber}
+899-                onChange={e => setNewProfileAppNumber(e.target.value)}
+900-                className="w-full border border-gray-400 p-2 bg-white"
+901-                placeholder="e.g. W123456789 (leave empty for auto)"
+902-              />
+903-            </div>
+904-          </div>
+905-
+906-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+907-            <div>
+908-              <label className="block text-xs font-bold mb-1">UCI (optional)</label>
+909-              <input 
+910-                type="text" 
+911-                value={newProfileUci}
+912-                onChange={e => setNewProfileUci(e.target.value)}
+913-                className="w-full border border-gray-400 p-2 bg-white"
+914-                placeholder="e.g. 11-2222-3333"
+915-              />
+916-            </div>
+917-            <div>
+918-              <label className="block text-xs font-bold mb-1">Current Status</label>
+919-              <select
+920-                value={newProfileStatus}
+921-                onChange={e => setNewProfileStatus(e.target.value)}
+922-                className="w-full border border-gray-400 p-2 bg-white font-medium"
+923-              >
+924-                <option value="Submitted">Submitted</option>
+925-                <option value="Processing">Processing</option>
+926-                <option value="Under Review">Under Review</option>
+927-                <option value="Approved">Approved</option>
+928-                <option value="Refused">Refused</option>
+929-                <option value="Documents Requested">Documents Requested</option>
+930-              </select>
+931-            </div>
+932-          </div>
+933-
+934-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+935-            <div>
+936-              <label className="block text-xs font-bold mb-1">Date Created / Received</label>
+937-              <input 
+938-                type="date" 
+939-                value={newProfileDateCreated}
+940-                onChange={e => setNewProfileDateCreated(e.target.value)}
+941-                className="w-full border border-gray-400 p-2 bg-white"
+942-              />
+943-            </div>
+944-            <div>
+945-              <label className="block text-xs font-bold mb-1">Date Submitted</label>
+946-              <input 
+947-                type="date" 
+948-                value={newProfileDateSubmitted}
+949-                onChange={e => setNewProfileDateSubmitted(e.target.value)}
+950-                className="w-full border border-gray-400 p-2 bg-white"
+951-              />
+952-            </div>
+953-          </div>
+954-
+955-          <button type="submit" className="bg-[#26374a] text-white px-4 py-2 font-bold hover:bg-[#111820] w-full transition-colors">
+956-            Create Profile & Application Record
+957-          </button>
+958-          <p className="text-xs text-gray-600 mt-2">After creating, provide the email to the user. All initial status stages will be prepared automatically.</p>
+959-        </form>
+960-      </div>
+961-
+962-      {loading ? (
+963-        <p>Loading applications...</p>
+964-      ) : (
+965-        <div className={`grid grid-cols-1 ${selectedAppId && showSidebar ? 'lg:grid-cols-12 gap-8' : ''} items-start`}>
+966-          {(!selectedAppId || showSidebar) && (
+967-            <div className={`space-y-6 ${selectedAppId ? 'lg:col-span-4 bg-white p-4 border border-gray-300 shadow-sm rounded sticky top-4 max-h-[90vh] overflow-y-auto' : 'w-full'}`}>
+968-              <div className="flex gap-4 border-b border-gray-300">
+969-            <button 
+970-              onClick={() => { setViewMode('profiles'); setSelectedAppId(null); }} 
+971-              className={`pb-2 px-2 font-bold ${viewMode === 'profiles' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+972-            >
+973-              Applicant Profiles
+974-            </button>
+975-            <button 
+976-              onClick={() => { setViewMode('applications'); setSelectedAppId(null); setSelectedProfileEmail(null); }} 
+977-              className={`pb-2 px-2 font-bold ${viewMode === 'applications' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+978-            >
+979-              All Applications
+980-            </button>
+981-          </div>
+982-
+983-          {viewMode === 'profiles' && !selectedProfileEmail && (
+984-            <div>
+985-              <h2 className="text-xl font-bold mb-4">
+986-                {selectedAppId ? "Select Profile" : "Applicant Profiles"}
+987-              </h2>
+988-              {selectedAppId ? (
+989-                <div className="space-y-2">
+990-                  {allUsers.map(userItem => {
+991-                    const isSelectedProfile = allApplications.find(a => a.app.id === selectedAppId)?.email === userItem.email;
+992:                    return (
+993-                      <div 
+994-                        key={userItem.email}
+995-                        onClick={() => setSelectedProfileEmail(userItem.email)}
+996-                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+997-                          isSelectedProfile 
+998-                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+999-                            : 'bg-white border-gray-300 hover:border-gray-400'
+1000-                        }`}
+1001-                      >
+1002-                        <div className="font-bold text-gray-800 break-all">{userItem.name}</div>
+1003-                        <div className="text-xs text-gray-500 break-all">{userItem.email}</div>
+1004-                        <div className="text-xs font-bold text-[#26374a] mt-1.5">
+1005-                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
+1006-                        </div>
+1007-                      </div>
+1008-                    );
+1009-                  })}
+1010-                  {allUsers.length === 0 && (
+1011-                    <p className="text-gray-500 italic">No profiles created yet.</p>
+1012-                  )}
+1013-                </div>
+1014-              ) : (
+1015-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+1016-                  {allUsers.map(userItem => (
+1017-                    <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
+1018-                      <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
+1019-                        <div className="font-bold text-lg break-all">{userItem.name}</div>
+1020-                        <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
+1021-                        <div className="text-sm font-bold text-[#26374a] mt-2">
+1022-                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
+1023-                        </div>
+1024-                      </div>
+1025-                      <div className="mt-4 pt-3 border-t border-gray-200 text-right">
+1026-                        <button 
+1027-                          onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
+1028-                          className="text-red-600 hover:text-red-800 text-sm font-bold"
+1029-                        >
+1030-                          Delete Profile
+1031-                        </button>
+1032-                      </div>
+1033-                    </div>
+1034-                  ))}
+1035-                  {allUsers.length === 0 && (
+1036-                     <p className="text-gray-500 italic">No profiles created yet.</p>
+1037-                  )}
+1038-                </div>
+1039-              )}
+1040-            </div>
+1041-          )}
+1042-
+1043-          {viewMode === 'profiles' && selectedProfileEmail && (
+1044-            <div className="space-y-4">
+1045-              <div className="flex justify-between items-center bg-gray-100 p-4 border border-gray-300">
+1046-                <h2 className="text-xl font-bold break-all">Profile: {selectedProfileEmail}</h2>
+1047-                <button onClick={() => setSelectedProfileEmail(null)} className="text-sm font-bold text-[#26374a] hover:underline whitespace-nowrap ml-4">
+1048-                  &larr; Back to Profiles
+1049-                </button>
+1050-              </div>
+1051-
+1052-              <div className="space-y-4">
+1053-                <h3 className="font-bold text-lg">Applications / Records for this Profile</h3>
+1054-                {allApplications.filter(a => a.email === selectedProfileEmail).map((item) => (
+1055-                  <div key={item.app.id} className="bg-white border border-gray-300 p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+1056-                    <div>
+1057-                      <div className="font-bold text-lg">{item.app.type}</div>
+1058-                      <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
+1059-                    </div>
+1060-                    <div className="flex items-center gap-2">
+1061-                      <button 
+1062-                        onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+1063-                        className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+1064-                      >
+1065-                        Manage File
+1066-                      </button>
+1067-                      <button 
+1068-                        onClick={() => handleDeleteApplication(item.app.id)}
+1069-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+1070-                      >
+1071-                        Delete
+1072-                      </button>
+1073-                    </div>
+1074-                  </div>
+1075-                ))}
+1076-              </div>
+1077-            </div>
+1078-          )}
+1079-
+1080-          {viewMode === 'applications' && (
+1081-            <div>
+1082-              <h2 className="text-xl font-bold mb-4">
+1083-                {selectedAppId ? "Select Application" : "All Applications"}
+1084-              </h2>
+1085-              {selectedAppId ? (
+1086-                <div className="space-y-2">
+1087-                  {allApplications.map((item) => {
+1088-                    const isSelected = item.app.id === selectedAppId;
+1089:                    return (
+1090-                      <div 
+1091-                        key={item.app.id}
+1092-                        onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+1093-                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+1094-                          isSelected 
+1095-                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+1096-                            : 'bg-white border-gray-300 hover:border-gray-400'
+1097-                        }`}
+1098-                      >
+1099-                        <div className="flex justify-between items-start gap-2">
+1100-                          <span className="font-bold text-gray-800 app-number-font break-all">{item.app.id}</span>
+1101-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+1102-                            item.app.status === 'Approved' ? 'bg-green-100 text-green-800' :
+1103-                            item.app.status === 'Refused' ? 'bg-red-100 text-red-800' :
+1104-                            'bg-yellow-100 text-yellow-800'
+1105-                          }`}>
+1106-                            {item.app.status}
+1107-                          </span>
+1108-                        </div>
+1109-                        <div className="text-xs text-gray-600 truncate mt-1 break-all">{item.email}</div>
+1110-                        <div className="text-xs font-semibold text-[#26374a] mt-1">{item.app.type}</div>
+1111-                      </div>
+1112-                    );
+1113-                  })}
+1114-                </div>
+1115-              ) : (
+1116-                <div className="overflow-x-auto">
+1117-                  <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
+1118-                    <thead>
+1119-                      <tr className="bg-gray-200 border-b border-gray-400">
+1120-                        <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
+1121-                        <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
+1122-                        <th className="p-3 border-r border-gray-300 font-bold">Type</th>
+1123-                        <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
+1124-                        <th className="p-3 font-bold">Actions</th>
+1125-                      </tr>
+1126-                    </thead>
+1127-                    <tbody>
+1128-                      {allApplications.map((item, idx) => (
+1129-                        <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
+1130-                          <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
+1131-                          <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
+1132-                          <td className="p-3 border-r border-gray-300">{item.app.type}</td>
+1133-                          <td className="p-3 border-r border-gray-300">
+1134-                            <select 
+1135-                              value={item.app.status}
+1136-                              onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
+1137-                              className="border border-gray-400 p-1 w-full max-w-[200px]"
+1138-                            >
+1139-                              <option value="Pending">Pending</option>
+1140-                              <option value="SUBMITTED">SUBMITTED</option>
+1141-                              {IMMIGRATION_JOURNEY_STEPS.map(step => (
+1142-                                <option key={step} value={step}>{step}</option>
+1143-                              ))}
+1144-                              <option value="Approved">Approved</option>
+1145-                              <option value="Refused">Refused</option>
+1146-                            </select>
+1147-                          </td>
+1148-                          <td className="p-3">
+1149-                            <div className="flex items-center gap-2">
+1150-                              <button 
+1151-                                onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+1152-                                className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
+1153-                              >
+1154-                                Manage File
+1155-                              </button>
+1156-                              <button 
+1157-                                onClick={() => handleDeleteApplication(item.app.id)}
+1158-                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 font-bold whitespace-nowrap"
+1159-                              >
+1160-                                Delete
+1161-                              </button>
+1162-                            </div>
+1163-                          </td>
+1164-                        </tr>
+1165-                      ))}
+1166-                    </tbody>
+1167-                  </table>
+1168-                </div>
+1169-              )}
+1170-            </div>
+1171-          )}
+1172-            </div>
+1173-          )}
+1174-
+1175-          {selectedAppId && selectedUserEmail && (
+1176-            <div className={`${showSidebar ? 'lg:col-span-8' : 'w-full'} border border-gray-400 p-6 space-y-6 bg-gray-50`}>
+1177-              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-300 pb-4">
+1178-                <div>
+1179-                  <div className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">Active File Control</div>
+1180-                  <h2 className="text-2xl font-bold text-[#26374a] break-all flex items-center gap-2">
+1181-                    Case Management: ID <span className="app-number-font">{selectedAppId}</span>
+1182-                  </h2>
+1183-                </div>
+1184-                <div className="flex items-center gap-2 flex-wrap">
+1185-                  <button 
+1186-                    type="button"
+1187-                    onClick={() => setShowSidebar(prev => !prev)}
+1188-                    className="bg-white border border-gray-300 text-gray-700 font-bold px-3 py-1.5 text-xs shadow-sm hover:bg-gray-50 flex items-center gap-1.5 transition-all"
+1189-                    title={showSidebar ? "Hide sidebar for full screen editing" : "Show sidebar list"}
+1190-                  >
+1191-                    {showSidebar ? "👁 Hide Sidebar" : "👁 Show Sidebar"}
+1192-                  </button>
+1193-                  <button 
+1194-                    type="button"
+1195-                    onClick={() => { setSelectedAppId(null); setSelectedUserEmail(null); }}
+1196-                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-3 py-1.5 text-xs transition-colors"
+1197-                  >
+1198-                    Close File
+1199-                  </button>
+1200-                  <button 
+1201-                    type="button"
+1202-                    onClick={() => handleDeleteApplication(selectedAppId)}
+1203-                    className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 text-xs transition-colors"
+1204-                  >
+1205-                    Delete File
+1206-                  </button>
+1207-                </div>
+1208-              </div>
+1209-
+1210-              {/* Sub-tab switcher inside Case Management */}
+1211-              <div className="flex flex-wrap gap-1 border-b border-gray-300 pb-px">
+1212-                <button
+1213-                  type="button"
+1214-                  onClick={() => setCaseTab('profile')}
+1215-                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+1216-                    caseTab === 'profile'
+1217-                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+1218-                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+1219-                  }`}
+1220-                >
+1221-                  Applicant Info & Status
+1222-                </button>
+1223-                <button
+1224-                  type="button"
+1225-                  onClick={() => setCaseTab('stages')}
+1226-                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+1227-                    caseTab === 'stages'
+1228-                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+1229-                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+1230-                  }`}
+1231-                >
+1232-                  7 Processing Stages
+1233-                </button>
+1234-                <button
+1235-                  type="button"
+1236-                  onClick={() => setCaseTab('docs')}
+1237-                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+1238-                    caseTab === 'docs'
+1239-                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+1240-                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+1241-                  }`}
+1242-                >
+1243-                  Document Checklist & Rows
+1244-                </button>
+1245-                <button
+1246-                  type="button"
+1247-                  onClick={() => setCaseTab('messages')}
+1248-                  className={`px-4 py-2.5 text-xs md:text-sm font-bold border-t border-l border-r transition-colors ${
+1249-                    caseTab === 'messages'
+1250-                      ? 'bg-white border-gray-300 text-[#26374a] -mb-px border-b-2 border-b-white z-10'
+1251-                      : 'bg-gray-100 border-transparent text-gray-600 hover:text-black hover:bg-gray-200'
+1252-                  }`}
+1253-                >
+1254-                  Send Messages & Email
+1255-                </button>
+1256-              </div>
+1257-
+1258-              {caseTab === 'profile' && (
+1259-                <>
+1260-                  {/* SECTION A: Applicant Profile & Information */}
+1261-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+1262-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+1263-                  1. Applicant Information & Metadata
+1264-                </h3>
+1265-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+1266-                  <div>
+1267-                    <label className="block text-xs font-bold mb-1">Full Name</label>
+1268-                    <input 
+1269-                      type="text" 
+1270-                      value={editFullName}
+1271-                      onChange={e => setEditFullName(e.target.value)}
+1272-                      className="w-full border border-gray-400 p-2 bg-white"
+1273-                      placeholder="Principal Applicant"
+1274-                    />
+1275-                  </div>
+1276-                  <div>
+1277-                    <label className="block text-xs font-bold mb-1">UCI (Unique Client Identifier)</label>
+1278-                    <input 
+1279-                      type="text" 
+1280-                      value={editUci}
+1281-                      onChange={e => setEditUci(e.target.value)}
+1282-                      className="w-full border border-gray-400 p-2 bg-white"
+1283-                      placeholder="e.g. 11-2222-3333"
+1284-                    />
+1285-                  </div>
+1286-                  <div>
+1287-                    <label className="block text-xs font-bold mb-1">Application Number (Read-only)</label>
+1288-                    <input 
+1289-                      type="text" 
+1290-                      value={selectedAppId}
+1291-                      className="w-full border border-gray-300 p-2 bg-gray-100 cursor-not-allowed"
+1292-                      disabled
+1293-                    />
+1294-                  </div>
+1295-                  <div>
+1296-                    <label className="block text-xs font-bold mb-1">Application Type</label>
+1297-                    <select 
+1298-                      value={editAppType}
+1299-                      onChange={e => setEditAppType(e.target.value)}
+1300-                      className="w-full border border-gray-400 p-2 bg-white font-medium"
+1301-                    >
+1302-                      <option value="Online Application">Online Application</option>
+1303-                      <option value="Work Permit">Work Permit</option>
+1304-                      <option value="Visitor Visa">Visitor Visa</option>
+1305-                      <option value="Study Permit">Study Permit</option>
+1306-                      <option value="Permanent Residence">Permanent Residence</option>
+1307-                      <option value="Citizenship">Citizenship</option>
+1308-                      <option value="Passport">Passport</option>
+1309-                      <option value="Biometrics">Biometrics</option>
+1310-                    </select>
+1311-                  </div>
+1312-                  <div>
+1313-                    <label className="block text-xs font-bold mb-1">Date Received / Created</label>
+1314-                    <input 
+1315-                      type="text" 
+1316-                      value={editDateReceived}
+1317-                      onChange={e => setEditDateReceived(e.target.value)}
+1318-                      className="w-full border border-gray-400 p-2 bg-white"
+1319-                      placeholder="e.g. March 18, 2026"
+1320-                    />
+1321-                  </div>
+1322-                  <div>
+1323-                    <label className="block text-xs font-bold mb-1">Date Submitted</label>
+1324-                    <input 
+1325-                      type="text" 
+1326-                      value={editDateSubmitted}
+1327-                      onChange={e => setEditDateSubmitted(e.target.value)}
+1328-                      className="w-full border border-gray-400 p-2 bg-white"
+1329-                      placeholder="e.g. March 18, 2026"
+1330-                    />
+1331-                  </div>
+1332-                  <div>
+1333-                    <label className="block text-xs font-bold mb-1">Overall Current Status</label>
+1334-                    <select
+1335-                      value={editStatus}
+1336-                      onChange={e => setEditStatus(e.target.value)}
+1337-                      className="w-full border border-gray-400 p-2 bg-white font-semibold"
+1338-                    >
+1339-                      <option value="Submitted">Submitted</option>
+1340-                      <option value="Processing">Processing</option>
+1341-                      <option value="Under Review">Under Review</option>
+1342-                      <option value="Approved">Approved</option>
+1343-                      <option value="Refused">Refused</option>
+1344-                      <option value="Documents Requested">Documents Requested</option>
+1345-                    </select>
+1346-                  </div>
+1347-                  <div>
+1348-                    <label className="block text-xs font-bold mb-1">Biometrics Number</label>
+1349-                    <input 
+1350-                      type="text" 
+1351-                      value={editBiometricsNumber}
+1352-                      onChange={e => setEditBiometricsNumber(e.target.value)}
+1353-                      className="w-full border border-gray-400 p-2 bg-white"
+1354-                      placeholder="e.g. 123456789012"
+1355-                    />
+1356-                  </div>
+1357-                  <div>
+1358-                    <label className="block text-xs font-bold mb-1">Biometrics Date of Enrolment</label>
+1359-                    <input 
+1360-                      type="text" 
+1361-                      value={editBiometricsDate}
+1362-                      onChange={e => setEditBiometricsDate(e.target.value)}
+1363-                      className="w-full border border-gray-400 p-2 bg-white"
+1364-                      placeholder="e.g. June 15, 2026"
+1365-                    />
+1366-                  </div>
+1367-                  <div>
+1368-                    <label className="block text-xs font-bold mb-1">Biometrics Expiry Date</label>
+1369-                    <input 
+1370-                      type="text" 
+1371-                      value={editBiometricsExpiry}
+1372-                      onChange={e => setEditBiometricsExpiry(e.target.value)}
+1373-                      className="w-full border border-gray-400 p-2 bg-white"
+1374-                      placeholder="e.g. June 15, 2036"
+1375-                    />
+1376-                  </div>
+1377-
+1378-
+1379-
+1380-                  {/* Confirmation Transmission Info */}
+1381-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+1382-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Date</label>
+1383-                    <input 
+1384-                      type="text" 
+1385-                      value={confirmDate}
+1386-                      onChange={e => setConfirmDate(e.target.value)}
+1387-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+1388-                      placeholder="e.g. 2 August 2023"
+1389-                    />
+1390-                  </div>
+1391-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+1392-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Time</label>
+1393-                    <input 
+1394-                      type="text" 
+1395-                      value={confirmTime}
+1396-                      onChange={e => setConfirmTime(e.target.value)}
+1397-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+1398-                      placeholder="e.g. 06:40:02 p.m."
+1399-                    />
+1400-                  </div>
+1401-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+1402-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Timezone</label>
+1403-                    <input 
+1404-                      type="text" 
+1405-                      value={confirmTimezone}
+1406-                      onChange={e => setConfirmTimezone(e.target.value)}
+1407-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
+1408-                      placeholder="e.g. EDT"
+1409-                    />
+1410-                  </div>
+1411-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded sm:col-span-2 md:col-span-3">
+1412-                    <label className="block text-xs font-bold mb-1 text-blue-900">Payment Receipt Number</label>
+1413-                    <input 
+1414-                      type="text" 
+1415-                      value={confirmReceiptNumber}
+1416-                      onChange={e => setConfirmReceiptNumber(e.target.value)}
+1417-                      className="w-full border border-blue-400 p-2 bg-white font-medium font-mono"
+1418-                      placeholder="e.g. O689745557"
+1419-                    />
+1420-                  </div>
+1421-                </div>
+1422-                <div className="pt-2 text-right">
+1423-                  <button 
+1424-                    onClick={async () => {
+1425-                      const item = allApplications.find(a => a.app.id === selectedAppId);
+1426-                      let updatedMessages = [];
+1427-                      if (item) {
+1428-                        const currentMessages = item.app.messages || [];
+1429-                        const hasConfirm = currentMessages.some(m => m.subject === "Confirmation of Online Application Transmission");
+1430-                        
+1431-                        if (hasConfirm) {
+1432-                          updatedMessages = currentMessages.map(msg => {
+1433-                            if (msg.subject === "Confirmation of Online Application Transmission") {
+1434-                              return {
+1435-                                ...msg,
+1436-                                transmissionDate: confirmDate,
+1437-                                transmissionTime: confirmTime,
+1438-                                transmissionTimezone: confirmTimezone,
+1439-                                receiptNumber: confirmReceiptNumber
+1440-                              };
+1441-                            }
+1442-                            return msg;
+1443-                          });
+1444-                        } else {
+1445-                          updatedMessages = [
+1446-                            {
+1447-                              id: `msg-${Date.now()}-confirm`,
+1448-                              subject: "Confirmation of Online Application Transmission",
+1449-                              date: confirmDate || "August 2, 2023",
+1450-                              isRead: true,
+1451-                              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+1452-                              transmissionDate: confirmDate,
+1453-                              transmissionTime: confirmTime,
+1454-                              transmissionTimezone: confirmTimezone,
+1455-                              receiptNumber: confirmReceiptNumber
+1456-                            },
+1457-                            ...currentMessages
+1458-                          ];
+1459-                        }
+1460-                      }
+1461-
+1462-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+1463-                        fullName: editFullName,
+1464-                        uci: editUci,
+1465-                        type: editAppType,
+1466-                        typeFr: editAppType,
+1467-                        dateReceived: editDateReceived,
+1468-                        dateSubmitted: editDateSubmitted,
+1469-                        status: editStatus,
+1470-                        biometricsNumber: editBiometricsNumber,
+1471-                        biometricsDate: editBiometricsDate,
+1472-                        biometricsExpiry: editBiometricsExpiry,
+1473-                        showDocumentStatus: editShowDocumentStatus,
+1474-                        messages: updatedMessages
+1475-                      }, "Profile Information Updated");
+1476-                      alert("Applicant Information saved!");
+1477-                    }}
+1478-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+1479-                  >
+1480-                    Save Applicant Info
+1481-                  </button>
+1482-                </div>
+1483-              </div>
+1484-
+1485-              {/* SECTION B: Application Status Summary & Latest Update */}
+1486-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+1487-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+1488-                  2. Status Summary & Latest Update text
+1489-                </h3>
+1490-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+1491-                  <div>
+1492-                    <label className="block text-xs font-bold mb-1">Application Status Summary message (appears at top left)</label>
+1493-                    <textarea 
+1494-                      value={editStatusSummary}
+1495-                      onChange={e => setEditStatusSummary(e.target.value)}
+1496-                      rows={3}
+1497-                      className="w-full border border-gray-400 p-2 bg-white"
+1498-                      placeholder="e.g. Your application is in progress. We will send you a message..."
+1499-                    />
+1500-                  </div>
+1501-                  <div>
+1502-                    <div className="flex justify-between items-center mb-1">
+1503-                      <label className="block text-xs font-bold">Latest Update text description</label>
+1504-                      <button
+1505-                        type="button"
+1506-                        onClick={() => {
+1507-                          const now = new Date();
+1508-                          const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+1509-                          const dateTimeStr = `${dateStr}: `;
+1510-                          setEditLatestUpdate(prev => prev ? `${dateTimeStr}${prev}` : `${dateTimeStr}`);
+1511-                        }}
+1512-                        className="text-xs text-[#05355c] hover:underline font-bold"
+1513-                        title="Click to prepend the current date to your latest update text."
+1514-                      >
+1515-                        + Insert Date
+1516-                      </button>
+1517-                    </div>
+1518-                    <textarea 
+1519-                      value={editLatestUpdate}
+1520-                      onChange={e => setEditLatestUpdate(e.target.value)}
+1521-                      rows={3}
+1522-                      className="w-full border border-gray-400 p-2 bg-white"
+1523-                      placeholder="e.g. Final decision - April 29, 2021: Your application was approved..."
+1524-                    />
+1525-                  </div>
+1526-                </div>
+1527-                <div className="pt-2 text-right">
+1528-                  <button 
+1529-                    onClick={async () => {
+1530-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+1531-                        statusSummary: editStatusSummary,
+1532-                        latestUpdate: editLatestUpdate,
+1533-                        details: editStatusSummary // Fallback sync
+1534-                      }, "Status Summary Updated");
+1535-                      alert("Status summaries saved!");
+1536-                    }}
+1537-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+1538-                  >
+1539-                    Save Status Summaries
+1540-                  </button>
+1541-                </div>
+1542-              </div>
+1543-                </>
+1544-              )}
+1545-
+1546-              {/* SECTION C: 7 Processing Stages */}
+1547-              {caseTab === 'stages' && (
+1548-                <div className="bg-white p-5 border border-gray-300 space-y-4">
+1549-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+1550-                  3. Immigration Processing Stages (7 Stages)
+1551-                </h3>
+1552-                <p className="text-xs text-gray-600">Update each processing stage individually with its current status text, date, and detailed description.</p>
+1553-                
+1554-                <div className="space-y-6 divide-y divide-gray-200">
+1555-                  
+1556-                  {/* Stage 1: Eligibility */}
+1557-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1558-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 1: Review of Eligibility</div>
+1559-                    <div>
+1560-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1561-                      <input type="text" value={stageEligibilityStatus} onChange={e => setStageEligibilityStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. We are reviewing..." />
+1562-                    </div>
+1563-                    <div>
+1564-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1565-                      <input type="text" value={stageEligibilityDate} onChange={e => setStageEligibilityDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+1566-                    </div>
+1567-                    <div>
+1568-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1569-                      <input type="text" value={stageEligibilityDesc} onChange={e => setStageEligibilityDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="Officer notes or explanatory details" />
+1570-                    </div>
+1571-                  </div>
+1572-
+1573-                  {/* Stage 2: Medical */}
+1574-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1575-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 2: Review of Medical Results</div>
+1576-                    <div>
+1577-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1578-                      <input type="text" value={stageMedicalStatus} onChange={e => setStageMedicalStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. You do not need a medical exam..." />
+1579-                    </div>
+1580-                    <div>
+1581-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1582-                      <input type="text" value={stageMedicalDate} onChange={e => setStageMedicalDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+1583-                    </div>
+1584-                    <div>
+1585-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1586-                      <input type="text" value={stageMedicalDesc} onChange={e => setStageMedicalDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1587-                    </div>
+1588-                  </div>
+1589-
+1590-                  {/* Stage 3: Additional Documents */}
+1591-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1592-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 3: Review of Additional Documents</div>
+1593-                    <div>
+1594-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1595-                      <input type="text" value={stageAdditionalDocsStatus} onChange={e => setStageAdditionalDocsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1596-                    </div>
+1597-                    <div>
+1598-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1599-                      <input type="text" value={stageAdditionalDocsDate} onChange={e => setStageAdditionalDocsDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1600-                    </div>
+1601-                    <div>
+1602-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1603-                      <input type="text" value={stageAdditionalDocsDesc} onChange={e => setStageAdditionalDocsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1604-                    </div>
+1605-                  </div>
+1606-
+1607-                  {/* Stage 4: Interview */}
+1608-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1609-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 4: Interview</div>
+1610-                    <div>
+1611-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1612-                      <input type="text" value={stageInterviewStatus} onChange={e => setStageInterviewStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1613-                    </div>
+1614-                    <div>
+1615-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1616-                      <input type="text" value={stageInterviewDate} onChange={e => setStageInterviewDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1617-                    </div>
+1618-                    <div>
+1619-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1620-                      <input type="text" value={stageInterviewDesc} onChange={e => setStageInterviewDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1621-                    </div>
+1622-                  </div>
+1623-
+1624-                  {/* Stage 5: Biometrics */}
+1625-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1626-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 5: Biometrics</div>
+1627-                    <div>
+1628-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1629-                      <input type="text" value={stageBiometricsStatus} onChange={e => setStageBiometricsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1630-                    </div>
+1631-                    <div>
+1632-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1633-                      <input type="text" value={stageBiometricsDateState} onChange={e => setStageBiometricsDateState(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1634-                    </div>
+1635-                    <div>
+1636-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1637-                      <input type="text" value={stageBiometricsDesc} onChange={e => setStageBiometricsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1638-                    </div>
+1639-                  </div>
+1640-
+1641-                  {/* Stage 6: Background check */}
+1642-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1643-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 6: Background Check</div>
+1644-                    <div>
+1645-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1646-                      <input type="text" value={stageBackgroundStatus} onChange={e => setStageBackgroundStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1647-                    </div>
+1648-                    <div>
+1649-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1650-                      <input type="text" value={stageBackgroundDate} onChange={e => setStageBackgroundDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1651-                    </div>
+1652-                    <div>
+1653-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1654-                      <input type="text" value={stageBackgroundDesc} onChange={e => setStageBackgroundDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1655-                    </div>
+1656-                  </div>
+1657-
+1658-                  {/* Stage 7: Final decision */}
+1659-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+1660-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 7: Final Decision</div>
+1661-                    <div>
+1662-                      <label className="block text-xs font-bold mb-1">Status Message</label>
+1663-                      <input type="text" value={stageFinalDecisionStatus} onChange={e => setStageFinalDecisionStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1664-                    </div>
+1665-                    <div>
+1666-                      <label className="block text-xs font-bold mb-1">Date Update</label>
+1667-                      <input type="text" value={stageFinalDecisionDate} onChange={e => setStageFinalDecisionDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1668-                    </div>
+1669-                    <div>
+1670-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+1671-                      <input type="text" value={stageFinalDecisionDesc} onChange={e => setStageFinalDecisionDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+1672-                    </div>
+1673-                  </div>
+1674-
+1675-                </div>
+1676-
+1677-                <div className="pt-4 text-right border-t border-gray-200">
+1678-                  <button 
+1679-                    onClick={async () => {
+1680-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
+1681-                        stages: {
+1682-                          eligibilityStatus: stageEligibilityStatus,
+1683-                          eligibilityDesc: stageEligibilityDesc,
+1684-                          eligibilityDate: stageEligibilityDate,
+1685-                          medicalStatus: stageMedicalStatus,
+1686-                          medicalDesc: stageMedicalDesc,
+1687-                          medicalDate: stageMedicalDate,
+1688-                          additionalDocsStatus: stageAdditionalDocsStatus,
+1689-                          additionalDocsDesc: stageAdditionalDocsDesc,
+1690-                          additionalDocsDate: stageAdditionalDocsDate,
+1691-                          interviewStatus: stageInterviewStatus,
+1692-                          interviewDesc: stageInterviewDesc,
+1693-                          interviewDate: stageInterviewDate,
+1694-                          biometricsStatus: stageBiometricsStatus,
+1695-                          biometricsDesc: stageBiometricsDesc,
+1696-                          biometricsDate: stageBiometricsDateState,
+1697-                          backgroundStatus: stageBackgroundStatus,
+1698-                          backgroundDesc: stageBackgroundDesc,
+1699-                          backgroundDate: stageBackgroundDate,
+1700-                          finalDecisionStatus: stageFinalDecisionStatus,
+1701-                          finalDecisionDesc: stageFinalDecisionDesc,
+1702-                          finalDecisionDate: stageFinalDecisionDate
+1703-                        }
+1704-                      }, "Immigration Stage Progress Updated");
+1705-                      alert("7 Processing Stages Saved!");
+1706-                    }}
+1707-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+1708-                  >
+1709-                    Save 7 Stages Progress
+1710-                  </button>
+1711-                </div>
+1712-              </div>
+1713-              )}
+1714-
+1715-              {/* SECTION D: Document Table Row Management */}
+1716-              {caseTab === 'docs' && (
+1717-                <>
+1718-                  <div className="bg-white p-5 border border-gray-300 space-y-4">
+1719-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+1720-                  4. Document Status Table Rows
+1721-                </h3>
+1722-                <p className="text-xs text-gray-600">
+1723-                  Every document listed here will automatically appear inside the applicant's read-only "Document Status" table.
+1724-                </p>
+1725-
+1726-                {/* Existing Rows */}
+1727-                <div className="overflow-x-auto">
+1728-                  <table className="w-full text-left text-xs border-collapse border border-gray-300 min-w-[1100px]">
+1729-                    <thead>
+1730-                      <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+1731-                        <th className="p-2 border-r border-gray-200">Name / Category</th>
+1732-                        <th className="p-2 border-r border-gray-200">Doc Type</th>
+1733-                        <th className="p-2 border-r border-gray-200">Doc Number</th>
+1734-                        <th className="p-2 border-r border-gray-200">Status</th>
+1735-                        <th className="p-2 border-r border-gray-200">Expiry</th>
+1736-                        <th className="p-2 border-r border-gray-200">Updated</th>
+1737-                        <th className="p-2 border-r border-gray-200">Country of Issue</th>
+1738-                        <th className="p-2">Action</th>
+1739-                      </tr>
+1740-                    </thead>
+1741-                    <tbody>
+1742-                      {(() => {
+1743-                        const target = allApplications.find(a => a.app.id === selectedAppId);
+1744-                        const docRows = target?.app.documentStatuses || [];
+1745-                        if (docRows.length === 0) {
+1746:                          return (
+1747-                            <tr>
+1748-                              <td colSpan={8} className="p-3 text-center text-gray-500 italic">No document rows generated yet.</td>
+1749-                            </tr>
+1750-                          );
+1751-                        }
+1752-                        return docRows.map((docRow) => (
+1753-                          <tr key={docRow.id} className="border-b border-gray-200 hover:bg-gray-50">
+1754-                            <td className="p-2 border-r border-gray-200 font-medium">{docRow.name}</td>
+1755-                            <td className="p-2 border-r border-gray-200">{docRow.documentType}</td>
+1756-                            <td className="p-2 border-r border-gray-200">{docRow.documentNumber || 'N/A'}</td>
+1757-                            <td className="p-2 border-r border-gray-200 font-semibold text-blue-800">{docRow.status}</td>
+1758-                            <td className="p-2 border-r border-gray-200">{docRow.expiryDate || 'N/A'}</td>
+1759-                            <td className="p-2 border-r border-gray-200">{docRow.statusUpdatedDate || 'N/A'}</td>
+1760-                            <td className="p-2 border-r border-gray-200">{docRow.countryOfIssue || 'N/A'}</td>
+1761-                            <td className="p-2">
+1762-                              <button 
+1763-                                onClick={async () => {
+1764-                                  if (!confirm("Are you sure you want to delete this document row?")) return;
+1765-                                  const updated = docRows.filter(r => r.id !== docRow.id);
+1766-                                  await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Deleted Document Record: ${docRow.name}`);
+1767-                                  alert("Row deleted!");
+1768-                                }}
+1769-                                className="text-red-600 hover:text-red-900 font-bold hover:underline"
+1770-                              >
+1771-                                Delete
+1772-                              </button>
+1773-                            </td>
+1774-                          </tr>
+1775-                        ));
+1776-                      })()}
+1777-                    </tbody>
+1778-                  </table>
+1779-                </div>
+1780-
+1781-                {/* Add Row Form */}
+1782-                <form 
+1783-                  onSubmit={async (e) => {
+1784-                    e.preventDefault();
+1785-                    if (!newDocRowName) return;
+1786-                    const target = allApplications.find(a => a.app.id === selectedAppId);
+1787-                    const docRows = target?.app.documentStatuses || [];
+1788-                    const newRow = {
+1789-                      id: 'doc-' + Date.now(),
+1790-                      name: newDocRowName,
+1791-                      uci: newDocRowUci || editUci,
+1792-                      documentType: newDocRowType,
+1793-                      documentNumber: newDocRowNumber,
+1794-                      status: newDocRowStatus,
+1795-                      expiryDate: newDocRowExpiry,
+1796-                      statusUpdatedDate: newDocRowUpdated,
+1797-                      travelDocumentNumber: newDocRowTravelNum,
+1798-                      countryOfIssue: newDocRowCountry
+1799-                    };
+1800-                    const updated = [...docRows, newRow];
+1801-                    await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Added Document Record: ${newDocRowName}`);
+1802-                    alert("Document Row Added!");
+1803-                    setNewDocRowName('');
+1804-                    setNewDocRowType('');
+1805-                    setNewDocRowNumber('');
+1806-                    setNewDocRowStatus('');
+1807-                    setNewDocRowExpiry('');
+1808-                    setNewDocRowUpdated('');
+1809-                    setNewDocRowTravelNum('');
+1810-                    setNewDocRowCountry('');
+1811-                  }} 
+1812-                  className="bg-gray-100 p-4 border border-gray-300 space-y-3 text-xs font-semibold"
+1813-                >
+1814-                  <div className="text-sm font-bold text-[#26374a] mb-2">Add Document Status Row</div>
+1815-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+1816-                    <div>
+1817-                      <label className="block mb-1">Document Category / Name</label>
+1818-                      <input type="text" value={newDocRowName} onChange={e => setNewDocRowName(e.target.value)} placeholder="e.g. Passport, IELTS Certificate" required className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1819-                    </div>
+1820-                    <div>
+1821-                      <label className="block mb-1">UCI (Defaults to Applicant UCI)</label>
+1822-                      <input type="text" value={newDocRowUci} onChange={e => setNewDocRowUci(e.target.value)} placeholder="e.g. 11-2222-3333" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1823-                    </div>
+1824-                    <div>
+1825-                      <label className="block mb-1">Document Type</label>
+1826-                      <input type="text" value={newDocRowType} onChange={e => setNewDocRowType(e.target.value)} placeholder="e.g. Work Permit, Passport" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1827-                    </div>
+1828-                    <div>
+1829-                      <label className="block mb-1">Document Number</label>
+1830-                      <input type="text" value={newDocRowNumber} onChange={e => setNewDocRowNumber(e.target.value)} placeholder="e.g. E819203" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1831-                    </div>
+1832-                    <div>
+1833-                      <label className="block mb-1">Status Message</label>
+1834-                      <input type="text" value={newDocRowStatus} onChange={e => setNewDocRowStatus(e.target.value)} placeholder="e.g. Your document is valid." className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1835-                    </div>
+1836-                    <div>
+1837-                      <label className="block mb-1">Expiry Date</label>
+1838-                      <input type="text" value={newDocRowExpiry} onChange={e => setNewDocRowExpiry(e.target.value)} placeholder="e.g. 2030/12/31" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1839-                    </div>
+1840-                    <div>
+1841-                      <label className="block mb-1">Status Updated Date</label>
+1842-                      <input type="text" value={newDocRowUpdated} onChange={e => setNewDocRowUpdated(e.target.value)} placeholder="e.g. 2026/03/18" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1843-                    </div>
+1844-                    <div>
+1845-                      <label className="block mb-1">Travel Document Number</label>
+1846-                      <input type="text" value={newDocRowTravelNum} onChange={e => setNewDocRowTravelNum(e.target.value)} placeholder="e.g. 51000000" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1847-                    </div>
+1848-                    <div>
+1849-                      <label className="block mb-1">Country of Issue</label>
+1850-                      <input type="text" value={newDocRowCountry} onChange={e => setNewDocRowCountry(e.target.value)} placeholder="e.g. Philippines" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+1851-                    </div>
+1852-                  </div>
+1853-                  <button type="submit" className="bg-[#26374a] text-white px-4 py-1.5 font-bold hover:bg-[#111820]">
+1854-                    Add Row To Applicant Table
+1855-                  </button>
+1856-                </form>
+1857-              </div>
+1858-
+1859-              {/* SECTION E: Request Documents & Checklist Manager */}
+1860-              <div className="bg-white p-5 border border-gray-300 space-y-4">
+1861-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+1862-                  5. Request Documents from Applicant (Checklist & Upload Slots)
+1863-                </h3>
+1864-                <p className="text-xs text-gray-600">
+1865-                  Manage the checklist of files requested from the applicant. Adding a document request here places a slot in the applicant's <strong>Document Checklist</strong> (where they can upload documents) and automatically notifies them.
+1866-                </p>
+1867-
+1868-                {/* List of currently requested documents */}
+1869-                <div className="bg-gray-50 p-4 border border-gray-200 space-y-2">
+1870-                  <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">Currently Requested Documents (Checklist)</div>
+1871-                  {(() => {
+1872-                    const target = allApplications.find(a => a.app.id === selectedAppId);
+1873-                    const requestedList = target?.app.requestedDocuments || [];
+1874-                    if (requestedList.length === 0) {
+1875:                      return (
+1876-                        <p className="text-xs text-gray-500 italic py-2">No documents have been requested for this file yet.</p>
+1877-                      );
+1878-                    }
+1879:                    return (
+1880-                      <div className="overflow-x-auto">
+1881-                        <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2 min-w-[950px]">
+1882-                          <thead>
+1883-                            <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+1884-                              <th className="p-2 border-r border-gray-200">Document Name</th>
+1885-                              <th className="p-2 border-r border-gray-200 text-center w-24">Status</th>
+1886-                              <th className="p-2 border-r border-gray-200 w-48">Date & Time Updated</th>
+1887-                              <th className="p-2 border-r border-gray-200">Remarks / Feedback</th>
+1888-                              <th className="p-2 text-center w-64">Actions</th>
+1889-                            </tr>
+1890-                          </thead>
+1891-                          <tbody>
+1892-                            {requestedList.map((doc, idx) => {
+1893-                              const isEditing = editingDocName === doc.name;
+1894:                              return (
+1895-                                <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
+1896-                                  <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
+1897-                                  <td className="p-2 border-r border-gray-200 text-center">
+1898-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+1899-                                      doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
+1900-                                      doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+1901-                                      'bg-yellow-100 text-yellow-800 border border-yellow-300'
+1902-                                    }`}>
+1903-                                      {doc.status}
+1904-                                    </span>
+1905-                                  </td>
+1906-                                  <td className="p-2 border-r border-gray-200 text-gray-600">
+1907-                                    {isEditing ? (
+1908-                                      <input
+1909-                                        type="text"
+1910-                                        value={editDateUpdated}
+1911-                                        onChange={e => setEditDateUpdated(e.target.value)}
+1912-                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white font-medium"
+1913-                                        placeholder="e.g. July 2, 2026, 10:15 AM"
+1914-                                      />
+1915-                                    ) : (
+1916-                                      doc.dateUpdated || 'N/A'
+1917-                                    )}
+1918-                                  </td>
+1919-                                  <td className="p-2 border-r border-gray-200 text-gray-600 italic">
+1920-                                    {isEditing ? (
+1921-                                      <textarea
+1922-                                        value={editRemarks}
+1923-                                        onChange={e => setEditRemarks(e.target.value)}
+1924-                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white h-12 font-medium"
+1925-                                        placeholder="Enter remarks about this document..."
+1926-                                      />
+1927-                                    ) : (
+1928-                                      doc.remarks || 'No remarks.'
+1929-                                    )}
+1930-                                  </td>
+1931-                                  <td className="p-2">
+1932-                                    <div className="flex gap-1 justify-center items-center flex-wrap">
+1933-                                      {isEditing ? (
+1934-                                        <>
+1935-                                          <button
+1936-                                            onClick={() => handleSaveDocEdits(selectedUserEmail, selectedAppId, doc.name)}
+1937-                                            className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+1938-                                          >
+1939-                                            Save
+1940-                                          </button>
+1941-                                          <button
+1942-                                            onClick={() => setEditingDocName(null)}
+1943-                                            className="bg-gray-500 hover:bg-gray-600 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+1944-                                          >
+1945-                                            Cancel
+1946-                                          </button>
+1947-                                        </>
+1948-                                      ) : (
+1949-                                        <>
+1950-                                          <button
+1951-                                            onClick={() => startEditingDoc(doc)}
+1952-                                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded px-2 py-1 text-[11px] font-bold"
+1953-                                            title="Edit date/time and remarks directly"
+1954-                                          >
+1955-                                            Edit Details
+1956-                                          </button>
+1957-                                          <select
+1958-                                            value={doc.status}
+1959-                                            onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
+1960-                                            className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
+1961-                                          >
+1962-                                            <option value="Pending">Pending</option>
+1963-                                            <option value="Submitted">Submitted</option>
+1964-                                            <option value="Received">Received</option>
+1965-                                          </select>
+1966-                                          <button
+1967-                                            onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
+1968-                                            className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
+1969-                                          >
+1970-                                            Cancel
+1971-                                          </button>
+1972-                                        </>
+1973-                                      )}
+1974-                                    </div>
+1975-                                  </td>
+1976-                                </tr>
+1977-                              );
+1978-                            })}
+1979-                          </tbody>
+1980-                        </table>
+1981-                      </div>
+1982-                    );
+1983-                  })()}
+1984-                </div>
+1985-
+1986-                {/* Manage Standard Documents Options */}
+1987-                <div className="bg-blue-50 p-4 border border-blue-200 space-y-3 rounded">
+1988-                  <div className="text-xs font-bold text-[#26374a] uppercase tracking-wider flex justify-between items-center">
+1989-                    <span>Standard Documents Checklist Options</span>
+1990-                    <span className="text-[10px] text-gray-500 font-normal lowercase italic">(click ✕ to remove any option from the standard checklist)</span>
+1991-                  </div>
+1992-                  <div className="flex flex-wrap gap-2">
+1993-                    {standardDocs.map((doc, idx) => (
+1994-                      <div key={idx} className="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm">
+1995-                        <span>{doc}</span>
+1996-                        <button
+1997-                          type="button"
+1998-                          onClick={() => handleRemoveStandardDoc(doc)}
+1999-                          className="text-red-500 hover:text-red-700 font-extrabold ml-1 hover:bg-red-50 rounded-full w-4 h-4 flex items-center justify-center transition-colors text-sm"
+2000-                          title={`Remove "${doc}" from standard list`}
+2001-                        >
+2002-                          &times;
+2003-                        </button>
+2004-                      </div>
+2005-                    ))}
+2006-                    {standardDocs.length === 0 && (
+2007-                      <p className="text-xs text-gray-500 italic">No standard documents remaining in the option list. You can still request custom documents below.</p>
+2008-                    )}
+2009-                  </div>
+2010-                </div>
+2011-
+2012-                {/* Request New Document Form */}
+2013-                <div className="bg-gray-100 p-4 border border-gray-300 space-y-4">
+2014-                  <div className="text-sm font-bold text-[#26374a]">Request New Document (Add to Checklist)</div>
+2015-                  
+2016-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+2017-                    <div>
+2018-                      <label className="block mb-1 text-gray-700">Select standard document from list:</label>
+2019-                      <select
+2020-                        value={selectedPredefinedDoc}
+2021-                        onChange={(e) => {
+2022-                          const val = e.target.value;
+2023-                          setSelectedPredefinedDoc(val);
+2024-                          if (val !== 'Custom Document...') {
+2025-                            setCustomRequestedDocName(val);
+2026-                          } else {
+2027-                            setCustomRequestedDocName('');
+2028-                          }
+2029-                        }}
+2030-                        className="w-full border border-gray-400 p-2 bg-white font-medium"
+2031-                      >
+2032-                        {standardDocs.map((doc, idx) => (
+2033-                          <option key={idx} value={doc}>{doc}</option>
+2034-                        ))}
+2035-                        <option value="Custom Document...">-- Custom Document (type custom name below) --</option>
+2036-                      </select>
+2037-                    </div>
+2038-
+2039-                    <div>
+2040-                      <label className="block mb-1 text-gray-700">Document Name to request:</label>
+2041-                      <input
+2042-                        type="text"
+2043-                        value={customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '')}
+2044-                        onChange={(e) => setCustomRequestedDocName(e.target.value)}
+2045-                        placeholder="e.g. Police Clearance Certificate, IELTS Results"
+2046-                        className="w-full border border-gray-400 p-2 bg-white font-medium"
+2047-                      />
+2048-                    </div>
+2049-                  </div>
+2050-
+2051-                  <div className="pt-2 text-right">
+2052-                    <button
+2053-                      type="button"
+2054-                      onClick={async () => {
+2055-                        const finalName = customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '');
+2056-                        if (!finalName || !finalName.trim()) {
+2057-                          alert("Please specify a document name to request.");
+2058-                          return;
+2059-                        }
+2060-                        await handleRequestDocument(selectedUserEmail, selectedAppId, finalName.trim());
+2061-                      }}
+2062-                      className="bg-[#26374a] text-white px-5 py-2 font-bold hover:bg-[#111820] text-xs transition-colors"
+2063-                    >
+2064-                      Send Document Request to Applicant
+2065-                    </button>
+2066-                  </div>
+2067-                </div>
+2068-              </div>
+2069-                </>
+2070-              )}
+2071-
+2072-              {/* SECTION F: System Messaging & Communications */}
+2073-              {caseTab === 'messages' && (
+2074-                <div className="bg-white p-5 border border-gray-300 space-y-4">
+2075-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+2076-                  6. Compose & Send Messages
+2077-                </h3>
+2078-                <p className="text-xs text-gray-600">Compose and send messages that appear inside the applicant's "Messages About Your Application" section.</p>
+2079-                {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent successfully to Applicant!</div>}
+2080-                <form onSubmit={handleSendEmail} className="space-y-3 text-sm">
+2081-                  <div>
+2082-                    <label className="block text-xs font-bold mb-1">Subject</label>
+2083-                    <input 
+2084-                      type="text" 
+2085-                      value={emailSubject}
+2086-                      onChange={e => setEmailSubject(e.target.value)}
+2087-                      className="w-full border border-gray-400 p-2 bg-white font-medium"
+2088-                      placeholder="e.g. Correspondence Letter"
+2089-                      required
+2090-                    />
+2091-                  </div>
+2092-                  <div>
+2093-                    <label className="block text-xs font-bold mb-1">Message Content (HTML Allowed)</label>
+2094-                    <textarea 
+2095-                      value={emailText}
+2096-                      onChange={e => setEmailText(e.target.value)}
+2097-                      className="w-full border border-gray-400 p-2 h-32 bg-white"
+2098-                      placeholder="Type your official correspondence..."
+2099-                      required
+2100-                    />
+2101-                  </div>
+2102-                  <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820] text-sm">
+2103-                    Send System Message
+2104-                  </button>
+2105-                </form>
+2106-              </div>
+2107-              )}
+2108-
+2109-            </div>
+2110-          )}
+2111-        </div>
+2112-      )}
+2113-    </main>
+2114-  );
+2115-}

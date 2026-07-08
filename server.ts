@@ -325,8 +325,18 @@ async function getUser(email: string) {
 }
 
 async function saveUser(email: string, data: UserProfile) {
-  if (!firestoreDb) { db.users.set(email, data); return; }
-  await setDoc(doc(firestoreDb, 'users', email), data);
+  const sanitize = (obj: any): any => {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sanitize);
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => [k, sanitize(v)])
+    );
+  };
+  const sanitizedData = sanitize(data);
+  if (!firestoreDb) { db.users.set(email, sanitizedData); return; }
+  await setDoc(doc(firestoreDb, 'users', email), sanitizedData);
 }
 
 async function deleteUser(email: string) {
@@ -341,8 +351,20 @@ async function getApplications(email: string) {
 }
 
 async function saveApplications(email: string, apps: ApplicationInfo[]) {
-  if (!firestoreDb) { db.applications.set(email, apps); return; }
-  await setDoc(doc(firestoreDb, 'applications', email), { apps });
+  const sanitize = (obj: any): any => {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sanitize);
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => [k, sanitize(v)])
+    );
+  };
+  
+  const sanitizedApps = sanitize(apps);
+
+  if (!firestoreDb) { db.applications.set(email, sanitizedApps); return; }
+  await setDoc(doc(firestoreDb, 'applications', email), { apps: sanitizedApps });
 }
 
 async function deleteApplications(email: string) {
