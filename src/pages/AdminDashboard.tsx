@@ -440,7 +440,6 @@ export default function AdminDashboard() {
         let content = `<p style="margin-bottom: 16px;">Dear Applicant,</p>
 <p style="margin-bottom: 16px;">We are currently reviewing your application.</p>
 <p style="margin-bottom: 16px;">In order to proceed to the next step, please provide the following document as soon as possible:<br/>- <strong>${docName}</strong></p>
-<p style="margin-bottom: 16px;">You can upload this document or send it as instructed.</p>
 <p style="margin-bottom: 0;">Thank you,<br/>Immigration, Refugees and Citizenship Canada</p>`;
 
         const lowerDoc = docName.toLowerCase();
@@ -837,7 +836,7 @@ export default function AdminDashboard() {
     return (
       <main className="mx-auto max-w-6xl w-full px-4 py-8">
         <h1 className="text-xl font-bold">Unauthorized</h1>
-    </main>
+      </main>
     );
   }
 
@@ -975,213 +974,214 @@ export default function AdminDashboard() {
 
               {/* Profiles & Applications Navigation */}
               <div className="bg-white p-4 border border-gray-300 shadow-sm rounded">
-              <div className="flex gap-4 border-b border-gray-300">
-            <button 
-              onClick={() => { setViewMode('profiles'); setSelectedAppId(null); }} 
-              className={`pb-2 px-2 font-bold ${viewMode === 'profiles' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
-            >
-              Applicant Profiles
-            </button>
-            <button 
-              onClick={() => { setViewMode('applications'); setSelectedAppId(null); setSelectedProfileEmail(null); }} 
-              className={`pb-2 px-2 font-bold ${viewMode === 'applications' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
-            >
-              All Applications
-            </button>
-          </div>
-
-          {viewMode === 'profiles' && !selectedProfileEmail && (
-            <div>
-              <h2 className="text-xl font-bold mb-4">
-                {selectedAppId ? "Select Profile" : "Applicant Profiles"}
-              </h2>
-              {selectedAppId ? (
-                <div className="space-y-2">
-                  {allUsers.map(userItem => {
-                    const isSelectedProfile = allApplications.find(a => a.app.id === selectedAppId)?.email === userItem.email;
-                    return (
-                      <div 
-                        key={userItem.email}
-                        onClick={() => setSelectedProfileEmail(userItem.email)}
-                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
-                          isSelectedProfile 
-                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
-                            : 'bg-white border-gray-300 hover:border-gray-400'
-                        }`}
-                      >
-                        <div className="font-bold text-gray-800 break-all">{userItem.name}</div>
-                        <div className="text-xs text-gray-500 break-all">{userItem.email}</div>
-                        <div className="text-xs font-bold text-[#26374a] mt-1.5">
-                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {allUsers.length === 0 && (
-                    <p className="text-gray-500 italic">No profiles created yet.</p>
-                  )}
+                <div className="flex gap-4 border-b border-gray-300">
+                  <button 
+                    onClick={() => { setViewMode('profiles'); setSelectedAppId(null); }} 
+                    className={`pb-2 px-2 font-bold ${viewMode === 'profiles' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+                  >
+                    Applicant Profiles
+                  </button>
+                  <button 
+                    onClick={() => { setViewMode('applications'); setSelectedAppId(null); setSelectedProfileEmail(null); }} 
+                    className={`pb-2 px-2 font-bold ${viewMode === 'applications' ? 'border-b-4 border-[#26374a] text-[#26374a]' : 'text-gray-500 hover:text-black'}`}
+                  >
+                    All Applications
+                  </button>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {allUsers.map(userItem => (
-                    <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
-                      <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
-                        <div className="font-bold text-lg break-all">{userItem.name}</div>
-                        <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
-                        <div className="text-sm font-bold text-[#26374a] mt-2">
-                          Applications: {allApplications.filter(a => a.email === userItem.email).length}
-                        </div>
-                      </div>
-                      <div className="mt-4 pt-3 border-t border-gray-200 text-right">
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
-                          className="text-red-600 hover:text-red-800 text-sm font-bold"
-                        >
-                          Delete Profile
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {allUsers.length === 0 && (
-                     <p className="text-gray-500 italic">No profiles created yet.</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
-          {viewMode === 'profiles' && selectedProfileEmail && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center bg-gray-100 p-4 border border-gray-300">
-                <h2 className="text-xl font-bold break-all">Profile: {selectedProfileEmail}</h2>
-                <button onClick={() => setSelectedProfileEmail(null)} className="text-sm font-bold text-[#26374a] hover:underline whitespace-nowrap ml-4">
-                  &larr; Back to Profiles
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-bold text-lg">Applications / Records for this Profile</h3>
-                {allApplications.filter(a => a.email === selectedProfileEmail).map((item) => (
-                  <div key={item.app.id} className="bg-white border border-gray-300 p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                    <div>
-                      <div className="font-bold text-lg">{item.app.type}</div>
-                      <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
-                        className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
-                      >
-                        Manage File
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteApplication(item.app.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {viewMode === 'applications' && (
-            <div>
-              <h2 className="text-xl font-bold mb-4">
-                {selectedAppId ? "Select Application" : "All Applications"}
-              </h2>
-              {selectedAppId ? (
-                <div className="space-y-2">
-                  {allApplications.map((item) => {
-                    const isSelected = item.app.id === selectedAppId;
-                    return (
-                      <div 
-                        key={item.app.id}
-                        onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
-                        className={`p-3 border transition-all cursor-pointer rounded text-sm ${
-                          isSelected 
-                            ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
-                            : 'bg-white border-gray-300 hover:border-gray-400'
-                        }`}
-                      >
-                        <div className="flex justify-between items-start gap-2">
-                          <span className="font-bold text-gray-800 app-number-font break-all">{item.app.id}</span>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
-                            item.app.status === 'Approved' ? 'bg-green-100 text-green-800' :
-                            item.app.status === 'Refused' ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {item.app.status}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600 truncate mt-1 break-all">{item.email}</div>
-                        <div className="text-xs font-semibold text-[#26374a] mt-1">{item.app.type}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
-                    <thead>
-                      <tr className="bg-gray-200 border-b border-gray-400">
-                        <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
-                        <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
-                        <th className="p-3 border-r border-gray-300 font-bold">Type</th>
-                        <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
-                        <th className="p-3 font-bold">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allApplications.map((item, idx) => (
-                        <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
-                          <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
-                          <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
-                          <td className="p-3 border-r border-gray-300">{item.app.type}</td>
-                          <td className="p-3 border-r border-gray-300">
-                            <select 
-                              value={item.app.status}
-                              onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
-                              className="border border-gray-400 p-1 w-full max-w-[200px]"
+                {viewMode === 'profiles' && !selectedProfileEmail && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">
+                      {selectedAppId ? "Select Profile" : "Applicant Profiles"}
+                    </h2>
+                    {selectedAppId ? (
+                      <div className="space-y-2">
+                        {allUsers.map(userItem => {
+                          const isSelectedProfile = allApplications.find(a => a.app.id === selectedAppId)?.email === userItem.email;
+                          return (
+                            <div 
+                              key={userItem.email}
+                              onClick={() => setSelectedProfileEmail(userItem.email)}
+                              className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+                                isSelectedProfile 
+                                  ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+                                  : 'bg-white border-gray-300 hover:border-gray-400'
+                              }`}
                             >
-                              <option value="Pending">Pending</option>
-                              <option value="SUBMITTED">SUBMITTED</option>
-                              {IMMIGRATION_JOURNEY_STEPS.map(step => (
-                                <option key={step} value={step}>{step}</option>
-                              ))}
-                              <option value="Approved">Approved</option>
-                              <option value="Refused">Refused</option>
-                            </select>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex items-center gap-2">
+                              <div className="font-bold text-gray-800 break-all">{userItem.name}</div>
+                              <div className="text-xs text-gray-500 break-all">{userItem.email}</div>
+                              <div className="text-xs font-bold text-[#26374a] mt-1.5">
+                                Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {allUsers.length === 0 && (
+                          <p className="text-gray-500 italic">No profiles created yet.</p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {allUsers.map(userItem => (
+                          <div key={userItem.email} className="bg-white p-5 border border-gray-300 hover:border-[#26374a] hover:shadow-sm flex flex-col justify-between">
+                            <div onClick={() => setSelectedProfileEmail(userItem.email)} className="cursor-pointer">
+                              <div className="font-bold text-lg break-all">{userItem.name}</div>
+                              <div className="text-sm text-gray-600 break-all">{userItem.email}</div>
+                              <div className="text-sm font-bold text-[#26374a] mt-2">
+                                Applications: {allApplications.filter(a => a.email === userItem.email).length}
+                              </div>
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-gray-200 text-right">
                               <button 
-                                onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
-                                className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
+                                onClick={(e) => { e.stopPropagation(); handleDeleteUser(userItem.email); }}
+                                className="text-red-600 hover:text-red-800 text-sm font-bold"
                               >
-                                Manage File
-                              </button>
-                              <button 
-                                onClick={() => handleDeleteApplication(item.app.id)}
-                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 font-bold whitespace-nowrap"
-                              >
-                                Delete
+                                Delete Profile
                               </button>
                             </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                          </div>
+                        ))}
+                        {allUsers.length === 0 && (
+                           <p className="text-gray-500 italic">No profiles created yet.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
+                {viewMode === 'profiles' && selectedProfileEmail && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center bg-gray-100 p-4 border border-gray-300">
+                      <h2 className="text-xl font-bold break-all">Profile: {selectedProfileEmail}</h2>
+                      <button onClick={() => setSelectedProfileEmail(null)} className="text-sm font-bold text-[#26374a] hover:underline whitespace-nowrap ml-4">
+                        &larr; Back to Profiles
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h3 className="font-bold text-lg">Applications / Records for this Profile</h3>
+                      {allApplications.filter(a => a.email === selectedProfileEmail).map((item) => (
+                        <div key={item.app.id} className="bg-white border border-gray-300 p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                          <div>
+                            <div className="font-bold text-lg">{item.app.type}</div>
+                            <div className="text-sm text-gray-600">ID: {item.app.id} &bull; Status: {item.app.status}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => { setViewMode('applications'); setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                              className="bg-[#26374a] hover:bg-[#111820] text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+                            >
+                              Manage File
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteApplication(item.app.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 font-bold text-sm whitespace-nowrap"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {viewMode === 'applications' && (
+                  <div>
+                    <h2 className="text-xl font-bold mb-4">
+                      {selectedAppId ? "Select Application" : "All Applications"}
+                    </h2>
+                    {selectedAppId ? (
+                      <div className="space-y-2">
+                        {allApplications.map((item) => {
+                          const isSelected = item.app.id === selectedAppId;
+                          return (
+                            <div 
+                              key={item.app.id}
+                              onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                              className={`p-3 border transition-all cursor-pointer rounded text-sm ${
+                                isSelected 
+                                  ? 'bg-blue-50 border-[#26374a] shadow-sm ring-1 ring-[#26374a]' 
+                                  : 'bg-white border-gray-300 hover:border-gray-400'
+                              }`}
+                            >
+                              <div className="flex justify-between items-start gap-2">
+                                <span className="font-bold text-gray-800 app-number-font break-all">{item.app.id}</span>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                                  item.app.status === 'Approved' ? 'bg-green-100 text-green-800' :
+                                  item.app.status === 'Refused' ? 'bg-red-100 text-red-800' :
+                                  'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {item.app.status}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-600 truncate mt-1 break-all">{item.email}</div>
+                              <div className="text-xs font-semibold text-[#26374a] mt-1">{item.app.type}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse border border-gray-300 min-w-[850px]">
+                          <thead>
+                            <tr className="bg-gray-200 border-b border-gray-400">
+                              <th className="p-3 border-r border-gray-300 font-bold">App ID</th>
+                              <th className="p-3 border-r border-gray-300 font-bold">Applicant Email</th>
+                              <th className="p-3 border-r border-gray-300 font-bold">Type</th>
+                              <th className="p-3 border-r border-gray-300 font-bold">Overall Status</th>
+                              <th className="p-3 font-bold">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {allApplications.map((item, idx) => (
+                              <tr key={idx} className="border-b border-gray-300 hover:bg-gray-50">
+                                <td className="p-3 border-r border-gray-300 app-number-font text-[16px]">{item.app.id}</td>
+                                <td className="p-3 border-r border-gray-300 break-all">{item.email}</td>
+                                <td className="p-3 border-r border-gray-300">{item.app.type}</td>
+                                <td className="p-3 border-r border-gray-300">
+                                  <select 
+                                    value={item.app.status}
+                                    onChange={(e) => handleUpdateApp(item.email, item.app.id, { status: e.target.value }, `Application Progress Updated to: ${e.target.value}`)}
+                                    className="border border-gray-400 p-1 w-full max-w-[200px]"
+                                  >
+                                    <option value="Pending">Pending</option>
+                                    <option value="SUBMITTED">SUBMITTED</option>
+                                    {IMMIGRATION_JOURNEY_STEPS.map(step => (
+                                      <option key={step} value={step}>{step}</option>
+                                    ))}
+                                    <option value="Approved">Approved</option>
+                                    <option value="Refused">Refused</option>
+                                  </select>
+                                </td>
+                                <td className="p-3">
+                                  <div className="flex items-center gap-2">
+                                    <button 
+                                      onClick={() => { setSelectedAppId(item.app.id); setSelectedUserEmail(item.email); setSubStatusEdits({}); }}
+                                      className="bg-[#26374a] hover:bg-[#111820] text-white px-3 py-1 font-bold whitespace-nowrap"
+                                    >
+                                      Manage File
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDeleteApplication(item.app.id)}
+                                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 font-bold whitespace-nowrap"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
-        
-            </div>
+          
           {selectedAppId && selectedUserEmail && (
             <div className={`${showSidebar ? 'lg:col-span-8' : 'w-full'} border border-gray-400 p-6 space-y-6 bg-gray-50`}>
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-gray-300 pb-4">
@@ -1268,852 +1268,849 @@ export default function AdminDashboard() {
               {caseTab === 'profile' && (
                 <>
                   {/* SECTION A: Applicant Profile & Information */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  1. Applicant Information & Metadata
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Full Name</label>
-                    <input 
-                      type="text" 
-                      value={editFullName}
-                      onChange={e => setEditFullName(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="Principal Applicant"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">UCI (Unique Client Identifier)</label>
-                    <input 
-                      type="text" 
-                      value={editUci}
-                      onChange={e => setEditUci(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. 11-2222-3333"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Application Number (Read-only)</label>
-                    <input 
-                      type="text" 
-                      value={selectedAppId}
-                      className="w-full border border-gray-300 p-2 bg-gray-100 cursor-not-allowed"
-                      disabled
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Application Type</label>
-                    <select 
-                      value={editAppType}
-                      onChange={e => setEditAppType(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white font-medium"
-                    >
-                      <option value="Online Application">Online Application</option>
-                      <option value="Work Permit">Work Permit</option>
-                      <option value="Visitor Visa">Visitor Visa</option>
-                      <option value="Study Permit">Study Permit</option>
-                      <option value="Permanent Residence">Permanent Residence</option>
-                      <option value="Citizenship">Citizenship</option>
-                      <option value="Passport">Passport</option>
-                      <option value="Biometrics">Biometrics</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Date Received / Created</label>
-                    <input 
-                      type="text" 
-                      value={editDateReceived}
-                      onChange={e => setEditDateReceived(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. March 18, 2026"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Date Submitted</label>
-                    <input 
-                      type="text" 
-                      value={editDateSubmitted}
-                      onChange={e => setEditDateSubmitted(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. March 18, 2026"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Overall Current Status</label>
-                    <select
-                      value={editStatus}
-                      onChange={e => setEditStatus(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white font-semibold"
-                    >
-                      <option value="Submitted">Submitted</option>
-                      <option value="Processing">Processing</option>
-                      <option value="Under Review">Under Review</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Refused">Refused</option>
-                      <option value="Documents Requested">Documents Requested</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Biometrics Number</label>
-                    <input 
-                      type="text" 
-                      value={editBiometricsNumber}
-                      onChange={e => setEditBiometricsNumber(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. 123456789012"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Biometrics Date of Enrolment</label>
-                    <input 
-                      type="text" 
-                      value={editBiometricsDate}
-                      onChange={e => setEditBiometricsDate(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. June 15, 2026"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Biometrics Expiry Date</label>
-                    <input 
-                      type="text" 
-                      value={editBiometricsExpiry}
-                      onChange={e => setEditBiometricsExpiry(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. June 15, 2036"
-                    />
-                  </div>
+                  <div className="bg-white p-5 border border-gray-300 space-y-4">
+                    <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                      1. Applicant Information & Metadata
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Full Name</label>
+                        <input 
+                          type="text" 
+                          value={editFullName}
+                          onChange={e => setEditFullName(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="Principal Applicant"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">UCI (Unique Client Identifier)</label>
+                        <input 
+                          type="text" 
+                          value={editUci}
+                          onChange={e => setEditUci(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. 11-2222-3333"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Application Number (Read-only)</label>
+                        <input 
+                          type="text" 
+                          value={selectedAppId}
+                          className="w-full border border-gray-300 p-2 bg-gray-100 cursor-not-allowed"
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Application Type</label>
+                        <select 
+                          value={editAppType}
+                          onChange={e => setEditAppType(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white font-medium"
+                        >
+                          <option value="Online Application">Online Application</option>
+                          <option value="Work Permit">Work Permit</option>
+                          <option value="Visitor Visa">Visitor Visa</option>
+                          <option value="Study Permit">Study Permit</option>
+                          <option value="Permanent Residence">Permanent Residence</option>
+                          <option value="Citizenship">Citizenship</option>
+                          <option value="Passport">Passport</option>
+                          <option value="Biometrics">Biometrics</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Received / Created</label>
+                        <input 
+                          type="text" 
+                          value={editDateReceived}
+                          onChange={e => setEditDateReceived(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. March 18, 2026"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Submitted</label>
+                        <input 
+                          type="text" 
+                          value={editDateSubmitted}
+                          onChange={e => setEditDateSubmitted(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. March 18, 2026"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Overall Current Status</label>
+                        <select
+                          value={editStatus}
+                          onChange={e => setEditStatus(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white font-semibold"
+                        >
+                          <option value="Submitted">Submitted</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Under Review">Under Review</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Refused">Refused</option>
+                          <option value="Documents Requested">Documents Requested</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Biometrics Number</label>
+                        <input 
+                          type="text" 
+                          value={editMetricsNumber => setEditBiometricsNumber(editMetricsNumber.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. 123456789012"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Biometrics Date of Enrolment</label>
+                        <input 
+                          type="text" 
+                          value={editBiometricsDate}
+                          onChange={e => setEditBiometricsDate(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. June 15, 2026"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Biometrics Expiry Date</label>
+                        <input 
+                          type="text" 
+                          value={editBiometricsExpiry}
+                          onChange={e => setEditBiometricsExpiry(e.target.value)}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. June 15, 2036"
+                        />
+                      </div>
 
-
-
-                  {/* Confirmation Transmission Info */}
-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Date</label>
-                    <input 
-                      type="text" 
-                      value={confirmDate}
-                      onChange={e => setConfirmDate(e.target.value)}
-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
-                      placeholder="e.g. 2 August 2023"
-                    />
-                  </div>
-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Time</label>
-                    <input 
-                      type="text" 
-                      value={confirmTime}
-                      onChange={e => setConfirmTime(e.target.value)}
-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
-                      placeholder="e.g. 06:40:02 p.m."
-                    />
-                  </div>
-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
-                    <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Timezone</label>
-                    <input 
-                      type="text" 
-                      value={confirmTimezone}
-                      onChange={e => setConfirmTimezone(e.target.value)}
-                      className="w-full border border-blue-400 p-2 bg-white font-medium"
-                      placeholder="e.g. EDT"
-                    />
-                  </div>
-                  <div className="bg-blue-50/50 p-2 border border-blue-200 rounded sm:col-span-2 md:col-span-3">
-                    <label className="block text-xs font-bold mb-1 text-blue-900">Payment Receipt Number</label>
-                    <input 
-                      type="text" 
-                      value={confirmReceiptNumber}
-                      onChange={e => setConfirmReceiptNumber(e.target.value)}
-                      className="w-full border border-blue-400 p-2 bg-white font-medium font-mono"
-                      placeholder="e.g. O689745557"
-                    />
-                  </div>
-                </div>
-                <div className="pt-2 text-right">
-                  <button 
-                    onClick={async () => {
-                      const item = allApplications.find(a => a.app.id === selectedAppId);
-                      let updatedMessages = [];
-                      if (item) {
-                        const currentMessages = item.app.messages || [];
-                        const hasConfirm = currentMessages.some(m => m.subject === "Confirmation of Online Application Transmission");
-                        
-                        if (hasConfirm) {
-                          updatedMessages = currentMessages.map(msg => {
-                            if (msg.subject === "Confirmation of Online Application Transmission") {
-                              return {
-                                ...msg,
-                                transmissionDate: confirmDate,
-                                transmissionTime: confirmTime,
-                                transmissionTimezone: confirmTimezone,
-                                receiptNumber: confirmReceiptNumber
-                              };
+                      {/* Confirmation Transmission Info */}
+                      <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                        <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Date</label>
+                        <input 
+                          type="text" 
+                          value={confirmDate}
+                          onChange={e => setConfirmDate(e.target.value)}
+                          className="w-full border border-blue-400 p-2 bg-white font-medium"
+                          placeholder="e.g. 2 August 2023"
+                        />
+                      </div>
+                      <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                        <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Time</label>
+                        <input 
+                          type="text" 
+                          value={confirmTime}
+                          onChange={e => setConfirmTime(e.target.value)}
+                          className="w-full border border-blue-400 p-2 bg-white font-medium"
+                          placeholder="e.g. 06:40:02 p.m."
+                        />
+                      </div>
+                      <div className="bg-blue-50/50 p-2 border border-blue-200 rounded">
+                        <label className="block text-xs font-bold mb-1 text-blue-900">Transmission Timezone</label>
+                        <input 
+                          type="text" 
+                          value={confirmTimezone}
+                          onChange={e => setConfirmTimezone(e.target.value)}
+                          className="w-full border border-blue-400 p-2 bg-white font-medium"
+                          placeholder="e.g. EDT"
+                        />
+                      </div>
+                      <div className="bg-blue-50/50 p-2 border border-blue-200 rounded sm:col-span-2 md:col-span-3">
+                        <label className="block text-xs font-bold mb-1 text-blue-900">Payment Receipt Number</label>
+                        <input 
+                          type="text" 
+                          value={confirmReceiptNumber}
+                          onChange={e => setConfirmReceiptNumber(e.target.value)}
+                          className="w-full border border-blue-400 p-2 bg-white font-medium font-mono"
+                          placeholder="e.g. O689745557"
+                        />
+                      </div>
+                    </div>
+                    <div className="pt-2 text-right">
+                      <button 
+                        onClick={async () => {
+                          const item = allApplications.find(a => a.app.id === selectedAppId);
+                          let updatedMessages = [];
+                          if (item) {
+                            const currentMessages = item.app.messages || [];
+                            const hasConfirm = currentMessages.some(m => m.subject === "Confirmation of Online Application Transmission");
+                            
+                            if (hasConfirm) {
+                              updatedMessages = currentMessages.map(msg => {
+                                if (msg.subject === "Confirmation of Online Application Transmission") {
+                                  return {
+                                    ...msg,
+                                    transmissionDate: confirmDate,
+                                    transmissionTime: confirmTime,
+                                    transmissionTimezone: confirmTimezone,
+                                    receiptNumber: confirmReceiptNumber
+                                  };
+                                }
+                                return msg;
+                              });
+                            } else {
+                              updatedMessages = [
+                                {
+                                  id: `msg-${Date.now()}-confirm`,
+                                  subject: "Confirmation of Online Application Transmission",
+                                  date: confirmDate || "August 2, 2023",
+                                  isRead: true,
+                                  content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
+                                  transmissionDate: confirmDate,
+                                  transmissionTime: confirmTime,
+                                  transmissionTimezone: confirmTimezone,
+                                  receiptNumber: confirmReceiptNumber
+                                },
+                                ...currentMessages
+                              ];
                             }
-                            return msg;
-                          });
-                        } else {
-                          updatedMessages = [
-                            {
-                              id: `msg-${Date.now()}-confirm`,
-                              subject: "Confirmation of Online Application Transmission",
-                              date: confirmDate || "August 2, 2023",
-                              isRead: true,
-                              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
-                              transmissionDate: confirmDate,
-                              transmissionTime: confirmTime,
-                              transmissionTimezone: confirmTimezone,
-                              receiptNumber: confirmReceiptNumber
-                            },
-                            ...currentMessages
-                          ];
-                        }
-                      }
+                          }
 
-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
-                        fullName: editFullName,
-                        uci: editUci,
-                        type: editAppType,
-                        typeFr: editAppType,
-                        dateReceived: editDateReceived,
-                        dateSubmitted: editDateSubmitted,
-                        status: editStatus,
-                        biometricsNumber: editBiometricsNumber,
-                        biometricsDate: editBiometricsDate,
-                        biometricsExpiry: editBiometricsExpiry,
-                        showDocumentStatus: editShowDocumentStatus,
-                        messages: updatedMessages
-                      }, "Profile Information Updated");
-                      alert("Applicant Information saved!");
-                    }}
-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
-                  >
-                    Save Applicant Info
-                  </button>
-                </div>
-              </div>
-
-              {/* SECTION B: Application Status Summary & Latest Update */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  2. Status Summary & Latest Update text
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Application Status Summary message (appears at top left)</label>
-                    <textarea 
-                      value={editStatusSummary}
-                      onChange={e => setEditStatusSummary(e.target.value)}
-                      rows={3}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. Your application is in progress. We will send you a message..."
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-bold">Latest Update text description</label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const now = new Date();
-                          const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                          const dateTimeStr = `${dateStr}: `;
-                          setEditLatestUpdate(prev => prev ? `${dateTimeStr}${prev}` : `${dateTimeStr}`);
+                          await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                            fullName: editFullName,
+                            uci: editUci,
+                            type: editAppType,
+                            typeFr: editAppType,
+                            dateReceived: editDateReceived,
+                            dateSubmitted: editDateSubmitted,
+                            status: editStatus,
+                            biometricsNumber: editBiometricsNumber,
+                            biometricsDate: editBiometricsDate,
+                            biometricsExpiry: editBiometricsExpiry,
+                            showDocumentStatus: editShowDocumentStatus,
+                            messages: updatedMessages
+                          }, "Profile Information Updated");
+                          alert("Applicant Information saved!");
                         }}
-                        className="text-xs text-[#05355c] hover:underline font-bold"
-                        title="Click to prepend the current date to your latest update text."
+                        className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
                       >
-                        + Insert Date
+                        Save Applicant Info
                       </button>
                     </div>
-                    <textarea 
-                      value={editLatestUpdate}
-                      onChange={e => setEditLatestUpdate(e.target.value)}
-                      rows={3}
-                      className="w-full border border-gray-400 p-2 bg-white"
-                      placeholder="e.g. Final decision - April 29, 2021: Your application was approved..."
-                    />
                   </div>
-                </div>
-                <div className="pt-2 text-right">
-                  <button 
-                    onClick={async () => {
-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
-                        statusSummary: editStatusSummary,
-                        latestUpdate: editLatestUpdate,
-                        details: editStatusSummary // Fallback sync
-                      }, "Status Summary Updated");
-                      alert("Status summaries saved!");
-                    }}
-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
-                  >
-                    Save Status Summaries
-                  </button>
-                </div>
-              </div>
+
+                  {/* SECTION B: Application Status Summary & Latest Update */}
+                  <div className="bg-white p-5 border border-gray-300 space-y-4">
+                    <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                      2. Status Summary & Latest Update text
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Application Status Summary message (appears at top left)</label>
+                        <textarea 
+                          value={editStatusSummary}
+                          onChange={e => setEditStatusSummary(e.target.value)}
+                          rows={3}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. Your application is in progress. We will send you a message..."
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="block text-xs font-bold">Latest Update text description</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const now = new Date();
+                              const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                              const dateTimeStr = `${dateStr}: `;
+                              setEditLatestUpdate(prev => prev ? `${dateTimeStr}${prev}` : `${dateTimeStr}`);
+                            }}
+                            className="text-xs text-[#05355c] hover:underline font-bold"
+                            title="Click to prepend the current date to your latest update text."
+                          >
+                            + Insert Date
+                          </button>
+                        </div>
+                        <textarea 
+                          value={editLatestUpdate}
+                          onChange={e => setEditLatestUpdate(e.target.value)}
+                          rows={3}
+                          className="w-full border border-gray-400 p-2 bg-white"
+                          placeholder="e.g. Final decision - April 29, 2021: Your application was approved..."
+                        />
+                      </div>
+                    </div>
+                    <div className="pt-2 text-right">
+                      <button 
+                        onClick={async () => {
+                          await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                            statusSummary: editStatusSummary,
+                            latestUpdate: editLatestUpdate,
+                            details: editStatusSummary // Fallback sync
+                          }, "Status Summary Updated");
+                          alert("Status summaries saved!");
+                        }}
+                        className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+                      >
+                        Save Status Summaries
+                      </button>
+                    </div>
+                  </div>
                 </>
               )}
 
               {/* SECTION C: 7 Processing Stages */}
               {caseTab === 'stages' && (
                 <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  3. Immigration Processing Stages (7 Stages)
-                </h3>
-                <p className="text-xs text-gray-600">Update each processing stage individually with its current status text, date, and detailed description.</p>
-                
-                <div className="space-y-6 divide-y divide-gray-200">
+                  <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                    3. Immigration Processing Stages (7 Stages)
+                  </h3>
+                  <p className="text-xs text-gray-600">Update each processing stage individually with its current status text, date, and detailed description.</p>
                   
-                  {/* Stage 1: Eligibility */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 1: Review of Eligibility</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageEligibilityStatus} onChange={e => setStageEligibilityStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. We are reviewing..." />
+                  <div className="space-y-6 divide-y divide-gray-200">
+                    
+                    {/* Stage 1: Eligibility */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 1: Review of Eligibility</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageEligibilityStatus} onChange={e => setStageEligibilityStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. We are reviewing..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageEligibilityDate} onChange={e => setStageEligibilityDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageEligibilityDesc} onChange={e => setStageEligibilityDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="Officer notes or explanatory details" />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageEligibilityDate} onChange={e => setStageEligibilityDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+
+                    {/* Stage 2: Medical */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 2: Review of Medical Results</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageMedicalStatus} onChange={e => setStageMedicalStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. You do not need a medical exam..." />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageMedicalDate} onChange={e => setStageMedicalDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageMedicalDesc} onChange={e => setStageMedicalDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageEligibilityDesc} onChange={e => setStageEligibilityDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="Officer notes or explanatory details" />
+
+                    {/* Stage 3: Additional Documents */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 3: Review of Additional Documents</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageAdditionalDocsStatus} onChange={e => setStageAdditionalDocsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageAdditionalDocsDate} onChange={e => setStageAdditionalDocsDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageAdditionalDocsDesc} onChange={e => setStageAdditionalDocsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
                     </div>
+
+                    {/* Stage 4: Interview */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 4: Interview</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageInterviewStatus} onChange={e => setStageInterviewStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageInterviewDate} onChange={e => setStageInterviewDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageInterviewDesc} onChange={e => setStageInterviewDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                    </div>
+
+                    {/* Stage 5: Biometrics */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 5: Biometrics</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageBiometricsStatus} onChange={e => setStageBiometricsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageBiometricsDateState} onChange={e => setStageBiometricsDateState(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageBiometricsDesc} onChange={e => setStageBiometricsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                    </div>
+
+                    {/* Stage 6: Background check */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 6: Background Check</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageBackgroundStatus} onChange={e => setStageBackgroundStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageBackgroundDate} onChange={e => setStageBackgroundDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageBackgroundDesc} onChange={e => setStageBackgroundDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                    </div>
+
+                    {/* Stage 7: Final decision */}
+                    <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="md:col-span-3 font-bold text-[#26374a]">Stage 7: Final Decision</div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Status Message</label>
+                        <input type="text" value={stageFinalDecisionStatus} onChange={e => setStageFinalDecisionStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Date Update</label>
+                        <input type="text" value={stageFinalDecisionDate} onChange={e => setStageFinalDecisionDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
+                        <input type="text" value={stageFinalDecisionDesc} onChange={e => setStageFinalDecisionDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
+                      </div>
+                    </div>
+
                   </div>
 
-                  {/* Stage 2: Medical */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 2: Review of Medical Results</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageMedicalStatus} onChange={e => setStageMedicalStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. You do not need a medical exam..." />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageMedicalDate} onChange={e => setStageMedicalDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" placeholder="e.g. April 29, 2021" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageMedicalDesc} onChange={e => setStageMedicalDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
+                  <div className="pt-4 text-right border-t border-gray-200">
+                    <button 
+                      onClick={async () => {
+                        await handleUpdateApp(selectedUserEmail, selectedAppId, {
+                          stages: {
+                            eligibilityStatus: stageEligibilityStatus,
+                            eligibilityDesc: stageEligibilityDesc,
+                            eligibilityDate: stageEligibilityDate,
+                            medicalStatus: stageMedicalStatus,
+                            medicalDesc: stageMedicalDesc,
+                            medicalDate: stageMedicalDate,
+                            additionalDocsStatus: stageAdditionalDocsStatus,
+                            additionalDocsDesc: stageAdditionalDocsDesc,
+                            additionalDocsDate: stageAdditionalDocsDate,
+                            interviewStatus: stageInterviewStatus,
+                            interviewDesc: stageInterviewDesc,
+                            interviewDate: stageInterviewDate,
+                            biometricsStatus: stageBiometricsStatus,
+                            biometricsDesc: stageBiometricsDesc,
+                            biometricsDate: stageBiometricsDateState,
+                            backgroundStatus: stageBackgroundStatus,
+                            backgroundDesc: stageBackgroundDesc,
+                            backgroundDate: stageBackgroundDate,
+                            finalDecisionStatus: stageFinalDecisionStatus,
+                            finalDecisionDesc: stageFinalDecisionDesc,
+                            finalDecisionDate: stageFinalDecisionDate
+                          }
+                        }, "Immigration Stage Progress Updated");
+                        alert("7 Processing Stages Saved!");
+                      }}
+                      className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
+                    >
+                      Save 7 Stages Progress
+                    </button>
                   </div>
-
-                  {/* Stage 3: Additional Documents */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 3: Review of Additional Documents</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageAdditionalDocsStatus} onChange={e => setStageAdditionalDocsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageAdditionalDocsDate} onChange={e => setStageAdditionalDocsDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageAdditionalDocsDesc} onChange={e => setStageAdditionalDocsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                  </div>
-
-                  {/* Stage 4: Interview */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 4: Interview</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageInterviewStatus} onChange={e => setStageInterviewStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageInterviewDate} onChange={e => setStageInterviewDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageInterviewDesc} onChange={e => setStageInterviewDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                  </div>
-
-                  {/* Stage 5: Biometrics */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 5: Biometrics</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageBiometricsStatus} onChange={e => setStageBiometricsStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageBiometricsDateState} onChange={e => setStageBiometricsDateState(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageBiometricsDesc} onChange={e => setStageBiometricsDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                  </div>
-
-                  {/* Stage 6: Background check */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 6: Background Check</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageBackgroundStatus} onChange={e => setStageBackgroundStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageBackgroundDate} onChange={e => setStageBackgroundDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageBackgroundDesc} onChange={e => setStageBackgroundDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                  </div>
-
-                  {/* Stage 7: Final decision */}
-                  <div className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="md:col-span-3 font-bold text-[#26374a]">Stage 7: Final Decision</div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Status Message</label>
-                      <input type="text" value={stageFinalDecisionStatus} onChange={e => setStageFinalDecisionStatus(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Date Update</label>
-                      <input type="text" value={stageFinalDecisionDate} onChange={e => setStageFinalDecisionDate(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">Stage Description / Help text</label>
-                      <input type="text" value={stageFinalDecisionDesc} onChange={e => setStageFinalDecisionDesc(e.target.value)} className="w-full border border-gray-400 p-2 bg-white" />
-                    </div>
-                  </div>
-
                 </div>
-
-                <div className="pt-4 text-right border-t border-gray-200">
-                  <button 
-                    onClick={async () => {
-                      await handleUpdateApp(selectedUserEmail, selectedAppId, {
-                        stages: {
-                          eligibilityStatus: stageEligibilityStatus,
-                          eligibilityDesc: stageEligibilityDesc,
-                          eligibilityDate: stageEligibilityDate,
-                          medicalStatus: stageMedicalStatus,
-                          medicalDesc: stageMedicalDesc,
-                          medicalDate: stageMedicalDate,
-                          additionalDocsStatus: stageAdditionalDocsStatus,
-                          additionalDocsDesc: stageAdditionalDocsDesc,
-                          additionalDocsDate: stageAdditionalDocsDate,
-                          interviewStatus: stageInterviewStatus,
-                          interviewDesc: stageInterviewDesc,
-                          interviewDate: stageInterviewDate,
-                          biometricsStatus: stageBiometricsStatus,
-                          biometricsDesc: stageBiometricsDesc,
-                          biometricsDate: stageBiometricsDateState,
-                          backgroundStatus: stageBackgroundStatus,
-                          backgroundDesc: stageBackgroundDesc,
-                          backgroundDate: stageBackgroundDate,
-                          finalDecisionStatus: stageFinalDecisionStatus,
-                          finalDecisionDesc: stageFinalDecisionDesc,
-                          finalDecisionDate: stageFinalDecisionDate
-                        }
-                      }, "Immigration Stage Progress Updated");
-                      alert("7 Processing Stages Saved!");
-                    }}
-                    className="bg-[#26374a] text-white font-bold px-5 py-2 hover:bg-[#111820] text-sm"
-                  >
-                    Save 7 Stages Progress
-                  </button>
-                </div>
-              </div>
               )}
 
               {/* SECTION D: Document Table Row Management */}
               {caseTab === 'docs' && (
                 <>
                   <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  4. Document Status Table Rows
-                </h3>
-                <p className="text-xs text-gray-600">
-                  Every document listed here will automatically appear inside the applicant's read-only "Document Status" table.
-                </p>
+                    <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                      4. Document Status Table Rows
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      Every document listed here will automatically appear inside the applicant's read-only "Document Status" table.
+                    </p>
 
-                {/* Existing Rows */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse border border-gray-300 min-w-[1100px]">
-                    <thead>
-                      <tr className="bg-gray-100 border-b border-gray-300 font-bold">
-                        <th className="p-2 border-r border-gray-200">Name / Category</th>
-                        <th className="p-2 border-r border-gray-200">Doc Type</th>
-                        <th className="p-2 border-r border-gray-200">Doc Number</th>
-                        <th className="p-2 border-r border-gray-200">Status</th>
-                        <th className="p-2 border-r border-gray-200">Expiry</th>
-                        <th className="p-2 border-r border-gray-200">Updated</th>
-                        <th className="p-2 border-r border-gray-200">Country of Issue</th>
-                        <th className="p-2">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(() => {
-                        const target = allApplications.find(a => a.app.id === selectedAppId);
-                        const docRows = target?.app.documentStatuses || [];
-                        if (docRows.length === 0) {
-                          return (
-                            <tr>
-                              <td colSpan={8} className="p-3 text-center text-gray-500 italic">No document rows generated yet.</td>
-                            </tr>
-                          );
-                        }
-                        return docRows.map((docRow) => (
-                          <tr key={docRow.id} className="border-b border-gray-200 hover:bg-gray-50">
-                            <td className="p-2 border-r border-gray-200 font-medium">{docRow.name}</td>
-                            <td className="p-2 border-r border-gray-200">{docRow.documentType}</td>
-                            <td className="p-2 border-r border-gray-200">{docRow.documentNumber || 'N/A'}</td>
-                            <td className="p-2 border-r border-gray-200 font-semibold text-blue-800">{docRow.status}</td>
-                            <td className="p-2 border-r border-gray-200">{docRow.expiryDate || 'N/A'}</td>
-                            <td className="p-2 border-r border-gray-200">{docRow.statusUpdatedDate || 'N/A'}</td>
-                            <td className="p-2 border-r border-gray-200">{docRow.countryOfIssue || 'N/A'}</td>
-                            <td className="p-2">
-                              <button 
-                                onClick={async () => {
-                                  if (!confirm("Are you sure you want to delete this document row?")) return;
-                                  const updated = docRows.filter(r => r.id !== docRow.id);
-                                  await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Deleted Document Record: ${docRow.name}`);
-                                  alert("Row deleted!");
-                                }}
-                                className="text-red-600 hover:text-red-900 font-bold hover:underline"
-                              >
-                                Delete
-                              </button>
-                            </td>
+                    {/* Existing Rows */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse border border-gray-300 min-w-[1100px]">
+                        <thead>
+                          <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+                            <th className="p-2 border-r border-gray-200">Name / Category</th>
+                            <th className="p-2 border-r border-gray-200">Doc Type</th>
+                            <th className="p-2 border-r border-gray-200">Doc Number</th>
+                            <th className="p-2 border-r border-gray-200">Status</th>
+                            <th className="p-2 border-r border-gray-200">Expiry</th>
+                            <th className="p-2 border-r border-gray-200">Updated</th>
+                            <th className="p-2 border-r border-gray-200">Country of Issue</th>
+                            <th className="p-2">Action</th>
                           </tr>
-                        ));
-                      })()}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Add Row Form */}
-                <form 
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (!newDocRowName) return;
-                    const target = allApplications.find(a => a.app.id === selectedAppId);
-                    const docRows = target?.app.documentStatuses || [];
-                    const newRow = {
-                      id: 'doc-' + Date.now(),
-                      name: newDocRowName,
-                      uci: newDocRowUci || editUci,
-                      documentType: newDocRowType,
-                      documentNumber: newDocRowNumber,
-                      status: newDocRowStatus,
-                      expiryDate: newDocRowExpiry,
-                      statusUpdatedDate: newDocRowUpdated,
-                      travelDocumentNumber: newDocRowTravelNum,
-                      countryOfIssue: newDocRowCountry
-                    };
-                    const updated = [...docRows, newRow];
-                    await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Added Document Record: ${newDocRowName}`);
-                    alert("Document Row Added!");
-                    setNewDocRowName('');
-                    setNewDocRowType('');
-                    setNewDocRowNumber('');
-                    setNewDocRowStatus('');
-                    setNewDocRowExpiry('');
-                    setNewDocRowUpdated('');
-                    setNewDocRowTravelNum('');
-                    setNewDocRowCountry('');
-                  }} 
-                  className="bg-gray-100 p-4 border border-gray-300 space-y-3 text-xs font-semibold"
-                >
-                  <div className="text-sm font-bold text-[#26374a] mb-2">Add Document Status Row</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block mb-1">Document Category / Name</label>
-                      <input type="text" value={newDocRowName} onChange={e => setNewDocRowName(e.target.value)} placeholder="e.g. Passport, IELTS Certificate" required className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">UCI (Defaults to Applicant UCI)</label>
-                      <input type="text" value={newDocRowUci} onChange={e => setNewDocRowUci(e.target.value)} placeholder="e.g. 11-2222-3333" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Document Type</label>
-                      <input type="text" value={newDocRowType} onChange={e => setNewDocRowType(e.target.value)} placeholder="e.g. Work Permit, Passport" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Document Number</label>
-                      <input type="text" value={newDocRowNumber} onChange={e => setNewDocRowNumber(e.target.value)} placeholder="e.g. E819203" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Status Message</label>
-                      <input type="text" value={newDocRowStatus} onChange={e => setNewDocRowStatus(e.target.value)} placeholder="e.g. Your document is valid." className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Expiry Date</label>
-                      <input type="text" value={newDocRowExpiry} onChange={e => setNewDocRowExpiry(e.target.value)} placeholder="e.g. 2030/12/31" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Status Updated Date</label>
-                      <input type="text" value={newDocRowUpdated} onChange={e => setNewDocRowUpdated(e.target.value)} placeholder="e.g. 2026/03/18" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Travel Document Number</label>
-                      <input type="text" value={newDocRowTravelNum} onChange={e => setNewDocRowTravelNum(e.target.value)} placeholder="e.g. 51000000" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Country of Issue</label>
-                      <input type="text" value={newDocRowCountry} onChange={e => setNewDocRowCountry(e.target.value)} placeholder="e.g. Philippines" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
-                    </div>
-                  </div>
-                  <button type="submit" className="bg-[#26374a] text-white px-4 py-1.5 font-bold hover:bg-[#111820]">
-                    Add Row To Applicant Table
-                  </button>
-                </form>
-              </div>
-
-              {/* SECTION E: Request Documents & Checklist Manager */}
-              <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  5. Request Documents from Applicant (Checklist & Upload Slots)
-                </h3>
-                <p className="text-xs text-gray-600">
-                  Manage the checklist of files requested from the applicant. Adding a document request here places a slot in the applicant's <strong>Document Checklist</strong> (where they can upload documents) and automatically notifies them.
-                </p>
-
-                {/* List of currently requested documents */}
-                <div className="bg-gray-50 p-4 border border-gray-200 space-y-2">
-                  <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">Currently Requested Documents (Checklist)</div>
-                  {(() => {
-                    const target = allApplications.find(a => a.app.id === selectedAppId);
-                    const requestedList = target?.app.requestedDocuments || [];
-                    if (requestedList.length === 0) {
-                      return (
-                        <p className="text-xs text-gray-500 italic py-2">No documents have been requested for this file yet.</p>
-                      );
-                    }
-                    return (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2 min-w-[950px]">
-                          <thead>
-                            <tr className="bg-gray-100 border-b border-gray-300 font-bold">
-                              <th className="p-2 border-r border-gray-200">Document Name</th>
-                              <th className="p-2 border-r border-gray-200 text-center w-24">Status</th>
-                              <th className="p-2 border-r border-gray-200 w-48">Date & Time Updated</th>
-                              <th className="p-2 border-r border-gray-200">Remarks / Feedback</th>
-                              <th className="p-2 text-center w-64">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {requestedList.map((doc, idx) => {
-                              const isEditing = editingDocName === doc.name;
+                        </thead>
+                        <tbody>
+                          {(() => {
+                            const target = allApplications.find(a => a.app.id === selectedAppId);
+                            const docRows = target?.app.documentStatuses || [];
+                            if (docRows.length === 0) {
                               return (
-                                <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
-                                  <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
-                                  <td className="p-2 border-r border-gray-200 text-center">
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                                      doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
-                                      doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
-                                      'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                    }`}>
-                                      {doc.status}
-                                    </span>
-                                  </td>
-                                  <td className="p-2 border-r border-gray-200 text-gray-600">
-                                    {isEditing ? (
-                                      <input
-                                        type="text"
-                                        value={editDateUpdated}
-                                        onChange={e => setEditDateUpdated(e.target.value)}
-                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white font-medium"
-                                        placeholder="e.g. July 2, 2026, 10:15 AM"
-                                      />
-                                    ) : (
-                                      doc.dateUpdated || 'N/A'
-                                    )}
-                                  </td>
-                                  <td className="p-2 border-r border-gray-200 text-gray-600 italic">
-                                    {isEditing ? (
-                                      <textarea
-                                        value={editRemarks}
-                                        onChange={e => setEditRemarks(e.target.value)}
-                                        className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white h-12 font-medium"
-                                        placeholder="Enter remarks about this document..."
-                                      />
-                                    ) : (
-                                      doc.remarks || 'No remarks.'
-                                    )}
-                                  </td>
-                                  <td className="p-2">
-                                    <div className="flex gap-1 justify-center items-center flex-wrap">
-                                      {isEditing ? (
-                                        <>
-                                          <button
-                                            onClick={() => handleSaveDocEdits(selectedUserEmail, selectedAppId, doc.name)}
-                                            className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
-                                          >
-                                            Save
-                                          </button>
-                                          <button
-                                            onClick={() => setEditingDocName(null)}
-                                            className="bg-gray-500 hover:bg-gray-600 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
-                                          >
-                                            Cancel
-                                          </button>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <button
-                                            onClick={() => startEditingDoc(doc)}
-                                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded px-2 py-1 text-[11px] font-bold"
-                                            title="Edit date/time and remarks directly"
-                                          >
-                                            Edit Details
-                                          </button>
-                                          <select
-                                            value={doc.status}
-                                            onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
-                                            className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
-                                          >
-                                            <option value="Pending">Pending</option>
-                                            <option value="Submitted">Submitted</option>
-                                            <option value="Received">Received</option>
-                                          </select>
-                                          <button
-                                            onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
-                                            className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
-                                          >
-                                            Cancel
-                                          </button>
-                                        </>
-                                      )}
-                                    </div>
-                                  </td>
+                                <tr>
+                                  <td colSpan={8} className="p-3 text-center text-gray-500 italic">No document rows generated yet.</td>
                                 </tr>
                               );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    );
-                  })()}
-                </div>
+                            }
+                            return docRows.map((docRow) => (
+                              <tr key={docRow.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                <td className="p-2 border-r border-gray-200 font-medium">{docRow.name}</td>
+                                <td className="p-2 border-r border-gray-200">{docRow.documentType}</td>
+                                <td className="p-2 border-r border-gray-200">{docRow.documentNumber || 'N/A'}</td>
+                                <td className="p-2 border-r border-gray-200 font-semibold text-blue-800">{docRow.status}</td>
+                                <td className="p-2 border-r border-gray-200">{docRow.expiryDate || 'N/A'}</td>
+                                <td className="p-2 border-r border-gray-200">{docRow.statusUpdatedDate || 'N/A'}</td>
+                                <td className="p-2 border-r border-gray-200">{docRow.countryOfIssue || 'N/A'}</td>
+                                <td className="p-2">
+                                  <button 
+                                    onClick={async () => {
+                                      if (!confirm("Are you sure you want to delete this document row?")) return;
+                                      const updated = docRows.filter(r => r.id !== docRow.id);
+                                      await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Deleted Document Record: ${docRow.name}`);
+                                      alert("Row deleted!");
+                                    }}
+                                    className="text-red-600 hover:text-red-900 font-bold hover:underline"
+                                  >
+                                    Delete
+                                  </button>
+                                </td>
+                              </tr>
+                            ));
+                          })()}
+                        </tbody>
+                      </table>
+                    </div>
 
-                {/* Manage Standard Documents Options */}
-                <div className="bg-blue-50 p-4 border border-blue-200 space-y-3 rounded">
-                  <div className="text-xs font-bold text-[#26374a] uppercase tracking-wider flex justify-between items-center">
-                    <span>Standard Documents Checklist Options</span>
-                    <span className="text-[10px] text-gray-500 font-normal lowercase italic">(click ✕ to remove any option from the standard checklist)</span>
+                    {/* Add Row Form */}
+                    <form 
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (!newDocRowName) return;
+                        const target = allApplications.find(a => a.app.id === selectedAppId);
+                        const docRows = target?.app.documentStatuses || [];
+                        const newRow = {
+                          id: 'doc-' + Date.now(),
+                          name: newDocRowName,
+                          uci: newDocRowUci || editUci,
+                          documentType: newDocRowType,
+                          documentNumber: newDocRowNumber,
+                          status: newDocRowStatus,
+                          expiryDate: newDocRowExpiry,
+                          statusUpdatedDate: newDocRowUpdated,
+                          travelDocumentNumber: newDocRowTravelNum,
+                          countryOfIssue: newDocRowCountry
+                        };
+                        const updated = [...docRows, newRow];
+                        await handleUpdateApp(selectedUserEmail, selectedAppId, { documentStatuses: updated }, `Added Document Record: ${newDocRowName}`);
+                        alert("Document Row Added!");
+                        setNewDocRowName('');
+                        setNewDocRowType('');
+                        setNewDocRowNumber('');
+                        setNewDocRowStatus('');
+                        setNewDocRowExpiry('');
+                        setNewDocRowUpdated('');
+                        setNewDocRowTravelNum('');
+                        setNewDocRowCountry('');
+                      }} 
+                      className="bg-gray-100 p-4 border border-gray-300 space-y-3 text-xs font-semibold"
+                    >
+                      <div className="text-sm font-bold text-[#26374a] mb-2">Add Document Status Row</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="block mb-1">Document Category / Name</label>
+                          <input type="text" value={newDocRowName} onChange={e => setNewDocRowName(e.target.value)} placeholder="e.g. Passport, IELTS Certificate" required className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">UCI (Defaults to Applicant UCI)</label>
+                          <input type="text" value={newDocRowUci} onChange={e => setNewDocRowUci(e.target.value)} placeholder="e.g. 11-2222-3333" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Document Type</label>
+                          <input type="text" value={newDocRowType} onChange={e => setNewDocRowType(e.target.value)} placeholder="e.g. Work Permit, Passport" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Document Number</label>
+                          <input type="text" value={newDocRowNumber} onChange={e => setNewDocRowNumber(e.target.value)} placeholder="e.g. E819203" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Status Message</label>
+                          <input type="text" value={newDocRowStatus} onChange={e => setNewDocRowStatus(e.target.value)} placeholder="e.g. Your document is valid." className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Expiry Date</label>
+                          <input type="text" value={newDocRowExpiry} onChange={e => setNewDocRowExpiry(e.target.value)} placeholder="e.g. 2030/12/31" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Status Updated Date</label>
+                          <input type="text" value={newDocRowUpdated} onChange={e => setNewDocRowUpdated(e.target.value)} placeholder="e.g. 2026/03/18" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Travel Document Number</label>
+                          <input type="text" value={newDocRowTravelNum} onChange={e => setNewDocRowTravelNum(e.target.value)} placeholder="e.g. 51000000" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                        <div>
+                          <label className="block mb-1">Country of Issue</label>
+                          <input type="text" value={newDocRowCountry} onChange={e => setNewDocRowCountry(e.target.value)} placeholder="e.g. Philippines" className="w-full border border-gray-400 p-1.5 bg-white font-medium" />
+                        </div>
+                      </div>
+                      <button type="submit" className="bg-[#26374a] text-white px-4 py-1.5 font-bold hover:bg-[#111820]">
+                        Add Row To Applicant Table
+                      </button>
+                    </form>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {standardDocs.map((doc, idx) => (
-                      <div key={idx} className="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm">
-                        <span>{doc}</span>
+
+                  {/* SECTION E: Request Documents & Checklist Manager */}
+                  <div className="bg-white p-5 border border-gray-300 space-y-4">
+                    <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                      5. Request Documents from Applicant (Checklist & Upload Slots)
+                    </h3>
+                    <p className="text-xs text-gray-600">
+                      Manage the checklist of files requested from the applicant. Adding a document request here places a slot in the applicant's <strong>Document Checklist</strong> (where they can upload documents) and automatically notifies them.
+                    </p>
+
+                    {/* List of currently requested documents */}
+                    <div className="bg-gray-50 p-4 border border-gray-200 space-y-2">
+                      <div className="text-xs font-bold text-gray-700 uppercase tracking-wider">Currently Requested Documents (Checklist)</div>
+                      {(() => {
+                        const target = allApplications.find(a => a.app.id === selectedAppId);
+                        const requestedList = target?.app.requestedDocuments || [];
+                        if (requestedList.length === 0) {
+                          return (
+                            <p className="text-xs text-gray-500 italic py-2">No documents have been requested for this file yet.</p>
+                          );
+                        }
+                        return (
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs border-collapse border border-gray-300 mt-2 min-w-[950px]">
+                              <thead>
+                                <tr className="bg-gray-100 border-b border-gray-300 font-bold">
+                                  <th className="p-2 border-r border-gray-200">Document Name</th>
+                                  <th className="p-2 border-r border-gray-200 text-center w-24">Status</th>
+                                  <th className="p-2 border-r border-gray-200 w-48">Date & Time Updated</th>
+                                  <th className="p-2 border-r border-gray-200">Remarks / Feedback</th>
+                                  <th className="p-2 text-center w-64">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {requestedList.map((doc, idx) => {
+                                  const isEditing = editingDocName === doc.name;
+                                  return (
+                                    <tr key={idx} className="border-b border-gray-200 bg-white hover:bg-gray-50">
+                                      <td className="p-2 border-r border-gray-200 font-semibold text-gray-800">{doc.name}</td>
+                                      <td className="p-2 border-r border-gray-200 text-center">
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                          doc.status === 'Received' ? 'bg-green-100 text-green-800 border border-green-300' :
+                                          doc.status === 'Submitted' ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                                          'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                        }`}>
+                                          {doc.status}
+                                        </span>
+                                      </td>
+                                      <td className="p-2 border-r border-gray-200 text-gray-600">
+                                        {isEditing ? (
+                                          <input
+                                            type="text"
+                                            value={editDateUpdated}
+                                            onChange={e => setEditDateUpdated(e.target.value)}
+                                            className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white font-medium"
+                                            placeholder="e.g. July 2, 2026, 10:15 AM"
+                                          />
+                                        ) : (
+                                          doc.dateUpdated || 'N/A'
+                                        )}
+                                      </td>
+                                      <td className="p-2 border-r border-gray-200 text-gray-600 italic">
+                                        {isEditing ? (
+                                          <textarea
+                                            value={editRemarks}
+                                            onChange={e => setEditRemarks(e.target.value)}
+                                            className="w-full border border-gray-300 p-1.5 rounded text-xs bg-white h-12 font-medium"
+                                            placeholder="Enter remarks about this document..."
+                                          />
+                                        ) : (
+                                          doc.remarks || 'No remarks.'
+                                        )}
+                                      </td>
+                                      <td className="p-2">
+                                        <div className="flex gap-1 justify-center items-center flex-wrap">
+                                          {isEditing ? (
+                                            <>
+                                              <button
+                                                onClick={() => handleSaveDocEdits(selectedUserEmail, selectedAppId, doc.name)}
+                                                className="bg-green-600 hover:bg-green-700 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+                                              >
+                                                Save
+                                              </button>
+                                              <button
+                                                onClick={() => setEditingDocName(null)}
+                                                className="bg-gray-500 hover:bg-gray-600 text-white font-bold rounded px-2.5 py-1 text-[11px] shadow-sm"
+                                              >
+                                                Cancel
+                                              </button>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <button
+                                                onClick={() => startEditingDoc(doc)}
+                                                className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded px-2 py-1 text-[11px] font-bold"
+                                                title="Edit date/time and remarks directly"
+                                              >
+                                                Edit Details
+                                              </button>
+                                              <select
+                                                value={doc.status}
+                                                onChange={(e) => handleUpdateRequestedDocStatus(selectedUserEmail, selectedAppId, doc.name, e.target.value as any)}
+                                                className="border border-gray-300 rounded p-1 text-[11px] font-medium bg-white"
+                                              >
+                                                <option value="Pending">Pending</option>
+                                                <option value="Submitted">Submitted</option>
+                                                <option value="Received">Received</option>
+                                              </select>
+                                              <button
+                                                onClick={() => handleDeleteRequestedDocument(selectedUserEmail, selectedAppId, doc.name)}
+                                                className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded px-2 py-1 text-[11px] font-bold"
+                                              >
+                                                Cancel
+                                              </button>
+                                            </>
+                                          )}
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Manage Standard Documents Options */}
+                    <div className="bg-blue-50 p-4 border border-blue-200 space-y-3 rounded">
+                      <div className="text-xs font-bold text-[#26374a] uppercase tracking-wider flex justify-between items-center">
+                        <span>Standard Documents Checklist Options</span>
+                        <span className="text-[10px] text-gray-500 font-normal lowercase italic">(click ✕ to remove any option from the standard checklist)</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {standardDocs.map((doc, idx) => (
+                          <div key={idx} className="flex items-center gap-1.5 bg-white border border-gray-200 px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 shadow-sm">
+                            <span>{doc}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveStandardDoc(doc)}
+                              className="text-red-500 hover:text-red-700 font-extrabold ml-1 hover:bg-red-50 rounded-full w-4 h-4 flex items-center justify-center transition-colors text-sm"
+                              title={`Remove "${doc}" from standard list`}
+                            >
+                              &times;
+                            </button>
+                          </div>
+                        ))}
+                        {standardDocs.length === 0 && (
+                          <p className="text-xs text-gray-500 italic">No standard documents remaining in the option list. You can still request custom documents below.</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Request New Document Form */}
+                    <div className="bg-gray-100 p-4 border border-gray-300 space-y-4">
+                      <div className="text-sm font-bold text-[#26374a]">Request New Document (Add to Checklist)</div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+                        <div>
+                          <label className="block mb-1 text-gray-700">Select standard document from list:</label>
+                          <select
+                            value={selectedPredefinedDoc}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedPredefinedDoc(val);
+                              if (val !== 'Custom Document...') {
+                                setCustomRequestedDocName(val);
+                              } else {
+                                setCustomRequestedDocName('');
+                              }
+                            }}
+                            className="w-full border border-gray-400 p-2 bg-white font-medium"
+                          >
+                            {standardDocs.map((doc, idx) => (
+                              <option key={idx} value={doc}>{doc}</option>
+                            ))}
+                            <option value="Custom Document...">-- Custom Document (type custom name below) --</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block mb-1 text-gray-700">Document Name to request:</label>
+                          <input
+                            type="text"
+                            value={customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '')}
+                            onChange={(e) => setCustomRequestedDocName(e.target.value)}
+                            placeholder="e.g. Police Clearance Certificate, IELTS Results"
+                            className="w-full border border-gray-400 p-2 bg-white font-medium"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-2 text-right">
                         <button
                           type="button"
-                          onClick={() => handleRemoveStandardDoc(doc)}
-                          className="text-red-500 hover:text-red-700 font-extrabold ml-1 hover:bg-red-50 rounded-full w-4 h-4 flex items-center justify-center transition-colors text-sm"
-                          title={`Remove "${doc}" from standard list`}
+                          onClick={async () => {
+                            const finalName = customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '');
+                            if (!finalName || !finalName.trim()) {
+                              alert("Please specify a document name to request.");
+                              return;
+                            }
+                            await handleRequestDocument(selectedUserEmail, selectedAppId, finalName.trim());
+                          }}
+                          className="bg-[#26374a] text-white px-5 py-2 font-bold hover:bg-[#111820] text-xs transition-colors"
                         >
-                          &times;
+                          Send Document Request to Applicant
                         </button>
                       </div>
-                    ))}
-                    {standardDocs.length === 0 && (
-                      <p className="text-xs text-gray-500 italic">No standard documents remaining in the option list. You can still request custom documents below.</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Request New Document Form */}
-                <div className="bg-gray-100 p-4 border border-gray-300 space-y-4">
-                  <div className="text-sm font-bold text-[#26374a]">Request New Document (Add to Checklist)</div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
-                    <div>
-                      <label className="block mb-1 text-gray-700">Select standard document from list:</label>
-                      <select
-                        value={selectedPredefinedDoc}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedPredefinedDoc(val);
-                          if (val !== 'Custom Document...') {
-                            setCustomRequestedDocName(val);
-                          } else {
-                            setCustomRequestedDocName('');
-                          }
-                        }}
-                        className="w-full border border-gray-400 p-2 bg-white font-medium"
-                      >
-                        {standardDocs.map((doc, idx) => (
-                          <option key={idx} value={doc}>{doc}</option>
-                        ))}
-                        <option value="Custom Document...">-- Custom Document (type custom name below) --</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-gray-700">Document Name to request:</label>
-                      <input
-                        type="text"
-                        value={customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '')}
-                        onChange={(e) => setCustomRequestedDocName(e.target.value)}
-                        placeholder="e.g. Police Clearance Certificate, IELTS Results"
-                        className="w-full border border-gray-400 p-2 bg-white font-medium"
-                      />
                     </div>
                   </div>
-
-                  <div className="pt-2 text-right">
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const finalName = customRequestedDocName || (selectedPredefinedDoc !== 'Custom Document...' ? selectedPredefinedDoc : '');
-                        if (!finalName || !finalName.trim()) {
-                          alert("Please specify a document name to request.");
-                          return;
-                        }
-                        await handleRequestDocument(selectedUserEmail, selectedAppId, finalName.trim());
-                      }}
-                      className="bg-[#26374a] text-white px-5 py-2 font-bold hover:bg-[#111820] text-xs transition-colors"
-                    >
-                      Send Document Request to Applicant
-                    </button>
-                  </div>
-                </div>
-              </div>
                 </>
               )}
 
               {/* SECTION F: System Messaging & Communications */}
               {caseTab === 'messages' && (
                 <div className="bg-white p-5 border border-gray-300 space-y-4">
-                <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
-                  6. Compose & Send Messages
-                </h3>
-                <p className="text-xs text-gray-600">Compose and send messages that appear inside the applicant's "Messages About Your Application" section.</p>
-                {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent successfully to Applicant!</div>}
-                <form onSubmit={handleSendEmail} className="space-y-3 text-sm">
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Subject</label>
-                    <input 
-                      type="text" 
-                      value={emailSubject}
-                      onChange={e => setEmailSubject(e.target.value)}
-                      className="w-full border border-gray-400 p-2 bg-white font-medium"
-                      placeholder="e.g. Correspondence Letter"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold mb-1">Message Content (HTML Allowed)</label>
-                    <textarea 
-                      value={emailText}
-                      onChange={e => setEmailText(e.target.value)}
-                      className="w-full border border-gray-400 p-2 h-32 bg-white"
-                      placeholder="Type your official correspondence..."
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820] text-sm">
-                    Send System Message
-                  </button>
-                </form>
-              </div>
+                  <h3 className="font-bold text-lg text-[#26374a] border-b border-gray-200 pb-2">
+                    6. Compose & Send Messages
+                  </h3>
+                  <p className="text-xs text-gray-600">Compose and send messages that appear inside the applicant's "Messages About Your Application" section.</p>
+                  {emailSuccess && <div className="bg-green-100 border border-green-400 text-green-700 p-2 font-bold text-sm">Message sent successfully to Applicant!</div>}
+                  <form onSubmit={handleSendEmail} className="space-y-3 text-sm">
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Subject</label>
+                      <input 
+                        type="text" 
+                        value={emailSubject}
+                        onChange={e => setEmailSubject(e.target.value)}
+                        className="w-full border border-gray-400 p-2 bg-white font-medium"
+                        placeholder="e.g. Correspondence Letter"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Message Content (HTML Allowed)</label>
+                      <textarea 
+                        value={emailText}
+                        onChange={e => setEmailText(e.target.value)}
+                        className="w-full border border-gray-400 p-2 h-32 bg-white"
+                        placeholder="Type your official correspondence..."
+                        required
+                      />
+                    </div>
+                    <button type="submit" className="bg-[#26374a] text-white font-bold px-4 py-2 hover:bg-[#111820] text-sm">
+                      Send System Message
+                    </button>
+                  </form>
+                </div>
               )}
 
             </div>
