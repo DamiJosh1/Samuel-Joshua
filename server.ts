@@ -6,6 +6,21 @@ import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
 
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc } from 'firebase/firestore';
+
+let firestoreDb: any;
+try {
+  const firebaseConfigStr = fs.readFileSync(path.join(process.cwd(), 'firebase-applet-config.json'), 'utf8');
+  const firebaseConfig = JSON.parse(firebaseConfigStr);
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  firestoreDb = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId);
+} catch (err) {
+  console.error("Failed to initialize Firestore", err);
+}
+
+
 interface TimelineEvent {
   id: string;
   date: string;
@@ -296,78 +311,62 @@ function createDefaultApplicationsForUser(email: string): ApplicationInfo[] {
   return DEFAULT_APPLICATIONS;
 }
 
-function saveData() {
-  const data = {
-    users: Array.from(db.users.entries()),
-    applications: Array.from(db.applications.entries()),
-  };
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data));
+// Helper to get all users
+async function getUsers() {
+  if (!firestoreDb) return Array.from(db.users.values());
+  const snapshot = await getDocs(collection(firestoreDb, 'users'));
+  return snapshot.docs.map(d => d.data() as UserProfile);
 }
 
-function loadData() {
-  if (fs.existsSync(DATA_FILE)) {
-    try {
-      const fileData = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-      db.users = new Map(fileData.users);
-      db.applications = new Map(fileData.applications);
+async function getUser(email: string) {
+  if (!firestoreDb) return db.users.get(email);
+  const d = await getDoc(doc(firestoreDb, 'users', email));
+  return d.exists() ? d.data() as UserProfile : undefined;
+}
 
-      // Self-healing check: Recreate missing users from applications to prevent accidental data deletion
-      for (const [email, apps] of db.applications.entries()) {
-        const lowerEmail = email.toLowerCase().trim();
-        if (lowerEmail !== "guest" && lowerEmail !== "admin@canada.ca" && !db.users.has(lowerEmail)) {
-          const firstApp = apps[0];
-          db.users.set(lowerEmail, {
-            email: lowerEmail,
-            name: firstApp?.fullName || "Applicant",
-            dateCreated: firstApp?.dateCreated || "2026-03-18",
-            timeCreated: firstApp?.timeCreated || "09:00 AM",
-            uci: firstApp?.uci || ""
-          });
-        }
-      }
+async function saveUser(email: string, data: UserProfile) {
+  if (!firestoreDb) { db.users.set(email, data); return; }
+  await setDoc(doc(firestoreDb, 'users', email), data);
+}
 
-      // Ensure all loaded applications have the Confirmation of Online Application Transmission message
-      for (const [email, apps] of db.applications.entries()) {
-        for (const app of apps) {
-          if (!app.messages) {
-            app.messages = [];
-          }
-          const confirmMsg = app.messages.find(m => m.subject === "Confirmation of Online Application Transmission");
-          if (!confirmMsg) {
-            app.messages.unshift({
-              id: `msg-${Date.now()}-confirm-${Math.random().toString(36).substring(2, 7)}`,
-              subject: "Confirmation of Online Application Transmission",
-              date: formatHumanDate(app.dateSubmitted || app.dateCreated),
-              isRead: true,
-              content: "<p>Hello,</p><p>You have successfully transmitted your Online Application on 2 August 2023 06:40:02 p.m. EDT.</p><p>Your payment receipt number is # O689745557.</p>",
-              transmissionDate: "2 August 2023",
-              transmissionTime: "06:40:02 p.m.",
-              transmissionTimezone: "EDT",
-              receiptNumber: "O689745557"
-            });
-          } else {
-            if (!confirmMsg.transmissionDate) confirmMsg.transmissionDate = "2 August 2023";
-            if (!confirmMsg.transmissionTime) confirmMsg.transmissionTime = "06:40:02 p.m.";
-            if (!confirmMsg.transmissionTimezone) confirmMsg.transmissionTimezone = "EDT";
-            if (!confirmMsg.receiptNumber) confirmMsg.receiptNumber = "O689745557";
-          }
-        }
-      }
+async function deleteUser(email: string) {
+  if (!firestoreDb) { db.users.delete(email); return; }
+  await deleteDoc(doc(firestoreDb, 'users', email));
+}
 
-      saveData();
-      return;
-    } catch (e) {
-      console.error("Error loading data file:", e);
-    }
+async function getApplications(email: string) {
+  if (!firestoreDb) return db.applications.get(email);
+  const d = await getDoc(doc(firestoreDb, 'applications', email));
+  return d.exists() ? d.data()?.apps as ApplicationInfo[] : undefined;
+}
+
+async function saveApplications(email: string, apps: ApplicationInfo[]) {
+  if (!firestoreDb) { db.applications.set(email, apps); return; }
+  await setDoc(doc(firestoreDb, 'applications', email), { apps });
+}
+
+async function deleteApplications(email: string) {
+  if (!firestoreDb) { db.applications.delete(email); return; }
+  await deleteDoc(doc(firestoreDb, 'applications', email));
+}
+
+async function getAllApplications() {
+  if (!firestoreDb) {
+    const allApps: { email: string; app: ApplicationInfo }[] = [];
+    db.applications.forEach((apps, email) => {
+      apps.forEach(app => allApps.push({ email, app }));
+    });
+    return allApps;
   }
-  
-  // Seed initial database if no file exists
-  db.users.set("applicant@domain.ca", { email: "applicant@domain.ca", name: "TESTIMONY ABIOLA NASIRU", dateCreated: "2023-08-02", timeCreated: "10:00 AM" });
-  db.applications.set("applicant@domain.ca", DEFAULT_APPLICATIONS);
-  saveData();
+  const snapshot = await getDocs(collection(firestoreDb, 'applications'));
+  const allApps: { email: string; app: ApplicationInfo }[] = [];
+  snapshot.docs.forEach(d => {
+    const email = d.id;
+    const apps = d.data().apps || [];
+    apps.forEach((app: ApplicationInfo) => allApps.push({ email, app }));
+  });
+  return allApps;
 }
-
-loadData();
 
 async function startServer() {
   const app = express();
@@ -376,7 +375,7 @@ async function startServer() {
   app.use(express.json());
 
   // Authentication and User API
-  app.post("/api/login", (req, res) => {
+  app.post("/api/login", async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -384,25 +383,23 @@ async function startServer() {
     }
 
     if (email.toLowerCase() === "admin@canada.ca") {
-      if (password === "admin") { // simple mock password for admin
+      if (password === "admin") {
         return res.json({ email: "admin@canada.ca", name: "Administrator" });
       } else {
         return res.status(401).json({ error: "Invalid admin credentials" });
       }
     }
 
-    // Normal user check
     const lowerEmail = email.toLowerCase();
-    if (!db.users.has(lowerEmail)) {
+    const user = await getUser(lowerEmail);
+    if (!user) {
       return res.status(401).json({ error: "Account not found. Only administrators can create applicant profiles. Please contact your immigration officer." });
     }
 
-    // We can just accept any password for now or set a temporary one, let's just accept any for mock since we are not storing passwords
-    const user = db.users.get(lowerEmail);
     res.json({ email: user?.email, name: user?.name, dateCreated: user?.dateCreated, timeCreated: user?.timeCreated });
   });
 
-  app.post("/api/admin/users", (req, res) => {
+  app.post("/api/admin/users", async (req, res) => {
     const { email, name, appType, appNumber, uci, dateCreated, dateSubmitted, status } = req.body;
     if (!email || !name) return res.status(400).json({ error: "Email and name required" });
     
@@ -410,7 +407,7 @@ async function startServer() {
     const finalDateCreated = dateCreated || new Date().toISOString().split('T')[0];
     const timeCreated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    db.users.set(lowerEmail, { email: lowerEmail, name, dateCreated: finalDateCreated, timeCreated, uci: uci || "" });
+    await saveUser(lowerEmail, { email: lowerEmail, name, dateCreated: finalDateCreated, timeCreated, uci: uci || "" });
     
     const applications = [];
     const finalAppNumber = appNumber || ("W" + Array.from({ length: 10 }, () => Math.floor(Math.random() * 10)).join(""));
@@ -496,28 +493,26 @@ async function startServer() {
       documentStatuses: []
     });
 
-    db.applications.set(lowerEmail, applications);
-    saveData();
-    
+    await saveApplications(lowerEmail, applications);
     res.status(201).json({ success: true });
   });
 
-  app.delete("/api/admin/users/:email", (req, res) => {
+  app.delete("/api/admin/users/:email", async (req, res) => {
     const email = req.params.email.toLowerCase();
     if (!email) return res.status(400).json({ error: "Email required" });
     
-    if (db.users.has(email)) {
-      db.users.delete(email);
-      db.applications.delete(email);
-      saveData();
+    const user = await getUser(email);
+    if (user) {
+      await deleteUser(email);
+      await deleteApplications(email);
       res.json({ success: true });
     } else {
       res.status(404).json({ error: "User not found" });
     }
   });
 
-  app.get("/api/admin/users", (req, res) => {
-    const usersList = Array.from(db.users.values());
+  app.get("/api/admin/users", async (req, res) => {
+    const usersList = await getUsers();
     res.json(usersList);
   });
 
@@ -556,16 +551,17 @@ async function startServer() {
   });
 
   // 5. API: Applications DB persistence by Email
-  app.get("/api/applications", (req, res) => {
+  app.get("/api/applications", async (req, res) => {
     const email = String(req.query.email || "guest").trim().toLowerCase();
-    if (!db.applications.has(email)) {
-      db.applications.set(email, createDefaultApplicationsForUser(email));
-      saveData();
+    let apps = await getApplications(email);
+    if (!apps) {
+      apps = createDefaultApplicationsForUser(email);
+      await saveApplications(email, apps);
     }
-    res.json(db.applications.get(email));
+    res.json(apps);
   });
 
-  app.post("/api/applications", (req, res) => {
+  app.post("/api/applications", async (req, res) => {
     const email = String(req.body.email || "guest").trim().toLowerCase();
     const newApp: ApplicationInfo = req.body.application;
 
@@ -579,20 +575,18 @@ async function startServer() {
       newApp.timeCreated = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    if (!db.applications.has(email)) {
-      db.applications.set(email, createDefaultApplicationsForUser(email));
+    let currentList = await getApplications(email);
+    if (!currentList) {
+      currentList = createDefaultApplicationsForUser(email);
     }
 
-    const currentList = db.applications.get(email) || [];
-    // Prepend new application status tracker ticket
     const updatedList = [newApp, ...currentList];
-    db.applications.set(email, updatedList);
-    saveData();
+    await saveApplications(email, updatedList);
 
     res.status(201).json(updatedList);
   });
 
-  app.patch("/api/applications/:id", (req, res) => {
+  app.patch("/api/applications/:id", async (req, res) => {
     const email = String(req.body.email || "guest").trim().toLowerCase();
     const id = req.params.id;
     const { 
@@ -604,12 +598,12 @@ async function startServer() {
       statusSummary, latestUpdate, stages, documentStatuses
     } = req.body;
 
-    if (!db.applications.has(email)) {
-      db.applications.set(email, createDefaultApplicationsForUser(email));
-      saveData();
+    let currentList = await getApplications(email);
+    if (!currentList) {
+      currentList = createDefaultApplicationsForUser(email);
+      await saveApplications(email, currentList);
     }
 
-    const currentList = db.applications.get(email) || [];
     const index = currentList.findIndex((item) => item.id === id);
 
     if (index === -1) {
@@ -646,20 +640,19 @@ async function startServer() {
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 
-    db.applications.set(email, currentList);
-    saveData();
+    await saveApplications(email, currentList);
     res.json(currentList[index]);
   });
 
-  app.delete("/api/applications/:id", (req, res) => {
+  app.delete("/api/applications/:id", async (req, res) => {
     const email = String(req.query.email || "guest").trim().toLowerCase();
     const id = req.params.id;
 
-    if (!db.applications.has(email)) {
+    let currentList = await getApplications(email);
+    if (!currentList) {
       return res.status(404).json({ error: "No applications found for this user" });
     }
 
-    const currentList = db.applications.get(email) || [];
     const index = currentList.findIndex((item) => item.id === id);
 
     if (index === -1) {
@@ -667,41 +660,33 @@ async function startServer() {
     }
 
     currentList.splice(index, 1);
-    db.applications.set(email, currentList);
-    saveData();
+    await saveApplications(email, currentList);
 
     res.json({ success: true, applications: currentList });
   });
 
   // 6. API: Admin GET all applications across all users
-  app.get("/api/admin/applications", (req, res) => {
-    const allApps: { email: string; app: ApplicationInfo }[] = [];
-    db.applications.forEach((apps, email) => {
-      apps.forEach(app => {
-        allApps.push({ email, app });
-      });
-    });
+  app.get("/api/admin/applications", async (req, res) => {
+    const allApps = await getAllApplications();
     res.json(allApps);
   });
 
   // API: Admin DELETE application by ID
-  app.delete("/api/admin/applications/:id", (req, res) => {
+  app.delete("/api/admin/applications/:id", async (req, res) => {
     const id = req.params.id;
-    let found = false;
-    db.applications.forEach((apps, email) => {
-      const index = apps.findIndex(app => app.id === id);
-      if (index !== -1) {
-        apps.splice(index, 1);
-        db.applications.set(email, apps);
-        found = true;
+    const allApps = await getAllApplications();
+    const foundApp = allApps.find(a => a.app.id === id);
+    
+    if (foundApp) {
+      const email = foundApp.email;
+      let currentList = await getApplications(email);
+      if (currentList) {
+        currentList = currentList.filter(a => a.id !== id);
+        await saveApplications(email, currentList);
+        return res.json({ success: true });
       }
-    });
-    if (found) {
-      saveData();
-      res.json({ success: true });
-    } else {
-      res.status(404).json({ error: "Application not found" });
     }
+    res.status(404).json({ error: "Application not found" });
   });
 
   // 7. API: Send email notification

@@ -272,7 +272,9 @@ export default function Dashboard() {
                     <span>type</span>
                     {sortField1 === 'type' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -285,7 +287,9 @@ export default function Dashboard() {
                     <span>number</span>
                     {sortField1 === 'id' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -297,7 +301,9 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'applicantName' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -309,7 +315,9 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'dateSubmitted' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -322,7 +330,9 @@ export default function Dashboard() {
                     <span>status</span>
                     {sortField1 === 'status' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -334,7 +344,9 @@ export default function Dashboard() {
                   <div>
                     {sortField1 === 'messages' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th className="p-2.5 font-bold text-left select-none bg-white text-[#333]" style={{ verticalAlign: 'bottom' }}>
@@ -481,7 +493,9 @@ export default function Dashboard() {
                     <span>type</span>
                     {sortField2 === 'type' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -493,7 +507,9 @@ export default function Dashboard() {
                   <div>
                     {sortField2 === 'dateCreated' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -506,7 +522,9 @@ export default function Dashboard() {
                     <span>to submit</span>
                     {sortField2 === 'daysLeft' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th 
@@ -519,7 +537,9 @@ export default function Dashboard() {
                     <span>saved</span>
                     {sortField2 === 'dateSaved' ? (
                       <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
-) : null}
+) : (
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                    )}
                   </div>
                 </th>
                 <th className="p-2.5 font-bold text-left select-none bg-white text-[#333]" style={{ verticalAlign: 'bottom' }}>
