@@ -155,20 +155,20 @@ export default function Dashboard() {
       if (direction === 'asc') {
         return (
           <span className="block mt-0.5 text-left font-bold text-[#333333] text-[15px] select-none leading-none">
-            ↑
+            ▲
           </span>
         );
       } else {
         return (
           <span className="block mt-0.5 text-left font-bold text-[#333333] text-[15px] select-none leading-none">
-            ↓
+            ▼
           </span>
         );
       }
     }
     return (
       <span className="block mt-0.5 text-left font-bold text-[#333333]/80 text-[15px] select-none leading-none tracking-tighter">
-        ↓↑
+        ▼▲
       </span>
     );
   };
@@ -271,9 +271,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>type</span>
                     {sortField1 === 'type' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -286,9 +286,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>number</span>
                     {sortField1 === 'id' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -300,9 +300,9 @@ export default function Dashboard() {
                   <div>Applicant name</div>
                   <div>
                     {sortField1 === 'applicantName' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -314,9 +314,9 @@ export default function Dashboard() {
                   <div>Date submitted</div>
                   <div>
                     {sortField1 === 'dateSubmitted' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -329,9 +329,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>status</span>
                     {sortField1 === 'status' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -343,9 +343,9 @@ export default function Dashboard() {
                   <div>Messages</div>
                   <div>
                     {sortField1 === 'messages' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir1 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -492,9 +492,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>type</span>
                     {sortField2 === 'type' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -506,9 +506,9 @@ export default function Dashboard() {
                   <div>Date Created</div>
                   <div>
                     {sortField2 === 'dateCreated' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -521,9 +521,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>to submit</span>
                     {sortField2 === 'daysLeft' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
@@ -536,9 +536,9 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span>saved</span>
                     {sortField2 === 'dateSaved' ? (
-                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '↑' : '↓'}</span>
+                      <span className="text-[#333] font-bold ml-1">{sortDir2 === 'asc' ? '▲' : '▼'}</span>
 ) : (
-                      <span className="text-[#666] ml-1 font-normal text-[14px]">↓↑</span>
+                      <span className="text-[#666] ml-1 font-normal text-[14px]">▼▲</span>
                     )}
                   </div>
                 </th>
