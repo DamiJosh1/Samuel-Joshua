@@ -1180,8 +1180,7 @@ export default function AdminDashboard() {
 
             </div>
           )}
-          </div>
-              )}
+        
             </div>
           {selectedAppId && selectedUserEmail && (
             <div className={`${showSidebar ? 'lg:col-span-8' : 'w-full'} border border-gray-400 p-6 space-y-6 bg-gray-50`}>
