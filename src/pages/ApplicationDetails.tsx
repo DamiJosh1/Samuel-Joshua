@@ -370,11 +370,11 @@ export default function ApplicationDetails() {
               <span>{formatSubmittedDate(selectedApp.dateReceived || selectedApp.dateCreated || '') || '—'}</span>
             </div>
 
-            {/* Added Biometrics block right below the Date Received block */}
+            {/* Structured exactly like the image template */}
             {(selectedApp.biometricsNumber || selectedApp.biometricsDate || selectedApp.biometricsExpiry) && (
-              <div className="mt-1">
+              <div className="pt-0.5">
                 <div className="font-bold text-gray-900">Biometrics:</div>
-                <div className="pl-8 flex flex-col mt-1">
+                <div className="pl-6 flex flex-col space-y-1 mt-1">
                   {selectedApp.biometricsNumber && (
                     <div>
                       <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
@@ -396,15 +396,6 @@ export default function ApplicationDetails() {
                 </div>
               </div>
             )}
-
-            <div>
-              <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
-              <span>{selectedApp.biometricsNumber || '—'}</span>
-            </div>
-            <div>
-              <span className="font-bold text-gray-900">Date of Biometrics Enrolment:</span>{" "}
-              <span>{selectedApp.biometricsDate || '—'}</span>
-            </div>
           </div>
         </div>
       </div>
