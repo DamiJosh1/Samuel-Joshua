@@ -369,6 +369,34 @@ export default function ApplicationDetails() {
               <span className="font-bold text-gray-900">Date Received:</span>{" "}
               <span>{formatSubmittedDate(selectedApp.dateReceived || selectedApp.dateCreated || '') || '—'}</span>
             </div>
+
+            {/* Added Biometrics block right below the Date Received block */}
+            {(selectedApp.biometricsNumber || selectedApp.biometricsDate || selectedApp.biometricsExpiry) && (
+              <div className="mt-1">
+                <div className="font-bold text-gray-900">Biometrics:</div>
+                <div className="pl-8 flex flex-col mt-1">
+                  {selectedApp.biometricsNumber && (
+                    <div>
+                      <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
+                      <span>{selectedApp.biometricsNumber}</span>
+                    </div>
+                  )}
+                  {selectedApp.biometricsDate && (
+                    <div>
+                      <span className="font-bold text-gray-900">Date of Biometrics Enrolment:</span>{" "}
+                      <span>{selectedApp.biometricsDate}</span>
+                    </div>
+                  )}
+                  {selectedApp.biometricsExpiry && (
+                    <div>
+                      <span className="font-bold text-gray-900">Expiry Date:</span>{" "}
+                      <span>{selectedApp.biometricsExpiry}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div>
               <span className="font-bold text-gray-900">Biometrics Number:</span>{" "}
               <span>{selectedApp.biometricsNumber || '—'}</span>
