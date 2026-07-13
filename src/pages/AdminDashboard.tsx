@@ -853,7 +853,7 @@ export default function AdminDashboard() {
           
           {/* LEFT SIDEBAR */}
           {(!selectedAppId || showSidebar) && (
-            <div className={`w-full lg:w-[750px] flex-shrink-0 flex flex-col gap-6 ${selectedAppId ? 'lg:sticky lg:top-4 lg:max-h-[90vh] overflow-y-auto' : ''}`}>
+            <div className={`w-full lg:w-[1050px] flex-shrink-0 flex flex-col gap-6 ${selectedAppId ? 'lg:sticky lg:top-4 lg:max-h-[90vh] overflow-y-auto' : ''}`}>
               
               {/* Create Applicant Profile */}
               {!selectedAppId && (
@@ -1358,7 +1358,7 @@ export default function AdminDashboard() {
                         <label className="block text-xs font-bold mb-1">Biometrics Number</label>
                         <input 
                           type="text" 
-                          value={editMetricsNumber => setEditBiometricsNumber(editMetricsNumber.target.value)}
+                          value={editBiometricsNumber => setEditBiometricsNumber(editBiometricsNumber.target.value)}
                           className="w-full border border-gray-400 p-2 bg-white"
                           placeholder="e.g. 123456789012"
                         />
