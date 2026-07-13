@@ -1358,7 +1358,8 @@ export default function AdminDashboard() {
                         <label className="block text-xs font-bold mb-1">Biometrics Number</label>
                         <input 
                           type="text" 
-                          value={editBiometricsNumber => setEditBiometricsNumber(editBiometricsNumber.target.value)}
+                          value={editBiometricsNumber} 
+                          onChange={e => setEditBiometricsNumber(e.target.value)}
                           className="w-full border border-gray-400 p-2 bg-white"
                           placeholder="e.g. 123456789012"
                         />
